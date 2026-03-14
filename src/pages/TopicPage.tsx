@@ -1,27 +1,23 @@
 import { useParams } from "react-router-dom";
+import { MDXRenderer } from "../components/content/MDXRenderer";
 
 export function TopicPage() {
   const { categoryId, slug } = useParams();
 
+  if (!categoryId || !slug) return null;
+
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="space-y-2">
-        <div className="text-xs font-mono text-primary/60 tracking-wider uppercase">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-3xl">
+      <div className="space-y-4 mb-12">
+        <div className="text-[11px] font-mono text-primary/70 tracking-widest uppercase bg-primary/10 inline-block px-2 py-1 rounded-md border border-primary/20 shadow-[0_0_15px_rgba(112,93,232,0.15)]">
           {categoryId}
         </div>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tighter-plus text-foreground">
           {slug?.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
         </h1>
-        <p className="text-xl text-muted-foreground leading-relaxed pt-2">
-          This is a placeholder page for the {slug} topic. MDX rendering will be implemented in Phase 2.
-        </p>
       </div>
 
-      <div className="glass-panel p-8 rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.6)] backdrop-blur-md">
-        <div className="text-center text-muted-foreground text-sm">
-          Interactive Architecture Diagram Placeholder
-        </div>
-      </div>
+      <MDXRenderer categoryId={categoryId} slug={slug} />
     </div>
   );
 }
