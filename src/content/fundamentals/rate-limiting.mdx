@@ -1,0 +1,129 @@
+---
+title: "Rate Limiting"
+slug: "rate-limiting"
+category: "fundamentals"
+difficulty: "medium"
+order: 5
+tags: ["scaling", "availability", "security"]
+relatedTopics: ["load-balancers", "api-gateway", "circuit-breaker"]
+---
+
+## Introduction
+
+Rate limiting is a strategy for limiting network traffic. It puts a cap on how often someone can repeat an action within a certain timeframe – for instance, trying to log into an account. 
+
+## Problem & Context
+
+In distributed systems, rate limiting is the principal defense against **resource exhaustion**. Without it, your system is vulnerable to:
+
+- **Resource Starvation**: A few heavy users monopolizing all available capacity.
+- **Cascading Failures**: Traffic spikes overwhelming one service and triggering a chain reaction of failures.
+- **Cost Runaway**: Unexpected usage spikes leading to massive cloud infrastructure bills.
+- **Brute Force & DDoS**: Attackers overwhelming endpoints with high-velocity requests.
+
+## Core Theory: Algorithms
+
+Several standard algorithms are used to implement rate limiting, each with different performance characteristics:
+
+### 1. Token Bucket
+Tokens are added to a "bucket" at a fixed rate. Each request consumes a token. This allows for **short bursts** while maintaining a steady average.
+
+### 2. Leaky Bucket
+Requests enter a buffer and leak out at a constant rate, smoothing out bursts into a **uniform flow**.
+
+### 3. Fixed Window
+Divides time into fixed slots. It's simple but can allow $2\times$ the limit at window boundaries.
+
+### 4. Sliding Window
+A more accurate approach that prevents the boundary problem by using a moving time window, often implemented using sorted sets in Redis.
+
+## Architecture & Components
+
+In a production environment, rate limiting is typically implemented as a centralized middleware or sidecar to maintain global state.
+
+<ArchitectureCanvas configId="api-gateway" />
+
+- **Edge / CDN**: Drops malicious traffic before it reaches your cloud provider.
+- **API Gateway**: Provides a centralized "hub" for limiting all internal services.
+- **Service-Level**: Fine-grained protection within a specific microservice.
+
+## Interactive Visualization & Flow
+
+Use the simulation below to explore how the **Token Bucket** algorithm handles traffic. Notice how you can "burst" several requests at once until the bucket is empty, after which you must wait for tokens to refill.
+
+<SimulationEmbed type="rate-limiting" />
+
+## Tradeoffs
+
+<TradeoffCard
+  pros={[
+    "Critical for security (DoS/Brute Force)",
+    "Ensures system stability under load",
+    "Enables predictable resource costs",
+    "Fairness among multiple tenants"
+  ]}
+  cons={[
+    "Can introduce latency due to counter checks",
+    "Requires centralized state (Redis) in distributed systems",
+    "Difficult to tune 'fair' limits for all users",
+    "Potential for false positives limiting good users"
+  ]}
+/>
+
+## Real-World Application
+
+### Level 1: Foundational (Single API Nodes)
+Small apps often use simple middleware like `express-rate-limit`. In this tier, state is usually stored in local memory. This is effective for protecting a single node against basic script-kiddies but doesn't scale across multiple instances.
+
+### Level 2: Enterprise (Global Scale)
+Global platforms like **Stripe** or **GitHub** use a tiered Redis-based approach. They use Lua scripts to ensure atomicity when incrementing counters and apply different limits based on identity (e.g., Authenticated vs. Anonymous).
+
+## Implementation Patterns
+
+<KnowledgeSnippet title="Distributed Atomicity">
+### Solving the Race Condition
+In a distributed system, two gateways might check a counter simultaneously. To solve this, use **Redis Lua scripts**. This ensures the "check-and-increment" logic runs as a single atomic operation, preventing users from bypassing limits during high-concurrency spikes.
+</KnowledgeSnippet>
+
+## Common Questions (Q&A)
+
+<FAQAccordion items={[
+  {
+    question: "What should I do if a user exceeds their limit?",
+    answer: "Always return an HTTP 429 'Too Many Requests' status code. Include a 'Retry-After' header to tell the client exactly when they can try again, which helps well-behaved clients back off gracefully."
+  },
+  {
+    question: "Where is the best place to store rate-limiting state?",
+    answer: "Redis is the industry standard. It's an in-memory store that supports atomic operations and TTLs, making it perfect for high-speed counter checks across multiple application servers."
+  },
+  {
+    question: "Can rate limiting be used for monetization?",
+    answer: "Yes, it is the primary mechanism for 'Tiered Pricing'. You can allow 1,000 requests/month for free users and 1,000,000 for enterprise users by using their API key as the rate-limiting identifier."
+  }
+]} />
+
+## Interview Notes
+<InterviewAnswer>
+### How would you implement rate limiting in a distributed system?
+
+1. **Deployment Strategy** Use a centralized sidecar or middleware at the `API Gateway` level (e.g., `Envoy`, `Kong`) to intercept requests before they hit internal services.
+2. **Distributed Storage** Use `Redis` for storing global counters. It is fast, atomic, and handles `TTL` (Time-to-Live) automatically, making it perfect for fixed or sliding window resets across multiple nodes.
+3. **Algorithm Protocol** The `Token Bucket` is preferred for most public APIs. It provides a simple way to allow for **burst traffic** while maintaining a long-term average rate.
+4. **Distributed Challenges** Systems must account for eventual consistency and clock variance:
+   - **Race Conditions** Use `Redis Lua scripts` or `INCR` to ensure atomicity when multiple gateway instances check and decrement the same counter.
+   - **Clock Drift** Use a centralized store's time (like Redis `TIME`) rather than local server time to ensure consistent window boundaries.
+5. **Observability & UX** Always return an `HTTP 429` (Too Many Requests) status code. Include a `Retry-After` header to communicate back-off strategies to clients gracefully.
+</InterviewAnswer>
+
+## Summary & Takeaways
+
+<KeyTakeaways items={[
+  "Rate limiting protects against resource exhaustion and abuse.",
+  "Token Bucket is the preferred algorithm for handling bursts effectively.",
+  "Distributed systems require a centralized state-store like Redis for global accuracy.",
+  "Always return HTTP 429 with Retry-After headers for a better developer experience."
+]} />
+
+## Next Steps & Related Topics
+
+<RelatedTopics slugs={["load-balancers", "api-gateway", "circuit-breaker", "database-sharding"]} />

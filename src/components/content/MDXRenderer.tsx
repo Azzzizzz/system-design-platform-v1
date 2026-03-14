@@ -11,6 +11,9 @@ import { LatencyThroughputSim } from "../simulation/LatencyThroughputSim";
 import { CapTheoremSim } from "../simulation/CapTheoremSim";
 import { ConsistencyModelsSim } from "../simulation/ConsistencyModelsSim";
 import { TopicNotFound } from "./TopicNotFound";
+import { InterviewAnswer } from "./InterviewAnswer";
+
+import { RateLimitingSim } from "../simulation/RateLimitingSim";
 
 // Import all MDX files
 const mdxModules = import.meta.glob("../../content/**/*.mdx");
@@ -22,6 +25,7 @@ const mdxComponents = {
   KeyTakeaways,
   RelatedTopics,
   ArchitectureCanvas,
+  InterviewAnswer,
   ConsistentHashingSim,
   LatencyThroughputSim,
   CapTheoremSim,
@@ -32,6 +36,7 @@ const mdxComponents = {
     if (type === 'latency-throughput') return <LatencyThroughputSim />;
     if (type === 'cap-theorem') return <CapTheoremSim />;
     if (type === 'consistency-models') return <ConsistencyModelsSim />;
+    if (type === 'rate-limiting') return <RateLimitingSim />;
     return (
       <div className="w-full h-64 border border-white/[0.08] bg-black/40 rounded-xl flex items-center justify-center text-sm text-white/50 my-8">
         SimulationEmbed: {type} (Pending Phase 4)

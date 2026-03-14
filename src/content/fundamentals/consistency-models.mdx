@@ -11,65 +11,57 @@ relatedTopics: ["cap-theorem", "database-replication"]
 ## Introduction
 In a distributed system, data is often replicated across multiple nodes for availability. **Consistency Models** define the rules that govern how and when a change made on one node becomes visible to other nodes.
 
-## Why It Matters
-Deciding on a consistency model is one of the most important architectural decisions. It is a direct trade-off between **System Performance** (Latency) and **Data Correctness**.
+## Problem & Context
+Deciding on a consistency model is one of the most important architectural decisions. It is a direct trade-off between **Latency** and **Data Correctness**. Without a clear model, various nodes may return different versions of the same data, leading to "stale reads" or lost updates.
 
----
+## Core Theory: Common Models
 
-## Interactive Simulation
-Use the toggle below to switch between Strong and Eventual consistency. Watch how a write to "Node A" affects what you see when reading from "Node B".
+### Strong Consistency
+The system guarantees that once a write is acknowledged, all subsequent reads will return that value. It usually requires a majority of nodes to confirm the write before responding.
+
+### Eventual Consistency
+The system guarantees that if no new updates are made, eventually all nodes will return the last updated value. This allows for massive scale and high availability at the cost of temporary staleness.
+
+### Causal Consistency
+A middle ground where the system ensures that operations that are "causally related" (e.g., a reply to a comment) are seen in the correct order by everyone.
+
+## Architecture & Components: PACELC
+Consistency models are the choice we make during both network failures and normal operations.
+
+<ArchitectureCanvas configId="load-balancer-flow" />
+
+- **Strong Consistency**: Prioritizes "C" (Consistency) over "L" (Latency) during normal operation.
+- **Eventual Consistency**: Prioritizes "L" (Latency) and "A" (Availability) over absolute correctness.
+
+## Interactive Visualization & Flow
+Use the toggle below to switch between Strong and Eventual consistency. Watch how a write to "Node A" affects what you see when reading from "Node B" across the network.
 
 <SimulationEmbed type="consistency-models" />
 
----
-
-## Common Consistency Models
-
-### Strong Consistency
-The system guarantees that once a write is acknowledged, all subsequent reads will return that value.
-- **Workflow**: The system usually blocks until all replicas (or a majority) have confirmed the write.
-- **Trade-off**: Higher latency and lower availability (if a node is down, the write might fail).
-
-### Eventual Consistency
-The system guarantees that if no new updates are made, eventually all nodes will return the last updated value.
-- **Workflow**: Replication happens asynchronously in the background.
-- **Trade-off**: High performance and maximum availability, but readers might see "stale" (old) data for a brief window.
-
-### Causal Consistency
-A middle ground where the system ensures that operations that are "causally related" are seen in the same order by everyone. If A happens before B, everyone sees A then B.
-
----
-
-## PACELC View
-If you recall the **CAP Theorem**, Consistency Models are the "C" in "PACELC".
-- **E**lse (no partition), you choose between **L**atency or **C**onsistency.
-- Choosing **Strong Consistency** means choosing **C**.
-- Choosing **Eventual Consistency** means prioritizing **L**.
-
 ## Tradeoffs
-
 <TradeoffCard
   pros={[
-    "Strong Consistency prevents double-spending and ensure user trust in critical data.",
-    "Eventual Consistency enables massive scale (e.g., social media likes, comments).",
-    "Causal Consistency provides a good balance for collaborative apps."
+    "Strong Consistency prevents double-spending and ensure trust",
+    "Eventual Consistency enables massive scale (e.g. social media)",
+    "Causal Consistency provides a good balance for collaborative apps"
   ]}
   cons={[
-    "Strong Consistency can significantly increase request latency (round-trips to all nodes).",
-    "Eventual Consistency requires developers to handle 'Conflict Resolution' (e.g., Last Write Wins).",
-    "Stale reads in Eventual systems can lead to confusing UX (e.g., deleted post reappearing)."
+    "Strong Consistency can significantly increase request latency",
+    "Eventual Consistency requires developers to handle conflicts",
+    "Stale reads can lead to confusing UX if not handled well"
   ]}
 />
 
 ## Real-World Application
 
 ### Level 1: Foundational (Social Media)
-In a social media app like **Instagram**, "Likes" and "Follower counts" are often **Eventually Consistent**. If you like a photo, your friend might not see the updated count for a few seconds. This delay is acceptable because the cost of "being wrong" for a moment is zero, and asynchronous replication allows the system to remain lightning-fast.
+In a social media app like **Instagram**, "Likes" and "Comments" are often **Eventually Consistent**. If you like a photo, your friend might not see the updated count for a few seconds. This delay is acceptable because the cost of "being wrong" for a moment is zero.
 
-### Level 2: Enterprise (E-commerce Inventory)
-For an e-commerce giant like **Amazon**, inventory management is a hybrid. The search results might show "5 in stock" (Eventual), but during the **Checkout process**, the system switches to **Strong Consistency**. It must ensure that the inventory is actually available and lock it before confirming the sale.
+### Level 2: Enterprise (Financial Systems)
+For an e-commerce giant like **Amazon**, the **Checkout process** requires **Strong Consistency**. The system must ensure that an item is actually in stock and lock it before confirming the sale. Using eventual consistency here could lead to overselling inventory.
 
 ## Implementation Patterns
+
 <KnowledgeSnippet title="Decision Framework">
 ### When to use Strong vs Eventual
 Use **Strong Consistency** when data integrity is critical and the number of writers is small. Use **Eventual Consistency** when read-availability and low latency are prioritized over immediate correctness across all nodes.
@@ -79,20 +71,32 @@ Use **Strong Consistency** when data integrity is critical and the number of wri
 <FAQAccordion items={[
   {
     question: "Does 'Eventual' mean the system is unreliable?",
-    answer: "Not necessarily. It means the system prioritizes availability. In a healthy network, the 'eventual' window is often less than 100ms, which is faster than a human can perceive. Reliability issues only appear during sustained network partitions."
+    answer: "No. It means the system prioritizes speed. In a healthy network, the 'eventual' window is often less than 100ms—faster than a human can perceive."
   },
   {
     question: "How do you resolve conflicts in eventual consistency?",
-    answer: "Common strategies include 'Last Write Wins' (using timestamps), 'Vector Clocks' (tracking causal relationships), or 'Conflict-free Replicated Data Types' (CRDTs) which allow nodes to merge state mathematically without a central leader."
+    answer: "Common strategies include 'Last Write Wins' (using timestamps), 'Vector Clocks', or 'CRDTs' which allow nodes to merge state mathematically without a central leader."
   }
 ]} />
 
-## Key Takeaways
+## Interview Notes
+
+<InterviewAnswer>
+### How do you handle "Read-Your-Writes" consistency in a distributed follower setup?
+
+1. **Replication Lag** In **Leader-Follower** setups, async replication causes a delay. If a user writes to the leader and reads from a lagging follower, their own data appears to be missing.
+2. **Leader-Only Routing** Route all reads for a user's *own* data (e.g., their user profile) to the **Leader Node**, while routing generic content (e.g., global feeds) to followers.
+3. **Sticky Sessions** Pin a user's session to a specific follower at the **Load Balancer** level. This ensures they consistently see progress from at least one node's perspective.
+4. **High-Water Marks** The client tracks its last update's `Version Tag`. The follower must confirm it has reached this version before serving the request, or it must redirect the read to the leader.
+5. **Caching Layer** Use an atomic cache like `Redis` for the most recent writes. This provides a fast, consistent "short-term memory" until the permanent database replicas catch up.
+</InterviewAnswer>
+
+## Summary & Takeaways
 <KeyTakeaways items={[
   "Consistency is a spectrum, not a binary choice.",
   "Strong consistency = correctness at the cost of speed.",
   "Eventual consistency = speed at the cost of temporary 'stale' data.",
-  "Replication delay is the primary cause of staleness in distributed systems.",
+  "Replication delay is the primary cause of staleness.",
   "Choose your model based on the cost of being 'wrong' for a few milliseconds."
 ]} />
 

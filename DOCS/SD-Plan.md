@@ -88,7 +88,7 @@ Inspired by **Linear.app's ultra-premium dashboard**.
 │              │  │  Simulation Controls                        │   │
 │              │  │  [▶ Play] [⏸ Pause] [🔄 Reset]             │   │
 │              │  │                                              │   │
-│              │  │  Tradeoffs & Interview Notes                │   │
+│              │  │  Tradeoffs & Q&A                             │   │
 │              │  └─────────────────────────────────────────────┘   │
 │              │                                                     │
 │              │  ← Prev Topic          Next Topic →                │
@@ -340,102 +340,91 @@ system-design-platform/
 
 ### 5.1 Standard MDX Topic Schema (12 Sections)
 
-Every **concept topic** (topics 1–22) follows a consistent 12-section structure. This ensures every page feels uniform and readers always know where to find each type of information.
-
-#### Recommended Page Sections
+Every **concept topic** (topics 1–22) follows a consistent 12-section structure. This ensures every page feels uniform, premium, and covers both foundational theory, real-world application, and structured interview preparation.
 
 | #  | Section                     | Purpose                                           | Key Component                |
 |----|-----------------------------|----------------------------------------------------|------------------------------|
-| 1  | **Introduction**            | What the concept is, in simple terms               | Prose                        |
-| 2  | **Why It Matters**          | Why this topic is important in distributed systems  | Prose                        |
-| 3  | **Problem It Solves**       | What system limitation or challenge this addresses  | Prose                        |
-| 4  | **Core Concept / Theory**   | Main explanation with key principles                | Prose + diagrams             |
-| 5  | **Architecture / Components** | Main building blocks involved                     | `<ArchitectureCanvas />`     |
-| 6  | **Request / Data Flow**     | Step-by-step system flow                            | `<SimulationEmbed />`        |
-| 7  | **Interactive Visualization** | React Flow diagram, animation, or simulation      | `<SimulationEmbed />`        |
-| 8  | **Tradeoffs**               | Benefits, drawbacks, common pitfalls                | `<TradeoffCard />`           |
-| 9  | **Real-World Usage**        | Where this is used in actual systems                | Prose + examples             |
-| 10 | **Interview Notes**         | How to explain it in an interview                   | `<InterviewAnswer />`        |
-| 11 | **Key Takeaways**           | Quick revision summary (3–5 bullet points)          | `<KeyTakeaways />`           |
-| 12 | **Related Topics**          | Links to connected concepts                         | `<RelatedTopics />`          |
+| 1  | **Introduction**            | High-level definition and core concept             | Prose                        |
+| 2  | **Problem & Context**       | Why it matters and the specific challenges it solves| Prose                        |
+| 3  | **Core Theory**             | Deep dive into algorithms and principles            | Prose + Diagrams             |
+| 4  | **Architecture & Components** | System building blocks and hierarchy              | `<ArchitectureCanvas />`     |
+| 5  | **Interactive Viz & Flow**  | Animated simulation of the concept in action       | `<SimulationEmbed />`        |
+| 6  | **Tradeoffs**               | Pros, cons, and operational considerations          | `<TradeoffCard />`           |
+| 7  | **Real-World Application**  | Level 1 (Foundational) vs Level 2 (Enterprise) usage| Prose + Examples             |
+| 8  | **Implementation Patterns** | Senior-level insights and production strategies     | `<KnowledgeSnippet />`       |
+| 9  | **Common Questions (Q&A)**  | Clarifying confusing points and edge cases         | `<FAQAccordion />`           |
+| 10 | **Interview Notes**         | Structured answer blueprint for interviews          | `<InterviewAnswer />`        |
+| 11 | **Summary & Takeaways**     | Quick revision summary (3–5 bullet points)          | `<KeyTakeaways />`           |
+| 12 | **Next Steps & Related Topics**| Links to connected concepts and deeper dives      | `<RelatedTopics />`          |
 
 #### MDX Template (Standard Topic)
 
 ```mdx
 ---
-title: "Load Balancers"
-slug: "load-balancers"
-category: "fundamentals"
+#### MDX Template (Standard Topic)
+
+```mdx
+---
+title: "Topic Name"
+slug: "topic-slug"
+category: "category-id"
 difficulty: "medium"
-order: 4
-tags: ["networking", "scaling", "availability"]
-relatedTopics: ["rate-limiting", "horizontal-vs-vertical"]
-diagramId: "load-balancer-flow"
+order: 1
+tags: ["tag1", "tag2"]
+relatedTopics: ["related1", "related2"]
 ---
 
 ## Introduction
-What a load balancer is and its role in modern systems.
+Prose defining the concept clearly and concisely.
 
-## Why It Matters
-Why load balancing is critical for availability and performance.
+## Problem & Context
+Explaining the distributed system challenges this topic addresses.
 
-## Problem It Solves
-What happens without load balancing — single points of failure, uneven load.
+## Core Theory
+Deep dive into the underlying principles, math, or logic.
 
-## Core Concept
-L4 vs L7 load balancers, algorithms (round robin, least connections, IP hash, weighted routing), health checks, sticky sessions.
+## Architecture & Components
+Visual breakdown of the system components.
+<ArchitectureCanvas configId="topic-slug-arch" />
 
-## Architecture
-
-<ArchitectureCanvas configId="load-balancer-flow" />
-
-## Request Flow
-
-<SimulationEmbed type="load-balancer" />
-
-## Interactive Visualization
-Interactive request-routing simulation with algorithm switching.
+## Interactive Visualization & Flow
+Animated simulation of data/request flow.
+<SimulationEmbed type="topic-slug-sim" />
 
 ## Tradeoffs
+<TradeoffCard pros={["A", "B"]} cons={["C", "D"]} />
 
-<TradeoffCard
-  pros={["High availability", "Horizontal scaling", "Health monitoring"]}
-  cons={["Single point of failure risk", "Added latency", "Complexity"]}
-/>
+## Real-World Application
 
-## Real-World Usage
-- AWS ALB / NLB
-- Nginx, HAProxy
-- Cloudflare Load Balancing
+### Level 1: Foundational (Standard Implementations)
+Basic patterns used in typical web applications.
 
-## Interview Notes
+### Level 2: Enterprise (Scale & Production)
+How FAANG/High-tier companies optimize this at scale.
 
-<InterviewAnswer>
-### How would you explain Load Balancers?
+## Implementation Patterns
+<KnowledgeSnippet title="Best Practices">
+Crucial production details and senior-level insights.
+</KnowledgeSnippet>
 
-**1. Definition:** Distributes incoming traffic across multiple servers.
-
-**2. Algorithms:** Round robin, least connections, IP hash, weighted.
-
-**3. Benefits:** Fault tolerance, horizontal scaling, health checks.
-
-**4. Tradeoffs:** Added complexity, potential SPOF without redundancy.
-
-**5. When to use:** Any multi-server deployment requiring high availability.
-</InterviewAnswer>
-
-## Key Takeaways
-
-<KeyTakeaways items={[
-  "Load balancers distribute traffic to prevent overload on any single server.",
-  "L4 operates at transport layer; L7 at application layer.",
-  "Always deploy LBs in active-passive pairs to avoid SPOF.",
-  "Health checks are essential for routing only to healthy backends."
+## Common Questions (Q&A)
+<FAQAccordion items={[
+  { question: "...", answer: "..." }
 ]} />
 
-## Related Topics
+## Interview Notes
+<InterviewAnswer>
+### How to explain this in an interview?
+**1. Definition:** ...
+**2. Core Principle:** ...
+**3. Real-world example:** ...
+</InterviewAnswer>
 
-<RelatedTopics slugs={["rate-limiting", "horizontal-vs-vertical", "api-gateway"]} />
+## Summary & Takeaways
+<KeyTakeaways items={["Point 1", "Point 2"]} />
+
+## Next Steps & Related Topics
+<RelatedTopics slugs={["related-slug"]} />
 ```
 
 ---
@@ -516,13 +505,13 @@ Below is the detailed content outline for every topic. Each bullet maps to conte
 
 #### Category 1: Fundamentals
 
-| # | Topic | Key Content Points |
-|---|---|---|
-| 1 | **Latency vs Throughput** | Definition of each, difference, why both matter, real-world examples, bottleneck visualization |
-| 2 | **CAP Theorem** | C/A/P definitions, network partition impact, CP vs AP, why CA is unrealistic, interactive triangle, real system examples |
-| 3 | **Consistency Models** | Strong, eventual, causal, read-your-writes, monotonic reads, timeline visualization |
-| 4 | **Load Balancers** | L4 vs L7, round robin / least conn / IP hash / weighted, health checks, sticky sessions, request-routing simulation |
-| 5 | **Rate Limiting** | Token bucket, leaky bucket, fixed window, sliding window, where to apply, token flow animation |
+| # | Topic | Key Content Points | Structure Check |
+|---|---|---|---|
+| 1 | **Latency vs Throughput** | Difference, why both matter, bottleneck visualization, Little's Law. | 11 Sections |
+| 2 | **CAP Theorem** | C/A/P definitions, network partition impact, interactive triangle. | 11 Sections |
+| 3 | **Consistency Models** | Strong, eventual, causal, read-your-writes, timeline visualization. | 11 Sections |
+| 4 | **Load Balancers** | L4 vs L7, round robin / least conn / IP hash, health checks. | 11 Sections |
+| 5 | **Rate Limiting** | Token bucket, leaky bucket, sliding window, token flow animation. | 11 Sections |
 
 #### Category 2: Scaling
 

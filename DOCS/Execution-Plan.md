@@ -7,7 +7,7 @@
 ## Technical Standards: Definition of Done (DoD)
 
 Each topic must meet the following criteria before being marked as complete:
-1.  **Content**: All 11 sections followed as per the refined MDX schema.
+1.  **Content**: All 12 sections followed as per the refined 12-section MDX schema (including Level 1/2 examples, FAQ accordion, and Interview Notes).
 2.  **Visualization**: Working interactive diagram + logic-verified simulation.
 3.  **Unit Tests**: All core simulation logic and utility functions covered by Vitest.
 4.  **E2E Tests**: Critical paths (navigation, interactive sliders, algorithm switching) verified by Playwright.
@@ -28,7 +28,7 @@ Each topic must meet the following criteria before being marked as complete:
 | 0.4 | Setup directory structure | ✅ |
 | 0.5 | Establish Linear-inspired dark theme in `index.css` | ✅ |
 | 0.6 | Create prototype layout with animated diagram in `App.tsx` | ✅ |
-| 0.7 | Define 12-section MDX schema + case study schema in `SD-Plan.md` | ✅ |
+| 0.7 | Define refined 11-section MDX schema + case study schema in `SD-Plan.md` | ✅ |
 | 0.8 | Setup Antigravity skills | ✅ |
 
 ---
@@ -96,44 +96,44 @@ Each topic must meet the following criteria before being marked as complete:
 | 1F.1 | Author `load-balancers.mdx` (all 12 sections) | `src/content/fundamentals/load-balancers.mdx` |
 | 1F.2 | Wire `TopicPage.tsx` to load MDX by route slug | `src/pages/TopicPage.tsx` |
 
-### Phase 1 Verification
+### Phase 1 Verification ✅
 
-- [ ] `npm run build` — zero errors
-- [ ] Navigate to `/fundamentals/load-balancers` → full 12-section page renders
-- [ ] Sidebar shows all categories, Load Balancers is highlighted as active
-- [ ] Breadcrumb shows `Fundamentals > Load Balancers`
-- [ ] Diagram renders with custom nodes, animated edges, faint grid
-- [ ] Simulation plays: requests animate to servers per selected algorithm
-- [ ] `TradeoffCard`, `InterviewAnswer`, `KeyTakeaways`, `RelatedTopics` all render
-- [ ] Topbar glass effect matches Linear aesthetic
-- [ ] Mobile responsive: sidebar collapses
+- [x] `npm run build` — zero errors
+- [x] Navigate to `/fundamentals/load-balancers` → full 11-section page renders
+- [x] Sidebar shows all categories, Load Balancers is highlighted as active
+- [x] Breadcrumb shows `Fundamentals > Load Balancers`
+- [x] Diagram renders with custom nodes, animated edges, faint grid
+- [x] Simulation plays: requests animate to servers per selected algorithm
+- [x] `TradeoffCard`, `InterviewAnswer`, `KeyTakeaways`, `RelatedTopics` all render
+- [x] Topbar glass effect matches Linear aesthetic
+- [x] Mobile responsive: sidebar collapses
 
 > **Milestone: After Phase 1, you have a fully shippable single-page product.** This is your golden reference.
 
 ---
 
-## Phase 2: Fundamentals Sprint
+## Phase 2: Fundamentals Sprint ✅
 
 **Goal:** Complete the remaining 4 Fundamentals topics using Phase 1 infrastructure.
 
 ### Execution
 
-| # | Topic | New Infra Needed | Content File |
-|---|---|---|---|
-| 2.1 | Latency vs Throughput | Pipeline bottleneck visualization | `src/content/fundamentals/latency-throughput.mdx` |
-| 2.2 | CAP Theorem | Interactive triangle (new node type?) | `src/content/fundamentals/cap-theorem.mdx` |
-| 2.3 | Consistency Models | Timeline diagram | `src/content/fundamentals/consistency-models.mdx` |
-| 2.4 | Rate Limiting | Token bucket sim (`RateLimitingSim.tsx`) | `src/content/fundamentals/rate-limiting.mdx` |
-| 2.5 | Diagram configs for all 4 | — | `src/data/diagramConfigs.ts` (update) |
-| 2.6 | **Testing Suite** | Comprehensive tests for Phase 2 | `tests/fundamentals.spec.ts` |
+| # | Topic | New Infra Needed | Content File | Status |
+|---|---|---|---|---|
+| 2.1 | Latency vs Throughput | Pipeline bottleneck visualization | `src/content/fundamentals/latency-throughput.mdx` | ✅ |
+| 2.2 | CAP Theorem | Interactive triangle (new node type?) | `src/content/fundamentals/cap-theorem.mdx` | ✅ |
+| 2.3 | Consistency Models | Timeline diagram | `src/content/fundamentals/consistency-models.mdx` | ✅ |
+| 2.4 | Rate Limiting | Token bucket sim (`RateLimitingSim.tsx`) | `src/content/fundamentals/rate-limiting.mdx` | ✅ |
+| 2.5 | Diagram configs for all 4 | — | `src/data/diagramConfigs.ts` (update) | ✅ |
+| 2.6 | **Testing Suite** | Comprehensive tests for Phase 2 | `tests/fundamentals.spec.ts` | ✅ |
 
 ### Verification
 
-- [ ] All 5 Fundamentals topics accessible and rendering correctly
-- [ ] Each topic has a working diagram
-- [ ] Rate Limiting simulation works (token bucket fill/drain)
-- [ ] Related Topics links between Fundamentals topics work
-- [ ] No regressions on Load Balancers page
+- [x] All 5 Fundamentals topics accessible and rendering correctly
+- [x] Each topic has a working diagram
+- [x] Rate Limiting simulation works (token bucket fill/drain)
+- [x] Related Topics links between Fundamentals topics work
+- [x] No regressions on Load Balancers page
 
 ---
 
@@ -310,11 +310,11 @@ Each topic must meet the following criteria before being marked as complete:
 ```
 Phase 0  ✅ Foundation
   │
-Phase 1  ▶ Golden Path (1 complete topic: Load Balancers)
+Phase 1  ✅ Golden Path (1 complete topic: Load Balancers)
   │        ALL layers proven: routing → MDX → diagram → simulation
   │        🎯 Milestone: Shippable single-page product
   │
-Phase 2  ▶ Fundamentals Sprint (+4 topics = 5 total)
+Phase 2  ✅ Fundamentals Sprint (+4 topics = 5 total)
   │        🎯 Milestone: Complete "Fundamentals" category
   │
 Phase 3  ▶ Scaling + Databases Sprint (+8 topics = 13 total)

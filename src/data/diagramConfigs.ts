@@ -34,5 +34,21 @@ export const diagramConfigs: Record<string, DiagramConfig> = {
       { ...defaultEdge("e-lb-web2", "lb", "web2", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-lb-web3", "lb", "web3", false), sourceHandle: "right", targetHandle: "left" },
     ]
+  },
+  "api-gateway": {
+    id: "api-gateway",
+    nodes: [
+      { id: "internet", type: "client", position: { x: 50, y: 125 }, data: { label: "Internet", sublabel: "Public Traffic", status: "healthy" } },
+      { id: "gateway", type: "lb", position: { x: 350, y: 125 }, data: { label: "API Gateway", sublabel: "Rate Limiting Hub", status: "healthy" } },
+      { id: "service1", type: "service", position: { x: 650, y: 0 }, data: { label: "Order Service", status: "healthy" } },
+      { id: "service2", type: "service", position: { x: 650, y: 125 }, data: { label: "User Service", status: "healthy" } },
+      { id: "service3", type: "service", position: { x: 650, y: 250 }, data: { label: "Auth Service", status: "healthy" } },
+    ],
+    edges: [
+      { ...defaultEdge("e-int-gw", "internet", "gateway", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-gw-s1", "gateway", "service1", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-gw-s2", "gateway", "service2", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-gw-s3", "gateway", "service3", true), sourceHandle: "right", targetHandle: "left" },
+    ]
   }
 };
