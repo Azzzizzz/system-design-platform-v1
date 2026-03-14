@@ -1,0 +1,53 @@
+---
+title: "Consistent Hashing"
+description: "How to scale distributed systems without breaking everything."
+difficulty: "medium"
+category: "Scaling"
+---
+
+# Consistent Hashing
+
+Consistent hashing is a special kind of hashing such that when a hash table is resized, only $K/n$ keys need to be remapped on average, where $K$ is the number of keys, and $n$ is the number of slots.
+
+## The Rehash Problem
+
+In a standard distributed system, you might route requests using a simple modulo: `server = hash(key) % total_servers`.
+
+This works... until you need to scale. 
+- If you have **10 servers** and add **1 more**, almost **100% of your requests** will hash to a different server.
+- In a caching system, this means a total cache miss storm.
+- In a stateful system, it means massive data migration.
+
+## The Hash Ring Solution
+
+Instead of mapping to a range of numbers, we map both **Requests** and **Servers** to a circular 360° ring.
+
+<ConsistentHashingSim />
+
+### Key Advantages
+
+1. **Minimal Disruption**: When a node is added, it only "steals" keys from its immediate counter-clockwise neighbor.
+2. **Scalability**: Seamlessly add or remove servers with predictable impacts.
+3. **Partitioning**: Each server is responsible for a "slice" of the hash space.
+
+---
+
+## Real-World Examples
+
+Consistent hashing isn't just a theoretical concept; it powers some of the most famous distributed systems in the world:
+
+- **Amazon DynamoDB & Apache Cassandra**: These distributed databases use consistent hashing to partition data across clusters. When you add a new node to a 1,000-node cluster, only 0.1% of the data needs to move.
+- **Akamai CDN**: Akamai uses consistent hashing to map content to edge servers. This ensures that users are routed to the nearest server without causing a global "cache miss storm" when a single edge server goes offline.
+- **Discord**: Discord uses it to distribute millions of concurrent WebSocket connections across their gateway clusters.
+
+---
+
+## Real-World Interview Question
+
+<InterviewAnswer>
+### Why is Consistent Hashing preferred over simple Modulo hashing in large-scale load balancers?
+
+Simple modulo hashing (`hash % n`) causes catastrophic remapping when 'n' (the number of servers) changes. Because the denominator changes, almost every key hashes to a new location. 
+
+Consistent hashing solves this by placing both keys and servers on a **Hash Ring**. When a server is added or removed, only the keys belonging to the segment of the ring near that server are affected ($1/n$ of keys on average), drastically reducing data migration and cache misses.
+</InterviewAnswer>

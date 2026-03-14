@@ -22,6 +22,7 @@ export const topicTree: Category[] = [
       { slug: "database-sharding", label: "Database Sharding", difficulty: "hard" },
       { slug: "database-replication", label: "Database Replication", difficulty: "medium" },
       { slug: "caching-strategies", label: "Caching Strategies", difficulty: "medium" },
+      { slug: "consistent-hashing", label: "Consistent Hashing", difficulty: "medium" },
     ],
   },
   {
