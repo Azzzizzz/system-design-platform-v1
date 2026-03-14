@@ -1,0 +1,53 @@
+---
+title: "Event-Driven Architecture"
+slug: "event-driven-architecture"
+category: "messaging"
+difficulty: "medium"
+order: 3
+tags: ["async", "kafka", "decoupling"]
+relatedTopics: ["kafka", "saga-pattern"]
+diagramId: "event-driven-flow"
+---
+
+## Introduction
+Brief overview of the concept and why it matters.
+
+## The Problem
+What problem does this solve? Real-world pain points.
+
+## Architecture
+Detailed explanation with embedded React Flow diagram.
+
+<ArchitectureCanvas configId="event-driven-flow" />
+
+## Flow Simulation
+Interactive simulation of the concept in action.
+
+<SimulationEmbed type="kafka-flow" />
+
+## Tradeoffs
+
+<TradeoffCard
+  pros={["Loose coupling", "Scalability", "Fault isolation"]}
+  cons={["Eventual consistency", "Debugging complexity", "Message ordering"]}
+/>
+
+## Real-World Examples
+- Netflix event processing pipeline
+- Uber trip lifecycle events
+
+## Interview Answer
+
+<InterviewAnswer>
+### How would you explain Event-Driven Architecture?
+
+**1. Definition:** Asynchronous communication pattern where services emit and react to events.
+
+**2. Components:** Event producers, event bus/broker (Kafka), event consumers.
+
+**3. Benefits:** Decoupled services, independent scaling, fault tolerance.
+
+**4. Tradeoffs:** Eventual consistency, complex debugging, idempotency requirements.
+
+**5. When to use:** High-throughput async workflows, microservices communication.
+</InterviewAnswer>
