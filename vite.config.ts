@@ -6,6 +6,9 @@ import remarkGfm from 'remark-gfm'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+
 // https://vite.dev/config/
 export default defineConfig({
   server: {
@@ -16,7 +19,13 @@ export default defineConfig({
     {
       enforce: 'pre',
       ...mdx({
-        remarkPlugins: [remarkGfm, remarkFrontmatter, [remarkMdxFrontmatter, { name: 'frontmatter' }]],
+        remarkPlugins: [
+          remarkGfm, 
+          remarkFrontmatter, 
+          [remarkMdxFrontmatter, { name: 'frontmatter' }],
+          remarkMath
+        ],
+        rehypePlugins: [rehypeKatex],
         providerImportSource: "@mdx-js/react"
       })
     },

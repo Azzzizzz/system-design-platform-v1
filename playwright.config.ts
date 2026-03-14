@@ -32,6 +32,15 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
 
+  /* Global configuration for visual snapshots */
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixelRatio: 0.05, // Allow up to 5% pixel difference for anti-aliasing
+      threshold: 0.2,          // Color difference threshold
+      scale: 'css',            // Use CSS pixel scaling for better high-DPI (Retina) support
+    },
+  },
+
   /* Configure projects for major browsers */
   projects: [
     {

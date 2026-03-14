@@ -4,6 +4,18 @@
 
 ---
 
+## Technical Standards: Definition of Done (DoD)
+
+Each topic must meet the following criteria before being marked as complete:
+1.  **Content**: All 11 sections followed as per the refined MDX schema.
+2.  **Visualization**: Working interactive diagram + logic-verified simulation.
+3.  **Unit Tests**: All core simulation logic and utility functions covered by Vitest.
+4.  **E2E Tests**: Critical paths (navigation, interactive sliders, algorithm switching) verified by Playwright.
+- **Visual Testing**: Restrict Visual Regression snapshots to macOS environments to ensure consistency.
+- **Hybrid Verification**: Adopt a dual-track (Antigravity UX + Playwright Regression) approach for every topic.
+
+---
+
 ## Phase 0: Foundation ✅ (Completed)
 
 **Goal:** Project scaffold, design system, and content architecture.
@@ -113,6 +125,7 @@
 | 2.3 | Consistency Models | Timeline diagram | `src/content/fundamentals/consistency-models.mdx` |
 | 2.4 | Rate Limiting | Token bucket sim (`RateLimitingSim.tsx`) | `src/content/fundamentals/rate-limiting.mdx` |
 | 2.5 | Diagram configs for all 4 | — | `src/data/diagramConfigs.ts` (update) |
+| 2.6 | **Testing Suite** | Comprehensive tests for Phase 2 | `tests/fundamentals.spec.ts` |
 
 ### Verification
 
@@ -279,16 +292,9 @@
 
 ### Execution
 
-| # | Task | Files |
-|---|---|---|
-| 8.1 | Setup Cypress | `cypress.config.ts` |
-| 8.2 | E2E: navigation flows | `cypress/e2e/navigation.cy.ts` |
-| 8.3 | E2E: MDX rendering | `cypress/e2e/content.cy.ts` |
-| 8.4 | E2E: simulations | `cypress/e2e/simulations.cy.ts` |
-| 8.5 | Lighthouse audit (Perf > 90, A11y > 95) | — |
-| 8.6 | Code splitting + lazy loading | Router + React.lazy |
-| 8.7 | SEO: meta tags, OG images | `index.html`, `public/` |
-| 8.8 | Production build + deploy | `npm run build` |
+- [ ] **Phase 8: Polish & Launch Readiness**
+    - [ ] Implement Hybrid Verification Suite (Antigravity UX + Playwright) for all prior phases.
+    - [ ] Comprehensive A11y & Performance Audit.
 
 ### Verification
 

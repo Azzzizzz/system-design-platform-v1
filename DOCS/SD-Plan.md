@@ -22,6 +22,7 @@
 14. [Component Specification](#14-component-specification)
 15. [Data Flow & State Management](#15-data-flow--state-management)
 16. [Performance Considerations](#16-performance-considerations)
+17. [Testing Strategy](#17-testing-strategy)
 
 ---
 
@@ -1295,6 +1296,38 @@ App
 ---
 
 ## 16. Performance Considerations
+
+... (content remains)
+
+---
+
+## 17. Testing Strategy
+
+To ensure clinical precision and visual excellence, the platform employs a three-tiered testing strategy. No topic is considered complete without passing all three tiers.
+
+### 17.1 Unit Testing (Vitest)
+- **Scope**: Data structures, simulation math, and utility functions.
+- **Focus**: Ensuring edge cases in algorithms (e.g., Round Robin indexing, Token Bucket drain logic) are mathematically correct.
+- **Command**: `npm run test:unit`
+
+### 17.2 E2E Functional Testing (Playwright)
+- **Scope**: User flows and interactivity.
+- **Goal**: Verify that clicking "CAP Theorem" actually loads the CAP page and that the interactive simulation responds to user inputs.
+- **Key Assertions**: URL changes, component visibility, state updates in the DOM.
+- **Command**: `npx playwright test`
+
+### 17.3 Visual Regression Testing (Playwright Snapshots)
+- **Scope**: UI Fidelity and Technical Rendering.
+- **Goal**: Catch issues that functional tests miss, such as unrendered LaTeX math (raw `$` signs), SVG diagram misalignment, or CSS regressions in the Glassmorphism theme.
+- **Strategy (Local Mac)**: For development speed, snapshots are generated and verified exclusively on **macOS**. Golden baselines are committed to the repository.
+- **Method**: Compare current screenshots against "Golden Baselines".
+- **Trigger**: Mandatory for every new component or MDX content change.
+- **Command**: `npx playwright test --update-snapshots` (to generate) / `npx playwright test` (to verify)
+
+### 17.4 Future Testing Pillars
+1.  **Accessibility (A11y)**: Automated `@axe-core/playwright` audits to ensure WCAG compliance for high-contrast dark mode and SVG interactive nodes.
+2.  **Content Schema Validation**: Automated `Zod` or Node.js scripts to enforce the 11-section quality requirement for all MDX topics.
+3.  **Performance Budgeting**: Tracking initial page load and animation FPS to maintain the "Ultra-Premium" snappy feel.
 
 | Concern                    | Strategy                                          |
 | -------------------------- | ------------------------------------------------- |

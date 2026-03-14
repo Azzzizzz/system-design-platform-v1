@@ -42,6 +42,7 @@ const TOPIC_DETAILS: Record<string, TopicInfo> = {
 
 export const CapTheoremSim: React.FC = () => {
   const [selection, setSelection] = useState<CAPSelection>(null);
+  const [hoveredSelection, setHoveredSelection] = useState<CAPSelection>(null);
 
   const trianglePoints = {
     C: { x: 200, y: 50, label: "Consistency" },
@@ -73,58 +74,92 @@ export const CapTheoremSim: React.FC = () => {
           />
 
           {/* Side Selectors (Interactive areas) */}
+          {/* CP - Left Edge */}
           <motion.path
             d={`M ${trianglePoints.C.x} ${trianglePoints.C.y} L ${trianglePoints.P.x} ${trianglePoints.P.y}`}
-            strokeWidth="12"
-            stroke="transparent"
+            strokeWidth="30"
+            stroke="white"
+            fill="none"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 0.15 }}
+            onHoverStart={() => setHoveredSelection('CP')}
+            onHoverEnd={() => setHoveredSelection(null)}
             className="cursor-pointer"
-            onClick={() => setSelection('CP')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelection('CP');
+            }}
             data-testid="cap-cp-path"
           />
+          {/* AP - Bottom Edge */}
           <motion.path
             d={`M ${trianglePoints.P.x} ${trianglePoints.P.y} L ${trianglePoints.A.x} ${trianglePoints.A.y}`}
-            strokeWidth="12"
-            stroke="transparent"
+            strokeWidth="30"
+            stroke="white"
+            fill="none"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 0.15 }}
+            onHoverStart={() => setHoveredSelection('AP')}
+            onHoverEnd={() => setHoveredSelection(null)}
             className="cursor-pointer"
-            onClick={() => setSelection('AP')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelection('AP');
+            }}
             data-testid="cap-ap-path"
           />
+          {/* CA - Right Edge */}
            <motion.path
             d={`M ${trianglePoints.A.x} ${trianglePoints.A.y} L ${trianglePoints.C.x} ${trianglePoints.C.y}`}
-            strokeWidth="12"
-            stroke="transparent"
+            strokeWidth="30"
+            stroke="white"
+            fill="none"
+            initial={{ opacity: 0 }}
+            whileHover={{ opacity: 0.15 }}
+            onHoverStart={() => setHoveredSelection('CA')}
+            onHoverEnd={() => setHoveredSelection(null)}
             className="cursor-pointer"
-            onClick={() => setSelection('CA')}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelection('CA');
+            }}
             data-testid="cap-ca-path"
           />
 
-          {/* Highlighted active edge */}
+          {/* Guided Breathing Pulse Line (Visual queue) */}
           <AnimatePresence>
-            {selection === 'CP' && (
-              <motion.line 
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
+            {!selection && (
+              <motion.path 
+                d={`M ${trianglePoints.C.x} ${trianglePoints.C.y} L ${trianglePoints.A.x} ${trianglePoints.A.y} L ${trianglePoints.P.x} ${trianglePoints.P.y} Z`}
+                fill="none"
+                stroke="white"
+                strokeWidth="1"
+                initial={{ opacity: 0.1 }}
+                animate={{ opacity: [0.1, 0.3, 0.1] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
                 exit={{ opacity: 0 }}
-                x1={trianglePoints.C.x} y1={trianglePoints.C.y} x2={trianglePoints.P.x} y2={trianglePoints.P.y}
-                stroke="#6366f1" strokeWidth="3"
               />
             )}
-            {selection === 'AP' && (
+          </AnimatePresence>
+
+          {/* Highlighted active/hover edge */}
+          <AnimatePresence>
+            {(selection || hoveredSelection) && (
               <motion.line 
+                key={selection || hoveredSelection}
                 initial={{ pathLength: 0, opacity: 0 }}
                 animate={{ pathLength: 1, opacity: 1 }}
                 exit={{ opacity: 0 }}
-                x1={trianglePoints.P.x} y1={trianglePoints.P.y} x2={trianglePoints.A.x} y2={trianglePoints.A.y}
-                stroke="#f59e0b" strokeWidth="3"
-              />
-            )}
-            {selection === 'CA' && (
-              <motion.line 
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                exit={{ opacity: 0 }}
-                x1={trianglePoints.A.x} y1={trianglePoints.A.y} x2={trianglePoints.C.x} y2={trianglePoints.C.y}
-                stroke="#10b981" strokeWidth="3"
+                x1={trianglePoints[(selection || hoveredSelection)![0] as keyof typeof trianglePoints].x} 
+                y1={trianglePoints[(selection || hoveredSelection)![0] as keyof typeof trianglePoints].y} 
+                x2={trianglePoints[(selection || hoveredSelection)![1] as keyof typeof trianglePoints].x} 
+                y2={trianglePoints[(selection || hoveredSelection)![1] as keyof typeof trianglePoints].y}
+                stroke={
+                  (selection || hoveredSelection) === 'CP' ? '#6366f1' : 
+                  (selection || hoveredSelection) === 'AP' ? '#f59e0b' : '#10b981'
+                } 
+                strokeWidth="4"
+                className="drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
               />
             )}
           </AnimatePresence>
@@ -132,12 +167,12 @@ export const CapTheoremSim: React.FC = () => {
           {/* Vertices */}
           {Object.entries(trianglePoints).map(([key, point]) => (
             <g key={key}>
-              <circle cx={point.x} cy={point.y} r="6" fill="white" className="opacity-40" />
+              <circle cx={point.x} cy={point.y} r="5" fill="white" className="opacity-30" />
               <text 
                 x={point.x} 
-                y={point.y + (point.y < 100 ? -20 : 30)} 
+                y={point.y + (point.y < 100 ? -25 : 35)} 
                 textAnchor="middle" 
-                className="text-[12px] fill-white/60 font-medium uppercase tracking-widest"
+                className="text-[9px] fill-white/40 font-bold uppercase tracking-[0.2em] pointer-events-none"
               >
                 {point.label}
               </text>
@@ -150,7 +185,7 @@ export const CapTheoremSim: React.FC = () => {
               layoutId="cap-dot"
               cx={activeCenter.x} 
               cy={activeCenter.y} 
-              r="10" 
+              r="8" 
               className={`fill-current ${selection === 'CP' ? 'text-indigo-500' : selection === 'AP' ? 'text-orange-500' : 'text-green-500'}`}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -159,9 +194,31 @@ export const CapTheoremSim: React.FC = () => {
           )}
         </svg>
 
-        <p className="mt-8 text-xs text-white/30 text-center max-w-[200px] leading-relaxed italic">
-          Click an edge representating a combination to see its characteristics.
-        </p>
+        {/* Hover Label Tooltip Overlay */}
+        <AnimatePresence>
+          {hoveredSelection && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="absolute pointer-events-none px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-[10px] font-bold text-white uppercase tracking-widest z-50"
+              style={{
+                left: getCombinationCenter(hoveredSelection)!.x,
+                top: getCombinationCenter(hoveredSelection)!.y - 40,
+                transform: 'translate(-50%, -50%)'
+              }}
+            >
+              View {hoveredSelection} Strategy
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className="mt-8 flex items-center gap-2 px-4 py-2 rounded-full border border-white/5 bg-white/[0.02] shadow-inner">
+           <Info className="w-3 h-3 text-indigo-400 animate-pulse" />
+           <p className="text-[10px] text-white/50 font-medium tracking-wide">
+             Click a glowing edge to explore trade-offs
+           </p>
+        </div>
       </div>
 
       {/* Info Panel */}
