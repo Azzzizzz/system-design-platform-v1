@@ -1,8 +1,9 @@
-import { useEffect, useState, useOptimistic, useTransition } from "react";
+import { useEffect, useState, useOptimistic, useTransition, useRef } from "react";
 import { useSimulation } from "../../hooks/useSimulation";
 import { SimulationControls } from "./SimulationControls";
 import { Server, MonitorSmartphone, GitPullRequestDraft, Power, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getNextTargetServer, calculateNewServerLoad } from "../../lib/simulation-logic";
 
 export function LoadBalancerSim() {
   const { isPlaying, speed, tick, advanceTick } = useSimulation();
@@ -13,6 +14,11 @@ export function LoadBalancerSim() {
   const [serverLoad, setServerLoad] = useState([0, 0, 0]);
   const [serverStatuses, setServerStatuses] = useState([true, true, true]);
   const [lastDecision, setLastDecision] = useState("Waiting for simulation to start...");
+
+  const loadRef = useRef(serverLoad);
+  useEffect(() => {
+    loadRef.current = serverLoad;
+  }, [serverLoad]);
 
   // React 19 useOptimistic for instant Interactive Failover feedback
   const [optimisticStatuses, addOptimisticStatus] = useOptimistic(
@@ -61,77 +67,41 @@ export function LoadBalancerSim() {
     if (!isPlaying) return;
 
     const intervalId = setInterval(() => {
-      const nextTick = useSimulation.getState().tick + 1;
+      const currentTick = useSimulation.getState().tick;
+      const nextTick = currentTick + 1;
       const clientColors = ['#f43f5e', '#3b82f6', '#10b981']; 
       const clientIdx = Math.floor(Math.random() * 3);
-      const clientNames = ['Client A', 'Client B', 'Client C'];
-      let targetIdx = 0;
-      let reason = "";
 
-      const activeServerIndices = optimisticStatuses
-        .map((status, i) => status ? i : -1)
-        .filter(i => i !== -1);
-
-      if (activeServerIndices.length === 0) {
-        setLastDecision("CRITICAL: All servers are DOWN. Request dropped.");
-        advanceTick();
-        return;
-      }
-
-      if (algorithm === "round-robin") {
-        // Find next active server in sequence
-        const potentialTarget = nextTick % 3;
-        if (optimisticStatuses[potentialTarget]) {
-          targetIdx = potentialTarget;
-        } else {
-          targetIdx = activeServerIndices[0]; // Fallback to first available
-        }
-        reason = `Round Robin: Routing to Server ${targetIdx + 1}.`;
-      } else if (algorithm === "least-conn") {
-        // Only consider active servers for load calculation
-        const activeLoads = activeServerIndices.map(i => serverLoad[i]);
-        const minLoad = Math.min(...activeLoads);
-        const candidates = activeServerIndices.filter(i => serverLoad[i] === minLoad);
-        targetIdx = candidates[Math.floor(Math.random() * candidates.length)];
-        reason = `Least Conn: Server ${targetIdx + 1} has lowest load among active nodes.`;
-      } else if (algorithm === "ip-hash") {
-        // Sticky but fails over if target is down
-        const preferredIdx = clientIdx;
-        if (optimisticStatuses[preferredIdx]) {
-          targetIdx = preferredIdx;
-          reason = `IP Hash (Sticky): ${clientNames[clientIdx]} -> Server ${targetIdx + 1}.`;
-        } else {
-          targetIdx = activeServerIndices[clientIdx % activeServerIndices.length];
-          reason = `IP Hash (Failover): Client pinned Server ${preferredIdx + 1} is DOWN. Redirecting to ${targetIdx + 1}.`;
-        }
-      }
+      const { targetIdx, reason, isDropped } = getNextTargetServer({
+        algorithm,
+        tick: nextTick,
+        serverLoad: loadRef.current,
+        clientIdx,
+        serverStatuses: optimisticStatuses
+      });
 
       setLastDecision(reason);
       advanceTick();
       const newReqId = Date.now();
       
-      setRequests(prev => [...prev.slice(-10), { 
-        id: newReqId, 
-        source: clientIdx, 
-        target: targetIdx, 
-        color: clientColors[clientIdx] 
-      }]);
+      if (!isDropped) {
+        setRequests(prev => [...prev.slice(-10), { 
+          id: newReqId, 
+          source: clientIdx, 
+          target: targetIdx, 
+          color: clientColors[clientIdx] 
+        }]);
+      }
       
       // Delay server load update to match animation impact (roughly 2s)
       setTimeout(() => {
-        setServerLoad(prev => {
-          const next = [...prev];
-          // Each request adds a stable unit of load, capped at 10 (100%)
-          next[targetIdx] = Math.min(10, next[targetIdx] + 2); 
-          // Constant decay to simulate "finished" requests
-          return next.map(l => Math.max(0, l - 0.35));
-        });
+        setServerLoad(prev => calculateNewServerLoad(prev, targetIdx, isDropped));
       }, 2000 / speed);
 
     }, 2400 / speed);
 
     return () => clearInterval(intervalId);
-  }, [isPlaying, speed, algorithm, advanceTick, serverLoad]);
+  }, [isPlaying, speed, algorithm, advanceTick, optimisticStatuses]);
 
   // Helper to generate curved path string for SVG (using coordinate system 0-100)
   const getPath = (source: number, target: number) => {
@@ -149,6 +119,7 @@ export function LoadBalancerSim() {
           {(["round-robin", "least-conn", "ip-hash"] as const).map(algo => (
             <button
               key={algo}
+              id={`algo-${algo}`}
               onClick={() => {
                 startTransition(() => {
                    setAlgorithm(algo);
@@ -269,6 +240,7 @@ export function LoadBalancerSim() {
                 </div>
 
                 <button 
+                  id={`server-power-${i}`}
                   onClick={() => toggleServerHealth(i)}
                   className={`p-1.5 rounded-md border transition-all ${optimisticStatuses[i] ? 'border-white/10 hover:bg-red-500/20 hover:border-red-500/40 text-white/30 hover:text-red-500' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}
                   title={optimisticStatuses[i] ? "Simulate Failure" : "Restore Server"}

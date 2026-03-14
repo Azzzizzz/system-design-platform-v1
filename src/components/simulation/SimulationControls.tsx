@@ -7,6 +7,7 @@ export function SimulationControls() {
   return (
     <div className="flex items-center gap-2 p-2 bg-[#0A0A0A]/90 backdrop-blur-md rounded-lg border border-white/10 shadow-lg">
       <button
+        id="sim-play-btn"
         onClick={togglePlay}
         className={`p-2 flex items-center justify-center rounded-md transition-colors ${isPlaying ? 'bg-rose-500/20 text-rose-400 hover:bg-rose-500/30' : 'bg-primary/20 text-primary hover:bg-primary/30'}`}
       >

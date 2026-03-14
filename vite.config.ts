@@ -8,6 +8,10 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 5173,
+    strictPort: true,
+  },
   plugins: [
     {
       enforce: 'pre',
@@ -22,5 +26,11 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  // @ts-ignore
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/tests/**'],
   },
 })
