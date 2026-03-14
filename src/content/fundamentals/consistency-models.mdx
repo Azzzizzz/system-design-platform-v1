@@ -1,0 +1,100 @@
+---
+title: "Consistency Models"
+slug: "consistency-models"
+category: "fundamentals"
+difficulty: "hard"
+order: 3
+tags: ["distributed-systems", "theory", "fundamentals"]
+relatedTopics: ["cap-theorem", "database-replication"]
+---
+
+## Introduction
+In a distributed system, data is often replicated across multiple nodes for availability. **Consistency Models** define the rules that govern how and when a change made on one node becomes visible to other nodes.
+
+## Why It Matters
+Deciding on a consistency model is one of the most important architectural decisions. It is a direct trade-off between **System Performance** (Latency) and **Data Correctness**.
+
+---
+
+## Interactive Simulation
+Use the toggle below to switch between Strong and Eventual consistency. Watch how a write to "Node A" affects what you see when reading from "Node B".
+
+<SimulationEmbed type="consistency-models" />
+
+---
+
+## Common Consistency Models
+
+### Strong Consistency
+The system guarantees that once a write is acknowledged, all subsequent reads will return that value.
+- **Workflow**: The system usually blocks until all replicas (or a majority) have confirmed the write.
+- **Trade-off**: Higher latency and lower availability (if a node is down, the write might fail).
+
+### Eventual Consistency
+The system guarantees that if no new updates are made, eventually all nodes will return the last updated value.
+- **Workflow**: Replication happens asynchronously in the background.
+- **Trade-off**: High performance and maximum availability, but readers might see "stale" (old) data for a brief window.
+
+### Causal Consistency
+A middle ground where the system ensures that operations that are "causally related" are seen in the same order by everyone. If A happens before B, everyone sees A then B.
+
+---
+
+## PACELC View
+If you recall the **CAP Theorem**, Consistency Models are the "C" in "PACELC".
+- **E**lse (no partition), you choose between **L**atency or **C**onsistency.
+- Choosing **Strong Consistency** means choosing **C**.
+- Choosing **Eventual Consistency** means prioritizing **L**.
+
+## Tradeoffs
+
+<TradeoffCard
+  pros={[
+    "Strong Consistency prevents double-spending and ensure user trust in critical data.",
+    "Eventual Consistency enables massive scale (e.g., social media likes, comments).",
+    "Causal Consistency provides a good balance for collaborative apps."
+  ]}
+  cons={[
+    "Strong Consistency can significantly increase request latency (round-trips to all nodes).",
+    "Eventual Consistency requires developers to handle 'Conflict Resolution' (e.g., Last Write Wins).",
+    "Stale reads in Eventual systems can lead to confusing UX (e.g., deleted post reappearing)."
+  ]}
+/>
+
+## Real-World Application
+
+### Level 1: Foundational (Social Media)
+In a social media app like **Instagram**, "Likes" and "Follower counts" are often **Eventually Consistent**. If you like a photo, your friend might not see the updated count for a few seconds. This delay is acceptable because the cost of "being wrong" for a moment is zero, and asynchronous replication allows the system to remain lightning-fast.
+
+### Level 2: Enterprise (E-commerce Inventory)
+For an e-commerce giant like **Amazon**, inventory management is a hybrid. The search results might show "5 in stock" (Eventual), but during the **Checkout process**, the system switches to **Strong Consistency**. It must ensure that the inventory is actually available and lock it before confirming the sale.
+
+## Implementation Patterns
+<KnowledgeSnippet title="Decision Framework">
+### When to use Strong vs Eventual
+Use **Strong Consistency** when data integrity is critical and the number of writers is small. Use **Eventual Consistency** when read-availability and low latency are prioritized over immediate correctness across all nodes.
+</KnowledgeSnippet>
+
+## Common Questions (Q&A)
+<FAQAccordion items={[
+  {
+    question: "Does 'Eventual' mean the system is unreliable?",
+    answer: "Not necessarily. It means the system prioritizes availability. In a healthy network, the 'eventual' window is often less than 100ms, which is faster than a human can perceive. Reliability issues only appear during sustained network partitions."
+  },
+  {
+    question: "How do you resolve conflicts in eventual consistency?",
+    answer: "Common strategies include 'Last Write Wins' (using timestamps), 'Vector Clocks' (tracking causal relationships), or 'Conflict-free Replicated Data Types' (CRDTs) which allow nodes to merge state mathematically without a central leader."
+  }
+]} />
+
+## Key Takeaways
+<KeyTakeaways items={[
+  "Consistency is a spectrum, not a binary choice.",
+  "Strong consistency = correctness at the cost of speed.",
+  "Eventual consistency = speed at the cost of temporary 'stale' data.",
+  "Replication delay is the primary cause of staleness in distributed systems.",
+  "Choose your model based on the cost of being 'wrong' for a few milliseconds."
+]} />
+
+## Next Steps & Related Topics
+<RelatedTopics slugs={["cap-theorem", "database-replication", "acid-base"]} />

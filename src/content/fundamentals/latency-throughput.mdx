@@ -1,0 +1,101 @@
+---
+title: "Latency vs Throughput"
+slug: "latency-throughput"
+category: "fundamentals"
+difficulty: "easy"
+order: 1
+tags: ["performance", "fundamentals", "optimization"]
+relatedTopics: ["load-balancers", "caching-strategies"]
+---
+
+## Introduction
+In distributed systems, performance is usually measured by two major metrics: **Latency** and **Throughput**. While often grouped together, they represent very different aspects of system performance.
+
+## Why It Matters
+Understanding the difference allows you to optimize for the right goal. A system can have high throughput but poor latency (like a cargo ship), or low latency but poor throughput (like a courier on a bicycle).
+
+## Definitions
+
+### Latency
+The time it takes for a single unit of data to travel from its source to its destination. It is the "delay" in the system.
+- **Metric**: Measured in time units (ms, s).
+- **Goal**: Minimize latency for better responsiveness.
+
+### Throughput
+The number of units of data that a system can process in a given amount of time. It is the "bandwidth" or "capacity" of the system.
+- **Metric**: Measured in requests per second (RPS), bits per second (bps).
+- **Goal**: Maximize throughput for better scale.
+
+## Interactive Simulation
+Adjust the sliders below to see how Latency (speed of travel) and Throughput (frequency of requests) interact. 
+
+<SimulationEmbed type="latency-throughput" />
+
+## The "Bucket Brigade" Analogy
+Imagine a line of people passing buckets of water from a well to a fire:
+- **Latency**: The time it takes for *one* bucket to get from the well to the fire.
+- **Throughput**: How many buckets per minute reach the fire.
+
+## Little's Law
+There is a mathematical relationship between these two, known as **Little's Law**:
+$$L = \lambda \times W$$
+Where:
+- $L$ = Average number of items in the system.
+- $\lambda$ = Average arrival rate (Throughput).
+- $W$ = Average time an item spends in the system (Latency).
+
+## Tradeoffs
+
+<TradeoffCard
+  pros={[
+    "Optimizing latency improves user-perceived speed and responsiveness.",
+    "Optimizing throughput allows the system to handle more concurrent users.",
+    "Monitoring both helps identify bottlenecks (e.g., high latency usually indicates a saturated resource)."
+  ]}
+  cons={[
+    "Lowering latency often requires expensive hardware or simpler algorithms.",
+    "Increasing throughput can increase latency if the system becomes congested.",
+    "There is often a 'knee' in the curve where increasing throughput causes latency to skyrocket."
+  ]}
+/>
+
+## Real-World Application
+
+### Level 1: Foundational (Web Browsing)
+When you browse the web, **Latency** is king. A page that takes 5 seconds to load (high latency) feels "broken," even if the server has enough **Throughput** to serve millions of other users simultaneously. Optimizing for latency here involves CDNs, minification, and HTTP/3.
+
+### Level 2: Enterprise (Data Migration)
+When moving petabytes of data between data centers, researchers often use "Sneakernet" (shipping physical hard drives in a truck).
+- **Latency**: Very high (days to travel).
+- **Throughput**: Massive (petabytes per truck).
+In this scenario, throughput is so high that it overcomes the terrible latency for the total data transfer time.
+
+## Implementation Patterns
+<KnowledgeSnippet title="Optimization Strategy">
+### The Performance Knee
+In every system, there is a point where increasing **Throughput** causes **Latency** to spike exponentially. This is usually due to resource contention (CPU queuing, Disk I/O wait). A senior engineer's job is to find this "knee" and set rate limits or scaling triggers just before it.
+</KnowledgeSnippet>
+
+## Common Questions (Q&A)
+<FAQAccordion items={[
+  {
+    question: "Can you have high throughput and high latency simultaneously?",
+    answer: "Yes. Architecture like a cargo ship or a long-distance satellite link has massive capacity (high throughput) but takes a long time for the first byte to arrive (high latency)."
+  },
+  {
+    question: "How does caching affect these metrics?",
+    answer: "Caching primarily improves latency by serving data from a closer/faster location. By reducing the load on the backend, it also indirectly increases the overall system throughput."
+  }
+]} />
+
+## Key Takeaways
+<KeyTakeaways items={[
+  "Latency is about speed; Throughput is about capacity.",
+  "They are not the same: a high-capacity pipe can still be very long.",
+  "Little's Law defines the relationship between these metrics and system load.",
+  "Always identify which metric is the bottleneck before starting optimization.",
+  "Performance optimization is a balancing act between the two."
+]} />
+
+## Next Steps & Related Topics
+<RelatedTopics slugs={["load-balancers", "horizontal-vs-vertical", "caching-strategies"]} />

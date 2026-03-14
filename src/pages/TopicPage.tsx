@@ -7,7 +7,10 @@ export function TopicPage() {
   if (!categoryId || !slug) return null;
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-3xl">
+    <div 
+      key={`${categoryId}-${slug}`} 
+      className="animate-in fade-in slide-in-from-bottom-4 duration-700 max-w-3xl"
+    >
       <div className="space-y-4 mb-12">
         <div className="text-[11px] font-mono text-primary/70 tracking-widest uppercase bg-primary/10 inline-block px-2 py-1 rounded-md border border-primary/20 shadow-[0_0_15px_rgba(112,93,232,0.15)]">
           {categoryId}

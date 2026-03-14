@@ -1,7 +1,12 @@
 import type { ReactNode } from "react";
-import { MessageSquareQuote } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 
-export function InterviewAnswer({ children }: { children: ReactNode }) {
+interface KnowledgeSnippetProps {
+  children: ReactNode;
+  title?: string;
+}
+
+export function KnowledgeSnippet({ children, title = "Implementation Tip" }: KnowledgeSnippetProps) {
   return (
     <div className="relative overflow-hidden rounded-xl border border-indigo-500/20 bg-indigo-500/5 my-8">
       {/* Decorative accent line */}
@@ -9,8 +14,8 @@ export function InterviewAnswer({ children }: { children: ReactNode }) {
       
       <div className="p-6">
         <div className="flex items-center gap-2 mb-4 text-indigo-400">
-          <MessageSquareQuote className="w-5 h-5" />
-          <h3 className="font-semibold text-sm tracking-wide uppercase">Interview Answer</h3>
+          <Lightbulb className="w-5 h-5" />
+          <h3 className="font-semibold text-sm tracking-wide uppercase">{title}</h3>
         </div>
         
         <div className="prose prose-invert prose-p:text-sm prose-p:leading-relaxed prose-p:text-foreground/80 prose-strong:text-foreground prose-strong:font-semibold marker:text-indigo-400">

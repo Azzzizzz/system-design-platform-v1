@@ -1,25 +1,36 @@
 import { lazy, Suspense, useMemo } from "react";
 import { TradeoffCard } from "./TradeoffCard";
-import { InterviewAnswer } from "./InterviewAnswer";
+import { FAQAccordion } from "./FAQAccordion";
+import { KnowledgeSnippet } from "./KnowledgeSnippet";
 import { KeyTakeaways } from "./KeyTakeaways";
 import { RelatedTopics } from "./RelatedTopics";
 import { ArchitectureCanvas } from "../diagram/ArchitectureCanvas";
 import { LoadBalancerSim } from "../simulation/LoadBalancerSim";
 import ConsistentHashingSim from "../simulation/ConsistentHashingSim";
+import { LatencyThroughputSim } from "../simulation/LatencyThroughputSim";
+import { CapTheoremSim } from "../simulation/CapTheoremSim";
+import { ConsistencyModelsSim } from "../simulation/ConsistencyModelsSim";
 
 // Import all MDX files
 const mdxModules = import.meta.glob("../../content/**/*.mdx");
 
 const mdxComponents = {
   TradeoffCard,
-  InterviewAnswer,
+  FAQAccordion,
+  KnowledgeSnippet,
   KeyTakeaways,
   RelatedTopics,
   ArchitectureCanvas,
   ConsistentHashingSim,
+  LatencyThroughputSim,
+  CapTheoremSim,
+  ConsistencyModelsSim,
   SimulationEmbed: ({ type }: { type: string }) => {
     if (type === 'load-balancer') return <LoadBalancerSim />;
     if (type === 'consistent-hashing') return <ConsistentHashingSim />;
+    if (type === 'latency-throughput') return <LatencyThroughputSim />;
+    if (type === 'cap-theorem') return <CapTheoremSim />;
+    if (type === 'consistency-models') return <ConsistencyModelsSim />;
     return (
       <div className="w-full h-64 border border-white/[0.08] bg-black/40 rounded-xl flex items-center justify-center text-sm text-white/50 my-8">
         SimulationEmbed: {type} (Pending Phase 4)

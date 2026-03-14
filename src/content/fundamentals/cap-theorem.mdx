@@ -1,0 +1,99 @@
+---
+title: "CAP Theorem"
+slug: "cap-theorem"
+category: "fundamentals"
+difficulty: "medium"
+order: 2
+tags: ["distributed-systems", "theory", "fundamentals"]
+relatedTopics: ["consistency-models", "load-balancers"]
+---
+
+## Introduction
+In theoretical computer science, the **CAP Theorem** (also known as Brewer's theorem) states that it is impossible for a distributed data store to simultaneously provide more than two out of three guarantees.
+
+## The Three Guarantees
+
+### Consistency (C)
+Every read receives the most recent write or an error. Imagine it as a single source of truth across all nodes.
+
+### Availability (A)
+Every request receives a (non-error) response, without the guarantee that it contains the most recent write. The system is "always on".
+
+### Partition Tolerance (P)
+The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes.
+
+---
+
+## Interactive Triangle
+The CAP Theorem is often visualized as a triangle. Pick an edge between two properties to see which systems prioritize them and what the trade-offs are.
+
+<SimulationEmbed type="cap-theorem" />
+
+---
+
+## The "Pick Two" Myth
+While CAP is often taught as "Pick Two," in modern distributed systems, **Partition Tolerance (P) is not optional**. Networks *will* fail, and messages *will* be dropped.
+
+The real choice is usually:
+- **CP (Consistency + Partition Tolerance)**: When a partition happens, the system shuts down or returns errors to ensure data remains consistent.
+- **AP (Availability + Partition Tolerance)**: When a partition happens, nodes keep serving requests, but they risk returning old data.
+
+## PACELC: The Extension
+Since partitions are rare, what happens when the system is healthy?
+- **P**artition then **A**vailability vs **C**onsistency
+- **E**lse (no partition) **L**atency vs **C**onsistency
+
+This explains why some systems are "CP" during a fail, but optimize for "L" (Low Latency) during normal operations.
+
+## Tradeoffs
+
+<TradeoffCard
+  pros={[
+    "Provides a clear framework for deciding which database is right for your use case.",
+    "Forces architects to consider failure modes before they happen.",
+    "Categorizes complex systems into understandable profiles (CP, AP, CA)."
+  ]}
+  cons={[
+    "Over-simplifies reality: consistency and availability are often a spectrum, not binary.",
+    "Does not account for many other factors like latency, throughput, or durability.",
+    "The 'CA' category is essentially impossible in true distributed systems."
+  ]}
+/>
+
+## Real-World Application
+
+### Level 1: Foundational (Single-Region Apps)
+Most small-scale applications use a **single-node RDBMS** (like MySQL or Postgres). These systems are technically **CA** (Consistent and Available) because there is no network partition to tolerate. However, if that single node or its network link fails, the system is down. In the distributed world, we usually trade Availability for Consistency (CP) in banking or financial apps.
+
+### Level 2: Enterprise (Global Scale)
+Giant systems like **Amazon DynamoDB** or **Apache Cassandra** are designed as **AP** systems. They prioritize being "always on" for writes across the globe. They use techniques like "Hinted Handoff" and "Last-Write-Wins" to resolve the inevitable inconsistencies that arise when nodes can't talk to each other.
+
+## Implementation Patterns
+<KnowledgeSnippet title="Design Decision">
+### Choosing between CP and AP
+If your business logic requires **exactness** (e.g., Inventory counts, Payments), go **CP**. If your business logic requires **latency-optimized uptime** (e.g., Social media feeds, Shopping carts, Like counts), go **AP**.
+</KnowledgeSnippet>
+
+## Common Questions (Q&A)
+<FAQAccordion items={[
+  {
+    question: "Is CAP still relevant in 2024?",
+    answer: "Yes, but with nuances. Modern designers focus more on PACELC, which accounts for Latency even when there is no partition. We also now build 'Tunable Consistency' systems where you can choose C or A on a per-request basis."
+  },
+  {
+    question: "Why is CA (Consistency + Availability) considered a myth?",
+    answer: "Because in a distributed system, network partitions (P) are inevitable. If you claim to be CA, you are essentially saying your network will never fail. When it inevitably does, you *must* choose between dropping requests (Losing A) or allowing inconsistent data (Losing C)."
+  }
+]} />
+
+## Key Takeaways
+<KeyTakeaways items={[
+  "CAP stands for Consistency, Availability, and Partition Tolerance.",
+  "You can only have 2 out of 3, but in reality, P is mandatory.",
+  "The real choice is CP vs AP during a network failure.",
+  "CP systems prioritize truth; AP systems prioritize uptime.",
+  "PACELC is a more modern extension that considers the Latency/Consistency tradeoff."
+]} />
+
+## Next Steps & Related Topics
+<RelatedTopics slugs={["consistency-models", "acid-base", "database-sharding"]} />

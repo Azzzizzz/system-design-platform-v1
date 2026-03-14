@@ -12,6 +12,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 export function Sidebar() {
+  console.log("Sidebar rendered at:", new Date().toLocaleTimeString());
   return (
     <aside className="w-64 border-r border-[rgba(255,255,255,0.04)] bg-transparent hidden md:block overflow-y-auto relative z-10">
       <div className="p-4 space-y-6">
