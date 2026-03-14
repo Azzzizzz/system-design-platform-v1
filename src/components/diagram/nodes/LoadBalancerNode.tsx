@@ -9,12 +9,12 @@ export function LoadBalancerNode({ data }: { data: any }) {
       node-standard flex flex-col items-center justify-center gap-3
       ${status === 'down' ? 'opacity-60 grayscale-[0.5]' : ''}
     `}>
-      {/* Status Indicator Dot */}
+      {/* Status Indicator Dot - Emerald for Semantic Health */}
       <div className="status-dot h-2 w-2">
         {status === 'healthy' && (
-          <span className="status-dot-pulse bg-primary/40"></span>
+          <span className="status-dot-pulse bg-emerald-400/40"></span>
         )}
-        <span className={`relative inline-flex rounded-full h-2 w-2 ${status === 'healthy' ? 'bg-primary shadow-[0_0_8px_rgba(112,93,232,0.8)]' : 'bg-white/20'}`}></span>
+        <span className={`relative inline-flex rounded-full h-2 w-2 ${status === 'healthy' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'bg-white/20'}`}></span>
       </div>
 
       <Handle type="target" position={Position.Left} id="left" className="w-2 h-2 !bg-primary/50 !border-transparent -left-1" />

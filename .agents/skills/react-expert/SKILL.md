@@ -8,26 +8,33 @@ description: Guidelines and best practices for developing React components in th
 You act as a Senior React Engineer. You must always adhere to the following React best practices specifically tailored for this `system-design-platform` project.
 
 ## 1. Project-Specific Stack
-*   **Framework:** React 18+ with Vite
+*   **Framework:** React 19+ with Vite
 *   **Language:** Strict TypeScript
-*   **Styling:** Tailwind CSS v3 inside Shadcn UI components
+*   **Styling:** Tailwind CSS v3
 *   **State:** Zustand (for simulation state/high-frequency updates) and React Context (for theme/low-frequency global state).
 
-## 2. Component Structure Rules
+## 2. React 19 Best Practices
+*   **New Hooks:** Prefer React 19 hooks for modern patterns:
+    *   **`use`**: Use for unwrapping Promises and Contexts cleanly.
+    *   **`useOptimistic`**: Use for high-interaction simulations where UI feedback needs to be instant.
+    *   **`useTransition`**: Use for heavy architectural diagram updates to prevent UI blocking.
+*   **Ref Props:** Use the new `ref` prop naming convention where applicable (standard `ref` prop instead of `forwardRef` in React 19).
+*   **Minimizing useEffect:** Actively seek to replace `useEffect` for data management with `use` or `useActionState`.
+
+## 3. Component Structure Rules
 *   **Function Components:** ALWAYS use functional components with arrow functions. Never use class components.
 *   **Props:** ALWAYS define a TypeScript `interface` or `type` for component props right above the component export.
 *   **Exports:** Prefer `export const ComponentName` instead of `export default` (except for lazy-loaded pages where `default` is required).
 *   **Directory:** Place reusable UI components in `src/components/ui/`. Domain-specific components go in their respective folders (`src/components/diagram/`, `src/components/simulation/`, etc.).
 
-## 3. Styling & Shadcn UI
+## 4. Styling & Shadcn UI
 *   **Tailwind:** Use Tailwind utility classes directly in the `className` prop.
-*   **Merging Classes:** When accepting `className` as a prop in a reusable component from Shadcn, **ALWAYS** wrap the output string in the `cn()` utility (`import { cn } from "@/lib/utils"`).
-*   *Example:* `className={cn("base-classes", className)}`
+*   **Merging Classes:** Use the `cn()` utility for combining conditional classes.
 
-## 4. Performance & State
+## 5. Performance & State
 *   **State Colocation:** Keep `useState` as close to where it's used as possible. Avoid lifting state up unnecessarily.
 *   **Zustand for Simulations:** Any state that updates more than 5 times a second (like the playhead of an animated simulation) MUST go into a Zustand store to prevent React from re-rendering the surrounding MDX page.
-*   **Dependencies:** ALWAYS meticulously check dependency arrays in `useEffect`, `useCallback`, and `useMemo` to prevent infinite loops.
+*   **Dependencies:** ALWAYS meticulously check dependency arrays in hooks to prevent infinite loops.
 
 ## 5. File Naming Rules
 *   React Components: `PascalCase.tsx`

@@ -1,16 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useOptimistic, useTransition } from "react";
 import { useSimulation } from "../../hooks/useSimulation";
 import { SimulationControls } from "./SimulationControls";
-import { Server, MonitorSmartphone, GitPullRequestDraft } from "lucide-react";
+import { Server, MonitorSmartphone, GitPullRequestDraft, Power, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function LoadBalancerSim() {
   const { isPlaying, speed, tick, advanceTick } = useSimulation();
   const [algorithm, setAlgorithm] = useState<"round-robin" | "least-conn" | "ip-hash">("round-robin");
+  const [isUpdating, startTransition] = useTransition();
   
   const [requests, setRequests] = useState<{ id: number; source: number; target: number; color: string }[]>([]);
   const [serverLoad, setServerLoad] = useState([0, 0, 0]);
+  const [serverStatuses, setServerStatuses] = useState([true, true, true]);
   const [lastDecision, setLastDecision] = useState("Waiting for simulation to start...");
+
+  // React 19 useOptimistic for instant Interactive Failover feedback
+  const [optimisticStatuses, addOptimisticStatus] = useOptimistic(
+    serverStatuses,
+    (state, { index, status }: { index: number; status: boolean }) => {
+      const next = [...state];
+      next[index] = status;
+      return next;
+    }
+  );
+
+  // Simulated Async Health Check Update
+  const toggleServerHealth = async (index: number) => {
+    const newStatus = !serverStatuses[index];
+    
+    // Instant UI reaction via Optimistic Hook
+    addOptimisticStatus({ index, status: newStatus });
+    
+    startTransition(async () => {
+      // Simulate architecture latency/health check time (800ms)
+      await new Promise(resolve => setTimeout(resolve, 800));
+      setServerStatuses(prev => {
+        const next = [...prev];
+        next[index] = newStatus;
+        return next;
+      });
+      setLastDecision(`Health Check: Server ${index + 1} is now marked as ${newStatus ? 'Healthy' : 'Down'}.`);
+    });
+  };
 
   // Handle local reset
   const resetLocalState = () => {
@@ -37,17 +68,42 @@ export function LoadBalancerSim() {
       let targetIdx = 0;
       let reason = "";
 
+      const activeServerIndices = optimisticStatuses
+        .map((status, i) => status ? i : -1)
+        .filter(i => i !== -1);
+
+      if (activeServerIndices.length === 0) {
+        setLastDecision("CRITICAL: All servers are DOWN. Request dropped.");
+        advanceTick();
+        return;
+      }
+
       if (algorithm === "round-robin") {
-        targetIdx = nextTick % 3;
-        reason = `Round Robin: Cyclical rotation. Next in line: Server ${targetIdx + 1}.`;
+        // Find next active server in sequence
+        const potentialTarget = nextTick % 3;
+        if (optimisticStatuses[potentialTarget]) {
+          targetIdx = potentialTarget;
+        } else {
+          targetIdx = activeServerIndices[0]; // Fallback to first available
+        }
+        reason = `Round Robin: Routing to Server ${targetIdx + 1}.`;
       } else if (algorithm === "least-conn") {
-        const minLoad = Math.min(...serverLoad);
-        const candidates = serverLoad.map((l, i) => l === minLoad ? i : -1).filter(i => i !== -1);
+        // Only consider active servers for load calculation
+        const activeLoads = activeServerIndices.map(i => serverLoad[i]);
+        const minLoad = Math.min(...activeLoads);
+        const candidates = activeServerIndices.filter(i => serverLoad[i] === minLoad);
         targetIdx = candidates[Math.floor(Math.random() * candidates.length)];
-        reason = `Least Conn: Server ${targetIdx + 1} has the lowest active load (${Math.round(minLoad * 10)}%).`;
+        reason = `Least Conn: Server ${targetIdx + 1} has lowest load among active nodes.`;
       } else if (algorithm === "ip-hash") {
-        targetIdx = clientIdx;
-        reason = `IP Hash: Hashing ${clientNames[clientIdx]} info. Pinning to Server ${targetIdx + 1}.`;
+        // Sticky but fails over if target is down
+        const preferredIdx = clientIdx;
+        if (optimisticStatuses[preferredIdx]) {
+          targetIdx = preferredIdx;
+          reason = `IP Hash (Sticky): ${clientNames[clientIdx]} -> Server ${targetIdx + 1}.`;
+        } else {
+          targetIdx = activeServerIndices[clientIdx % activeServerIndices.length];
+          reason = `IP Hash (Failover): Client pinned Server ${preferredIdx + 1} is DOWN. Redirecting to ${targetIdx + 1}.`;
+        }
       }
 
       setLastDecision(reason);
@@ -94,10 +150,12 @@ export function LoadBalancerSim() {
             <button
               key={algo}
               onClick={() => {
-                setAlgorithm(algo);
-                resetLocalState(); // Reset on change
+                startTransition(() => {
+                   setAlgorithm(algo);
+                   resetLocalState();
+                });
               }}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${algorithm === algo ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 text-white/50 border border-transparent hover:bg-white/10 hover:text-white/80'}`}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${algorithm === algo ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 text-white/50 border border-transparent hover:bg-white/10 hover:text-white/80'} ${isUpdating ? 'opacity-50 grayscale cursor-wait' : ''}`}
             >
               {algo.replace('-', ' ').toUpperCase()}
             </button>
@@ -167,8 +225,14 @@ export function LoadBalancerSim() {
               boxShadow: ["0 0 10px rgba(112,93,232,0.1)", "0 0 30px rgba(112,93,232,0.4)", "0 0 10px rgba(112,93,232,0.1)"]
             } : {}}
             transition={{ repeat: Infinity, duration: 2 / speed }}
-            className="node-standard !min-w-0 !p-4 !border-primary/40 shadow-[0_0_20px_rgba(112,93,232,0.2)]"
+            className="node-standard !min-w-0 !p-4 !border-primary/40 shadow-[0_0_20px_rgba(112,93,232,0.2)] relative"
           >
+            {/* Status Dot for LB */}
+            <div className="status-dot -top-1 -right-1 flex h-2 w-2">
+              <span className="status-dot-pulse bg-emerald-400"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+            </div>
+
             <div className="icon-box icon-box-active !p-0 !bg-transparent !border-transparent">
               <GitPullRequestDraft className="w-6 h-6 text-primary" />
             </div>
@@ -177,29 +241,48 @@ export function LoadBalancerSim() {
         </div>
 
         {/* Servers - Higher Z */}
-        <div className="flex flex-col justify-between h-full z-20 w-44 py-4">
+        <div className="flex flex-col justify-between h-full z-20 w-52 py-4">
           {[0, 1, 2].map(i => (
             <div key={i} className="flex flex-col gap-2">
               <motion.div 
-                animate={serverLoad[i] > 0.5 ? {
+                animate={serverLoad[i] > 0.5 && optimisticStatuses[i] ? {
                   scale: [1, 1.03, 1],
                   borderColor: ["rgba(255,255,255,0.1)", "rgba(112,93,232,0.4)", "rgba(255,255,255,0.1)"]
                 } : {}}
-                className="node-standard !p-3 flex items-center gap-3"
+                className={`node-standard !p-3 flex items-center gap-3 relative transition-all duration-500 ${!optimisticStatuses[i] ? 'opacity-40 grayscale border-red-500/30 bg-red-500/[0.02]' : ''}`}
               >
-                <div className="icon-box !p-1.5 bg-white/5 border-white/10">
-                  <Server className="w-4 h-4 text-white/80" />
+                {!optimisticStatuses[i] && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-red-500/5 rounded-xl">
+                    <AlertTriangle className="w-5 h-5 text-red-500/40" />
+                  </div>
+                )}
+                
+                <div className={`icon-box !p-1.5 ${optimisticStatuses[i] ? 'bg-white/5 border-white/10' : 'bg-red-500/10 border-red-500/20'}`}>
+                  <Server className={`w-4 h-4 ${optimisticStatuses[i] ? 'text-white/80' : 'text-red-500/60'}`} />
                 </div>
+                
                 <div className="flex-1 h-1.5 bg-black/50 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-primary transition-all duration-300 shadow-[0_0_8px_rgba(112,93,232,0.5)]" 
+                    className={`h-full transition-all duration-300 shadow-[0_0_8px_rgba(112,93,232,0.5)] ${optimisticStatuses[i] ? 'bg-primary' : 'bg-red-500/20'}`}
                     style={{ width: `${Math.round(serverLoad[i] * 10)}%` }}
                   />
                 </div>
+
+                <button 
+                  onClick={() => toggleServerHealth(i)}
+                  className={`p-1.5 rounded-md border transition-all ${optimisticStatuses[i] ? 'border-white/10 hover:bg-red-500/20 hover:border-red-500/40 text-white/30 hover:text-red-500' : 'border-emerald-500/40 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'}`}
+                  title={optimisticStatuses[i] ? "Simulate Failure" : "Restore Server"}
+                >
+                  <Power className="w-3 h-3" />
+                </button>
               </motion.div>
               <div className="flex justify-between items-center px-1">
-                <span className="text-[9px] font-mono text-white/40 uppercase tracking-tighter font-semibold">Web Server {i + 1}</span>
-                <span className="text-[9px] font-mono text-primary/80 font-bold">{Math.round(serverLoad[i] * 10)}% Load</span>
+                <span className={`text-[9px] font-mono uppercase tracking-tighter font-semibold ${optimisticStatuses[i] ? 'text-white/40' : 'text-red-400/60'}`}>
+                  Web Server {i + 1} {optimisticStatuses[i] ? '' : '[OFFLINE]'}
+                </span>
+                <span className={`text-[9px] font-mono font-bold ${optimisticStatuses[i] ? 'text-primary/80' : 'text-red-500/40'}`}>
+                  {Math.round(serverLoad[i] * 10)}% Load
+                </span>
               </div>
             </div>
           ))}
