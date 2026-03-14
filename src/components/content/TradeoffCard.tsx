@@ -6,13 +6,13 @@ export function TradeoffCard({ pros, cons }: { pros: string[]; cons: string[] })
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="glass-panel rounded-xl border border-[rgba(255,255,255,0.08)] bg-[rgba(10,10,10,0.4)] backdrop-blur-md overflow-hidden my-6">
+    <div className="glass-panel rounded-xl my-8 overflow-hidden group">
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 bg-white/[0.02] border-b border-[rgba(255,255,255,0.04)] hover:bg-white/[0.04] transition-colors"
+        className="w-full flex items-center justify-between p-4 bg-white/[0.03] border-b border-white/5 hover:bg-white/[0.06] transition-colors"
       >
-        <span className="font-semibold text-sm tracking-tight text-foreground/90">Tradeoffs</span>
-        {isExpanded ? <ChevronUp className="w-4 h-4 opacity-50" /> : <ChevronDown className="w-4 h-4 opacity-50" />}
+        <span className="font-bold text-[11px] tracking-widest text-foreground/90 uppercase font-mono">Tradeoffs</span>
+        {isExpanded ? <ChevronUp className="w-4 h-4 opacity-30" /> : <ChevronDown className="w-4 h-4 opacity-30" />}
       </button>
       
       <AnimatePresence>

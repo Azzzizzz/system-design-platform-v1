@@ -65,8 +65,10 @@ export function LoadBalancerSim() {
       setTimeout(() => {
         setServerLoad(prev => {
           const next = [...prev];
-          next[targetIdx] += 1.8; 
-          return next.map(l => Math.max(0, l - 0.4));
+          // Each request adds a stable unit of load, capped at 10 (100%)
+          next[targetIdx] = Math.min(10, next[targetIdx] + 2); 
+          // Constant decay to simulate "finished" requests
+          return next.map(l => Math.max(0, l - 0.35));
         });
       }, 2000 / speed);
 
@@ -108,15 +110,15 @@ export function LoadBalancerSim() {
         {/* Clients */}
         <div className="flex flex-col justify-between h-full z-20 py-4">
           {[
-            { name: 'Client A', color: 'text-rose-400' },
-            { name: 'Client B', color: 'text-blue-400' },
-            { name: 'Client C', color: 'text-emerald-400' }
+            { name: 'Client A', color: 'rose', lucideColor: 'text-rose-400' },
+            { name: 'Client B', color: 'blue', lucideColor: 'text-blue-400' },
+            { name: 'Client C', color: 'emerald', lucideColor: 'text-emerald-400' }
           ].map((client, i) => (
-            <div key={i} className="flex flex-col items-center gap-2">
-              <div className="p-3 bg-white/10 border border-white/20 rounded-full backdrop-blur-md">
-                <MonitorSmartphone className="w-4 h-4 text-white/80" />
+            <div key={i} className="node-standard !min-w-0 !p-3 !rounded-full flex items-center gap-3">
+              <div className="icon-box !p-1.5 bg-white/5 border-white/10">
+                <MonitorSmartphone className={`w-4 h-4 ${client.lucideColor}`} />
               </div>
-              <span className={`text-[10px] font-mono uppercase tracking-tighter ${client.color}`}>{client.name}</span>
+              <span className={`text-[11px] font-mono uppercase tracking-tighter ${client.lucideColor} font-semibold`}>{client.name}</span>
             </div>
           ))}
         </div>
@@ -165,15 +167,17 @@ export function LoadBalancerSim() {
               boxShadow: ["0 0 10px rgba(112,93,232,0.1)", "0 0 30px rgba(112,93,232,0.4)", "0 0 10px rgba(112,93,232,0.1)"]
             } : {}}
             transition={{ repeat: Infinity, duration: 2 / speed }}
-            className="z-20 bg-[#0A0A0A] border border-primary/40 rounded-lg p-4 shadow-[0_0_20px_rgba(112,93,232,0.2)]"
+            className="node-standard !min-w-0 !p-4 !border-primary/40 shadow-[0_0_20px_rgba(112,93,232,0.2)]"
           >
-            <GitPullRequestDraft className="w-6 h-6 text-primary" />
+            <div className="icon-box icon-box-active !p-0 !bg-transparent !border-transparent">
+              <GitPullRequestDraft className="w-6 h-6 text-primary" />
+            </div>
           </motion.div>
-          <span className="text-[10px] font-mono text-primary/60 uppercase tracking-widest">Load Balancer</span>
+          <span className="text-[10px] font-mono text-primary/60 uppercase tracking-widest font-semibold">Load Balancer</span>
         </div>
 
         {/* Servers - Higher Z */}
-        <div className="flex flex-col justify-between h-full z-20 w-36 py-4">
+        <div className="flex flex-col justify-between h-full z-20 w-44 py-4">
           {[0, 1, 2].map(i => (
             <div key={i} className="flex flex-col gap-2">
               <motion.div 
@@ -181,19 +185,21 @@ export function LoadBalancerSim() {
                   scale: [1, 1.03, 1],
                   borderColor: ["rgba(255,255,255,0.1)", "rgba(112,93,232,0.4)", "rgba(255,255,255,0.1)"]
                 } : {}}
-                className="relative flex items-center gap-3 p-3 bg-white/10 border border-white/20 rounded-lg backdrop-blur-md transition-all"
+                className="node-standard !p-3 flex items-center gap-3"
               >
-                <Server className="w-4 h-4 text-white/80" />
+                <div className="icon-box !p-1.5 bg-white/5 border-white/10">
+                  <Server className="w-4 h-4 text-white/80" />
+                </div>
                 <div className="flex-1 h-1.5 bg-black/50 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-primary transition-all duration-300 shadow-[0_0_8px_rgba(112,93,232,0.5)]" 
-                    style={{ width: `${Math.min(100, serverLoad[i] * 12)}%` }}
+                    style={{ width: `${Math.round(serverLoad[i] * 10)}%` }}
                   />
                 </div>
               </motion.div>
               <div className="flex justify-between items-center px-1">
-                <span className="text-[9px] font-mono text-white/40 uppercase tracking-tighter">Server {i + 1}</span>
-                <span className="text-[9px] font-mono text-primary/80">{Math.round(serverLoad[i] * 10)}% Load</span>
+                <span className="text-[9px] font-mono text-white/40 uppercase tracking-tighter font-semibold">Web Server {i + 1}</span>
+                <span className="text-[9px] font-mono text-primary/80 font-bold">{Math.round(serverLoad[i] * 10)}% Load</span>
               </div>
             </div>
           ))}
