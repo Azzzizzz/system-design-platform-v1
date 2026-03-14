@@ -45,6 +45,30 @@
     @apply bg-background text-foreground tracking-normal antialiased;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
+
+  /* Premium Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full transition-colors;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-white/20;
+  }
+
+  /* Support for Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
 }
 
 @layer utilities {
@@ -99,5 +123,31 @@
 
   .icon-box-active {
     @apply bg-primary/10 border-primary/20 text-primary;
+  }
+
+  /* Skeletons & Shimmers */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .animate-shimmer {
+    @apply relative overflow-hidden bg-white/5;
+  }
+
+  .animate-shimmer::after {
+    content: "";
+    @apply absolute inset-0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Top Loading Bar */
+  .loading-bar-container {
+    @apply fixed top-0 left-0 right-0 h-[2px] z-[9999] pointer-events-none;
+  }
+
+  .loading-bar-progress {
+    @apply h-full bg-primary shadow-[0_0_10px_rgba(112,93,232,0.8)];
   }
 }

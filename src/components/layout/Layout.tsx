@@ -2,9 +2,12 @@ import { Outlet } from "react-router-dom";
 import { Topbar } from "./Topbar";
 import { Sidebar } from "./Sidebar";
 
+import { NavbarLoadingBar } from "./NavbarLoadingBar";
+
 export function Layout() {
   return (
     <div className="h-screen flex flex-col overflow-hidden bg-background text-foreground transition-colors duration-500">
+      <NavbarLoadingBar />
       {/* Absolute Atmospheric Lighting Elements */}
       <div className="bg-glow top-0 left-1/4" />
       <div className="bg-glow bottom-0 right-1/4 opacity-10" />

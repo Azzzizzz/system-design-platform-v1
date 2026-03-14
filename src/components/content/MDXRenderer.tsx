@@ -10,6 +10,7 @@ import ConsistentHashingSim from "../simulation/ConsistentHashingSim";
 import { LatencyThroughputSim } from "../simulation/LatencyThroughputSim";
 import { CapTheoremSim } from "../simulation/CapTheoremSim";
 import { ConsistencyModelsSim } from "../simulation/ConsistencyModelsSim";
+import { TopicNotFound } from "./TopicNotFound";
 
 // Import all MDX files
 const mdxModules = import.meta.glob("../../content/**/*.mdx");
@@ -75,16 +76,24 @@ export function MDXRenderer({ categoryId, slug }: { categoryId: string; slug: st
   }, [loader]);
 
   if (!ContentComponent) {
-    return (
-      <div className="text-red-400 p-4 border border-red-500/20 bg-red-500/10 rounded-xl">
-        Failed to load content: {modulePath} not found.
-      </div>
-    );
+    return <TopicNotFound categoryId={categoryId} slug={slug} />;
   }
+
+  const Skeleton = () => (
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="h-8 w-1/3 animate-shimmer rounded-lg" />
+      <div className="space-y-3">
+        <div className="h-4 w-full animate-shimmer rounded-md" />
+        <div className="h-4 w-5/6 animate-shimmer rounded-md" />
+        <div className="h-4 w-4/6 animate-shimmer rounded-md" />
+      </div>
+      <div className="h-64 w-full animate-shimmer rounded-2xl" />
+    </div>
+  );
 
   return (
     <div className="mdx-content pb-20">
-      <Suspense fallback={<div className="animate-pulse h-32 bg-white/5 rounded-xl border border-white/10" />}>
+      <Suspense fallback={<Skeleton />}>
         <ContentComponent components={mdxComponents} />
       </Suspense>
     </div>
