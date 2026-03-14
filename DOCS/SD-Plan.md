@@ -62,7 +62,7 @@ Topic → Explanation → Visualization → Animation → Flow Simulation → In
 
 ### 2.1 Layout Structure
 
-Inspired by **Notion + Linear + Vercel Docs**.
+Inspired by **Linear.app's ultra-premium dashboard**.
 
 ```
 ┌────────────────────────────────────────────────────────────────────┐
@@ -94,25 +94,21 @@ Inspired by **Notion + Linear + Vercel Docs**.
 └──────────────┴─────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Color Palette
+### 2.2 Color Palette (Linear-Inspired Ultra-Premium Dark)
 
 ```
-┌────────────────────────────────────────────────┐
-│  Token              │  Value     │  Usage       │
-├────────────────────────────────────────────────┤
-│  --bg-primary       │  #0a0a0f  │  Page bg     │
-│  --bg-secondary     │  #111827  │  Cards/panels│
-│  --bg-elevated      │  #1e293b  │  Hover/active│
-│  --accent-primary   │  #6366f1  │  Links, CTA  │
-│  --accent-success   │  #22c55e  │  Success/flow│
-│  --accent-warning   │  #f59e0b  │  Warnings    │
-│  --accent-danger    │  #ef4444  │  Errors      │
-│  --text-primary     │  #f1f5f9  │  Headings    │
-│  --text-secondary   │  #94a3b8  │  Body text   │
-│  --text-muted       │  #64748b  │  Metadata    │
-│  --border           │  #1e293b  │  Dividers    │
-│  --border-active    │  #6366f1  │  Focus rings │
-└────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│  Token                │  Value                 │  Usage        │
+├────────────────────────────────────────────────────────┤
+│  --background         │  #000000 (OLED Black)  │  Page bg      │
+│  --card               │  #0A0A0A               │  Cards/panels │
+│  --popover            │  #121212               │  Hover/active │
+│  --primary            │  #705DE8 (Soft Indigo) │  Links, CTA   │
+│  --foreground         │  #ECECEC               │  Headings     │
+│  --muted-foreground   │  #8A8F98               │  Body text    │
+│  --border             │  rgba(255,255,255,0.04)│  Dividers     │
+│  --glass-bevel        │  inset 0 1px 0 rgba... │  Card tops    │
+└────────────────────────────────────────────────────────┘
 ```
 
 ### 2.3 Typography
@@ -128,12 +124,12 @@ Inspired by **Notion + Linear + Vercel Docs**.
 
 | Principle            | Implementation                                      |
 | -------------------- | --------------------------------------------------- |
-| **Clean whitespace** | `p-8` sections, `gap-6` between cards               |
-| **Minimal borders**  | 1px `border-[#1e293b]`, no heavy outlines           |
-| **Soft shadows**     | `shadow-lg shadow-black/20` on elevated elements    |
-| **Subtle gradients** | Background mesh gradients, card shimmer on hover     |
-| **Glass morphism**   | `backdrop-blur-xl bg-white/5` on floating panels     |
-| **Dark-first**       | Primary dark theme, light mode as secondary          |
+| **Absolute Black**   | Use `rgb(0,0,0)` backgrounds globally to maximize contrast. |
+| **Micro borders**    | Replace standard borders with `border-[rgba(255,255,255,0.04)]`. |
+| **The Linear Bevel** | Avoid heavy drop shadows. Instead use top-edge inner shadows `inset 0 1px 0 rgba(255,255,255,0.06)` for subtle depth. |
+| **Dual-Tone Text**   | Mix high-octane white (`#FFFFFF`) with muted gray (`#8A8F98`) within the same heading using ultra-tight `-0.04em` tracking. |
+| **Glass morphism**   | `backdrop-blur-xl bg-black/80` on topbars and sticky elements. |
+| **Atmospheric Glow** | Use massive, faded radial gradients behind major content sections for atmospheric depth. |
 
 ---
 
