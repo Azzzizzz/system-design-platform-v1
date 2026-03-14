@@ -337,68 +337,243 @@ system-design-platform/
 
 ## 5. Content Architecture
 
-### 5.1 MDX Topic Schema
+### 5.1 Standard MDX Topic Schema (12 Sections)
 
-Every topic follows a consistent structure via frontmatter + sections:
+Every **concept topic** (topics 1–22) follows a consistent 12-section structure. This ensures every page feels uniform and readers always know where to find each type of information.
+
+#### Recommended Page Sections
+
+| #  | Section                     | Purpose                                           | Key Component                |
+|----|-----------------------------|----------------------------------------------------|------------------------------|
+| 1  | **Introduction**            | What the concept is, in simple terms               | Prose                        |
+| 2  | **Why It Matters**          | Why this topic is important in distributed systems  | Prose                        |
+| 3  | **Problem It Solves**       | What system limitation or challenge this addresses  | Prose                        |
+| 4  | **Core Concept / Theory**   | Main explanation with key principles                | Prose + diagrams             |
+| 5  | **Architecture / Components** | Main building blocks involved                     | `<ArchitectureCanvas />`     |
+| 6  | **Request / Data Flow**     | Step-by-step system flow                            | `<SimulationEmbed />`        |
+| 7  | **Interactive Visualization** | React Flow diagram, animation, or simulation      | `<SimulationEmbed />`        |
+| 8  | **Tradeoffs**               | Benefits, drawbacks, common pitfalls                | `<TradeoffCard />`           |
+| 9  | **Real-World Usage**        | Where this is used in actual systems                | Prose + examples             |
+| 10 | **Interview Notes**         | How to explain it in an interview                   | `<InterviewAnswer />`        |
+| 11 | **Key Takeaways**           | Quick revision summary (3–5 bullet points)          | `<KeyTakeaways />`           |
+| 12 | **Related Topics**          | Links to connected concepts                         | `<RelatedTopics />`          |
+
+#### MDX Template (Standard Topic)
 
 ```mdx
 ---
-title: "Event-Driven Architecture"
-slug: "event-driven-architecture"
-category: "messaging"
-difficulty: "medium"          # easy | medium | hard
-order: 3
-tags: ["async", "kafka", "decoupling"]
-relatedTopics: ["kafka", "saga-pattern"]
-diagramId: "event-driven-flow"
+title: "Load Balancers"
+slug: "load-balancers"
+category: "fundamentals"
+difficulty: "medium"
+order: 4
+tags: ["networking", "scaling", "availability"]
+relatedTopics: ["rate-limiting", "horizontal-vs-vertical"]
+diagramId: "load-balancer-flow"
 ---
 
 ## Introduction
-Brief overview of the concept and why it matters.
+What a load balancer is and its role in modern systems.
 
-## The Problem
-What problem does this solve? Real-world pain points.
+## Why It Matters
+Why load balancing is critical for availability and performance.
+
+## Problem It Solves
+What happens without load balancing — single points of failure, uneven load.
+
+## Core Concept
+L4 vs L7 load balancers, algorithms (round robin, least connections, IP hash, weighted routing), health checks, sticky sessions.
 
 ## Architecture
-Detailed explanation with embedded React Flow diagram.
 
-<ArchitectureCanvas configId="event-driven-flow" />
-*Note: We rely on strictly typed `diagramConfigs.ts` via `configId` rather than passing complex JSON directly in MDX to prevent compilation issues.*
+<ArchitectureCanvas configId="load-balancer-flow" />
 
-## Flow Simulation
-Interactive simulation of the concept in action.
+## Request Flow
 
-<SimulationEmbed type="kafka-flow" />
+<SimulationEmbed type="load-balancer" />
+
+## Interactive Visualization
+Interactive request-routing simulation with algorithm switching.
 
 ## Tradeoffs
 
 <TradeoffCard
-  pros={["Loose coupling", "Scalability", "Fault isolation"]}
-  cons={["Eventual consistency", "Debugging complexity", "Message ordering"]}
+  pros={["High availability", "Horizontal scaling", "Health monitoring"]}
+  cons={["Single point of failure risk", "Added latency", "Complexity"]}
 />
 
-## Real-World Examples
-- Netflix event processing pipeline
-- Uber trip lifecycle events
+## Real-World Usage
+- AWS ALB / NLB
+- Nginx, HAProxy
+- Cloudflare Load Balancing
 
-## Interview Answer
+## Interview Notes
 
 <InterviewAnswer>
-### How would you explain Event-Driven Architecture?
+### How would you explain Load Balancers?
 
-**1. Definition:** Asynchronous communication pattern where services emit and react to events.
+**1. Definition:** Distributes incoming traffic across multiple servers.
 
-**2. Components:** Event producers, event bus/broker (Kafka), event consumers.
+**2. Algorithms:** Round robin, least connections, IP hash, weighted.
 
-**3. Benefits:** Decoupled services, independent scaling, fault tolerance.
+**3. Benefits:** Fault tolerance, horizontal scaling, health checks.
 
-**4. Tradeoffs:** Eventual consistency, complex debugging, idempotency requirements.
+**4. Tradeoffs:** Added complexity, potential SPOF without redundancy.
 
-**5. When to use:** High-throughput async workflows, microservices communication.
+**5. When to use:** Any multi-server deployment requiring high availability.
 </InterviewAnswer>
+
+## Key Takeaways
+
+<KeyTakeaways items={[
+  "Load balancers distribute traffic to prevent overload on any single server.",
+  "L4 operates at transport layer; L7 at application layer.",
+  "Always deploy LBs in active-passive pairs to avoid SPOF.",
+  "Health checks are essential for routing only to healthy backends."
+]} />
+
+## Related Topics
+
+<RelatedTopics slugs={["rate-limiting", "horizontal-vs-vertical", "api-gateway"]} />
 ```
 
-### 5.2 Topic Tree Navigation Data
+---
+
+### 5.2 Case Study MDX Schema (Separate Template)
+
+Case studies (topics 23–28) follow a **different template** that mirrors an actual system design interview answer structure:
+
+```mdx
+---
+title: "URL Shortener"
+slug: "url-shortener"
+category: "case-studies"
+difficulty: "medium"
+order: 1
+tags: ["hashing", "caching", "api-design"]
+relatedTopics: ["caching-strategies", "database-sharding"]
+diagramId: "url-shortener-arch"
+---
+
+## Requirements
+### Functional Requirements
+- Shorten a long URL to a short URL
+- Redirect short URL to original URL
+- Custom alias support (optional)
+
+### Non-Functional Requirements
+- Low latency redirects (< 100ms)
+- High availability (99.99%)
+- URL should not be guessable
+
+## Capacity Estimation
+Read/write ratio, storage, bandwidth calculations.
+
+## API Design
+Endpoint signatures with auth approach.
+
+## Data Model
+Schema design with database selection rationale.
+
+## High-Level Architecture
+
+<ArchitectureCanvas configId="url-shortener-arch" />
+
+## Read & Write Paths
+Step-by-step flow for URL creation and redirection.
+
+## Deep Dives
+Caching, DB scaling, URL generation strategy (Base62 vs MD5).
+
+## Tradeoffs & Decisions
+
+<TradeoffCard
+  pros={["Simple scaling", "Cache-friendly reads"]}
+  cons={["Hash collision handling", "Custom alias complexity"]}
+/>
+
+## Interview Answer Template
+
+<InterviewAnswer>
+Structured answer following the standard interview framework.
+</InterviewAnswer>
+
+## Key Takeaways
+
+<KeyTakeaways items={[...]} />
+
+## Related Topics
+
+<RelatedTopics slugs={["caching-strategies", "database-sharding"]} />
+```
+
+---
+
+### 5.3 Full Topic Content Outline (28 Topics)
+
+Below is the detailed content outline for every topic. Each bullet maps to content that should be authored within the corresponding MDX section.
+
+#### Category 1: Fundamentals
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 1 | **Latency vs Throughput** | Definition of each, difference, why both matter, real-world examples, bottleneck visualization |
+| 2 | **CAP Theorem** | C/A/P definitions, network partition impact, CP vs AP, why CA is unrealistic, interactive triangle, real system examples |
+| 3 | **Consistency Models** | Strong, eventual, causal, read-your-writes, monotonic reads, timeline visualization |
+| 4 | **Load Balancers** | L4 vs L7, round robin / least conn / IP hash / weighted, health checks, sticky sessions, request-routing simulation |
+| 5 | **Rate Limiting** | Token bucket, leaky bucket, fixed window, sliding window, where to apply, token flow animation |
+
+#### Category 2: Scaling
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 6 | **Horizontal vs Vertical** | Definitions, pros/cons, limits, when to choose each, scaling visualization |
+| 7 | **Database Sharding** | Shard key selection, range/hash/directory-based, rebalancing, hot partitions, distribution visualization |
+| 8 | **Database Replication** | Leader-follower, multi-leader, leaderless, read replicas, replication lag, failover, flow animation |
+| 9 | **Caching Strategies** | Cache-aside, read-through, write-through, write-behind, eviction, TTL, invalidation, hit/miss simulation |
+
+#### Category 3: Databases
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 10 | **Indexing** | B-tree basics, hash indexes, composite/covering indexes, good vs bad choices, lookup flow visualization |
+| 11 | **Partitioning** | Horizontal vs vertical, partition key strategy, skew, repartitioning, routing visualization |
+| 12 | **SQL vs NoSQL** | Data models, when each is better, schema flexibility, joins vs denormalization, comparison matrix |
+| 13 | **ACID vs BASE** | ACID properties, BASE principles, transaction guarantees, consistency tradeoffs, real-world examples |
+
+#### Category 4: Messaging
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 14 | **Kafka** | Broker/topic/partition/offset, producer/consumer groups, partitioning strategy, ordering, rebalancing, retention, delivery semantics, topology diagram, partition flow simulation |
+| 15 | **RabbitMQ** | Exchanges, queues, bindings, routing keys, ack/nack, competing consumers, retry/DLQ, queue routing visualization |
+| 16 | **Event-Driven Architecture** | Producer/broker/consumer, async communication, loose coupling, event schema, idempotency, failure handling, event flow diagram |
+| 17 | **Exactly-Once Processing** | Why it's hard, at-most/at-least/exactly-once, idempotency keys, deduplication, transactional processing, failure scenarios, message-processing visualization |
+
+#### Category 5: Distributed Patterns
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 18 | **Circuit Breaker** | Closed/open/half-open states, failure threshold, recovery logic, state machine visualization |
+| 19 | **Retry Pattern** | Retryable vs non-retryable errors, immediate vs exponential backoff, jitter, retry storms, timeline visualization |
+| 20 | **Saga Pattern** | Choreography vs orchestration, forward steps, compensating transactions, failure recovery, saga flow visualization |
+| 21 | **API Gateway** | Request routing, authentication, rate limiting, aggregation, cross-cutting concerns, gateway flow visualization |
+| 22 | **Service Discovery** | Client-side vs server-side, registry concepts, heartbeats, health checks, discovery flow visualization |
+
+#### Category 6: Case Studies
+
+| # | Topic | Key Content Points |
+|---|---|---|
+| 23 | **URL Shortener** | Capacity estimation, API design, data model, URL generation strategy (Base62 vs MD5), read/write path, caching, DB scaling |
+| 24 | **WhatsApp** | Real-time messaging, WebSocket connections, message delivery pipeline, presence/status, storage, fan-out strategy |
+| 25 | **Uber** | Driver-rider matching, location updates, dispatch flow, real-time trip state, surge, event-driven components |
+| 26 | **Netflix** | CDN/edge delivery, content ingestion, recommendation overview, microservices, playback flow, caching/resilience |
+| 27 | **YouTube** | Upload flow, video storage, transcoding pipeline, metadata service, streaming delivery, CDN, recommendations |
+| 28 | **Amazon** | Product catalog, search, cart, order workflow, payment, inventory, notification flow, microservice decomposition |
+
+---
+
+### 5.4 Topic Tree Navigation Data
 
 ```typescript
 // src/data/topicTree.ts
@@ -409,8 +584,8 @@ export const topicTree: TopicCategory[] = [
     label: "Fundamentals",
     icon: "BookOpen",
     topics: [
-      { slug: "cap-theorem",         label: "CAP Theorem",         difficulty: "medium" },
       { slug: "latency-throughput",   label: "Latency vs Throughput", difficulty: "easy" },
+      { slug: "cap-theorem",         label: "CAP Theorem",         difficulty: "medium" },
       { slug: "consistency-models",   label: "Consistency Models",   difficulty: "hard" },
       { slug: "load-balancers",       label: "Load Balancers",       difficulty: "medium" },
       { slug: "rate-limiting",        label: "Rate Limiting",        difficulty: "medium" },

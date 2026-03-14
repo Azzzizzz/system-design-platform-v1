@@ -1,11 +1,11 @@
 ---
 name: Topic Generator
-description: Generates a new MDX topic file for the System Design Platform.
+description: Generates a new MDX topic file for the System Design Platform following the standard 12-section schema or the Case Study schema.
 ---
 
 # Topic Generator Skill
 
-This skill teaches you how to generate a new MDX learning topic for the platform. When asked to "create a topic about X", you must rigorously follow the MDX schema and structure defined below.
+This skill teaches you how to generate a new MDX learning topic for the platform. When asked to "create a topic about X", you must rigorously follow the correct MDX schema based on the topic category.
 
 ## 1. File Location
 Topics must be saved as `[slug].mdx` inside the appropriate category folder under `src/content/`:
@@ -19,16 +19,45 @@ Topics must be saved as `[slug].mdx` inside the appropriate category folder unde
 ## 2. Topic Tree Registration
 After creating the file, you **MUST** update `src/data/topicTree.ts` to include the new topic in the relevant category array so it appears in the sidebar.
 
-## 3. MDX Schema Requirements
+## 3. Standard Topic Schema (12 Sections)
 
-EVERY topic must include the following sections exactly:
+For topics in categories 1–5 (Fundamentals, Scaling, Databases, Messaging, Patterns), EVERY topic must include the following sections exactly:
 
-1.  **Frontmatter (YAML):** `title`, `slug`, `category`, `difficulty`, `tags`, `diagramId`.
-2.  **## Introduction:** A brief overview.
-3.  **## The Problem:** What problem this system solves.
-4.  **## Architecture:** Detailed explanation containing an `<ArchitectureCanvas configId="[diagramId]" />`. *Note: You do not pass component arrays here, only the string ID.*
-5.  **## Flow Simulation:** If applicable, add `<SimulationEmbed type="[type]" />`
-6.  **## Tradeoffs:** A `<TradeoffCard pros={[...]} cons={[...]} />`
-7.  **## Interview Answer:** An `<InterviewAnswer>` wrapping 5 numbered points (Definition, Components, Benefits, Tradeoffs, When to use).
+1.  **Frontmatter (YAML):** `title`, `slug`, `category`, `difficulty`, `order`, `tags`, `relatedTopics`, `diagramId`.
+2.  **## Introduction:** What the concept is, in simple terms.
+3.  **## Why It Matters:** Why this topic is important in distributed systems or interviews.
+4.  **## Problem It Solves:** What system limitation or challenge this addresses.
+5.  **## Core Concept:** Main explanation with key principles and theory.
+6.  **## Architecture:** Building blocks with `<ArchitectureCanvas configId="[diagramId]" />`. *Note: Pass only the string ID, not component arrays.*
+7.  **## Request Flow:** Step-by-step system flow. If applicable, add `<SimulationEmbed type="[type]" />`.
+8.  **## Interactive Visualization:** Description of the interactive simulation for this topic.
+9.  **## Tradeoffs:** A `<TradeoffCard pros={[...]} cons={[...]} />`.
+10. **## Real-World Usage:** Where this is used in actual production systems.
+11. **## Interview Notes:** An `<InterviewAnswer>` wrapping 5 numbered points (Definition, Key Points, Benefits, Tradeoffs, When to use).
+12. **## Key Takeaways:** A `<KeyTakeaways items={[...]} />` with 3–5 revision bullets.
+13. **## Related Topics:** A `<RelatedTopics slugs={[...]} />` linking to connected concepts.
 
-Review the example `topic-template.mdx` file in this skill's `examples` folder before generating any content.
+## 4. Case Study Schema (Separate Template)
+
+For topics in the `case-studies` category, use this structure instead:
+
+1.  **Frontmatter (YAML):** Same as standard.
+2.  **## Requirements:** Functional and non-functional requirements.
+3.  **## Capacity Estimation:** Read/write ratio, storage, bandwidth calculations.
+4.  **## API Design:** Endpoint signatures and auth approach.
+5.  **## Data Model:** Schema design with database selection rationale.
+6.  **## High-Level Architecture:** `<ArchitectureCanvas configId="[diagramId]" />`
+7.  **## Read & Write Paths:** Step-by-step creation and retrieval flows.
+8.  **## Deep Dives:** Caching, scaling, and key algorithmic decisions.
+9.  **## Tradeoffs & Decisions:** `<TradeoffCard pros={[...]} cons={[...]} />`
+10. **## Interview Answer Template:** `<InterviewAnswer>` with structured answer.
+11. **## Key Takeaways:** `<KeyTakeaways items={[...]} />`
+12. **## Related Topics:** `<RelatedTopics slugs={[...]} />`
+
+## 5. Content Reference
+
+Before writing content for any topic, consult `DOCS/SD-Plan.md` Section 5.3 (Full Topic Content Outline) which lists the exact content points that should be covered for each of the 28 topics.
+
+Review the example templates in this skill's `examples` folder before generating any content:
+- `topic-template.mdx` — Standard 12-section topic
+- `case-study-template.mdx` — Case study topic

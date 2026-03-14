@@ -1,53 +1,98 @@
 ---
-title: "Event-Driven Architecture"
-slug: "event-driven-architecture"
-category: "messaging"
+title: "Load Balancers"
+slug: "load-balancers"
+category: "fundamentals"
 difficulty: "medium"
-order: 3
-tags: ["async", "kafka", "decoupling"]
-relatedTopics: ["kafka", "saga-pattern"]
-diagramId: "event-driven-flow"
+order: 4
+tags: ["networking", "scaling", "availability"]
+relatedTopics: ["rate-limiting", "horizontal-vs-vertical"]
+diagramId: "load-balancer-flow"
 ---
 
 ## Introduction
-Brief overview of the concept and why it matters.
+A load balancer sits in front of your servers and distributes incoming client requests across multiple backend servers. It ensures no single server bears too much load.
 
-## The Problem
-What problem does this solve? Real-world pain points.
+## Why It Matters
+Without load balancing, all traffic hits one server, creating a single point of failure and performance bottleneck. Load balancers are foundational to building scalable, highly available systems.
+
+## Problem It Solves
+- Uneven distribution of traffic across servers
+- Downtime caused by single server failures
+- Inability to horizontally scale a service
+
+## Core Concept
+Load balancers operate at Layer 4 (transport) or Layer 7 (application). L4 routes based on IP/port, while L7 inspects HTTP headers/URLs for smarter routing.
+
+**Key Algorithms:**
+- **Round Robin:** Requests cycle through servers sequentially
+- **Least Connections:** Routes to server with fewest active connections
+- **IP Hash:** Same client IP always routed to same server
+- **Weighted:** Distribute proportionally based on server capacity
+
+**Health Checks:** Periodic pings to verify server availability. Unhealthy servers are removed from the pool automatically.
+
+**Sticky Sessions:** Some applications need session affinity — the LB ensures the same user always reaches the same server.
 
 ## Architecture
-Detailed explanation with embedded React Flow diagram.
 
-<ArchitectureCanvas configId="event-driven-flow" />
+<ArchitectureCanvas configId="load-balancer-flow" />
 
-## Flow Simulation
-Interactive simulation of the concept in action.
+## Request Flow
 
-<SimulationEmbed type="kafka-flow" />
+<SimulationEmbed type="load-balancer" />
+
+## Interactive Visualization
+An interactive simulation where users can switch between Round Robin, Least Connections, and IP Hash algorithms and observe how requests are distributed across servers in real time.
 
 ## Tradeoffs
 
 <TradeoffCard
-  pros={["Loose coupling", "Scalability", "Fault isolation"]}
-  cons={["Eventual consistency", "Debugging complexity", "Message ordering"]}
+  pros={[
+    "Prevents server overload and improves response times",
+    "Adds fault tolerance — unhealthy servers are bypassed",
+    "Enables horizontal scaling by adding servers to the pool",
+    "Health checks ensure only healthy backends receive traffic"
+  ]}
+  cons={[
+    "Can become a single point of failure without active-passive redundancy",
+    "Increases architectural complexity and infrastructure costs",
+    "Introduces slight latency due to the extra network hop",
+    "Sticky sessions can cause uneven load distribution"
+  ]}
 />
 
-## Real-World Examples
-- Netflix event processing pipeline
-- Uber trip lifecycle events
+## Real-World Usage
+- **AWS ALB / NLB** — Managed load balancing for cloud deployments
+- **Nginx / HAProxy** — Popular open-source reverse proxies and load balancers
+- **Cloudflare** — Global load balancing at the edge
+- **Kubernetes Ingress** — Built-in L7 load balancing for containerized services
 
-## Interview Answer
+## Interview Notes
 
 <InterviewAnswer>
-### How would you explain Event-Driven Architecture?
+### How would you explain Load Balancers?
 
-**1. Definition:** Asynchronous communication pattern where services emit and react to events.
+**1. Definition:** A load balancer distributes incoming network traffic across multiple servers to ensure no single server is overwhelmed.
 
-**2. Components:** Event producers, event bus/broker (Kafka), event consumers.
+**2. Key Algorithms:** Round robin (sequential), least connections (smart routing), IP hash (session affinity), weighted (capacity-based).
 
-**3. Benefits:** Decoupled services, independent scaling, fault tolerance.
+**3. Benefits:** High availability, horizontal scaling, automatic failover via health checks.
 
-**4. Tradeoffs:** Eventual consistency, complex debugging, idempotency requirements.
+**4. Tradeoffs:** Added complexity, potential SPOF without redundancy, slight latency increase.
 
-**5. When to use:** High-throughput async workflows, microservices communication.
+**5. When to use:** Any system serving traffic across multiple server instances — which is essentially every production system.
 </InterviewAnswer>
+
+## Key Takeaways
+
+<KeyTakeaways items={[
+  "Load balancers distribute traffic to prevent overload on any single server.",
+  "L4 operates at transport layer; L7 at application layer with smarter routing.",
+  "Always deploy LBs in active-passive pairs to avoid single points of failure.",
+  "Health checks are essential for routing only to healthy backends.",
+  "Choose the algorithm based on your workload: stateless → round robin, stateful → IP hash."
+]} />
+
+## Related Topics
+
+<RelatedTopics slugs={["rate-limiting", "horizontal-vs-vertical", "api-gateway"]} />

@@ -1,0 +1,139 @@
+---
+title: "URL Shortener"
+slug: "url-shortener"
+category: "case-studies"
+difficulty: "medium"
+order: 1
+tags: ["hashing", "caching", "api-design", "database"]
+relatedTopics: ["caching-strategies", "database-sharding"]
+diagramId: "url-shortener-arch"
+---
+
+## Requirements
+
+### Functional Requirements
+- Given a long URL, generate a unique short URL
+- Redirect a short URL to the original long URL
+- Allow users to set a custom alias (optional)
+- Set a TTL / expiration on short URLs (optional)
+
+### Non-Functional Requirements
+- Low latency redirects (< 100ms p99)
+- High availability (99.99% uptime)
+- Short URLs should not be guessable (no sequential IDs)
+- System should handle 100M+ URLs
+
+## Capacity Estimation
+- **Read:Write ratio:** ~100:1 (reads dominate)
+- **Writes per second:** ~1,000 new URLs/sec
+- **Reads per second:** ~100,000 redirects/sec
+- **Storage (5 years):** ~15 TB assuming 500 bytes per record
+- **Bandwidth:** ~50 MB/s for reads
+
+## API Design
+
+```
+POST /api/v1/shorten
+  Body: { url: string, customAlias?: string, ttl?: number }
+  Response: { shortUrl: string, expiresAt: string }
+
+GET /:shortCode
+  Response: 301 Redirect to original URL
+```
+
+## Data Model
+
+```sql
+urls (
+  id          BIGINT PRIMARY KEY,
+  short_code  VARCHAR(8) UNIQUE INDEX,
+  original_url TEXT NOT NULL,
+  user_id     BIGINT,
+  created_at  TIMESTAMP,
+  expires_at  TIMESTAMP,
+  click_count INT DEFAULT 0
+)
+```
+
+**Database Choice:** NoSQL (e.g., DynamoDB) for simple key-value lookups at massive scale, or PostgreSQL with sharding for relational needs.
+
+## High-Level Architecture
+
+<ArchitectureCanvas configId="url-shortener-arch" />
+
+## Read & Write Paths
+
+### Write Path (URL Creation)
+1. Client sends POST request with long URL
+2. API server generates short code (Base62 encoding of auto-increment ID or MD5 hash)
+3. Check for collision in DB
+4. Store mapping in database
+5. Return short URL to client
+
+### Read Path (Redirect)
+1. Client hits GET /:shortCode
+2. Check Redis cache first (cache-aside pattern)
+3. If cache miss → query database
+4. If found → populate cache, return 301 redirect
+5. If not found → return 404
+
+## Deep Dives
+
+### URL Generation Strategy
+- **Base62 encoding:** Convert auto-increment ID to Base62 (a-z, A-Z, 0-9). 7 chars = 3.5 trillion unique URLs.
+- **MD5 hash:** Hash the URL, take first 7 characters. Handle collisions with retry or append.
+
+### Caching
+- **Redis cache** for hot URLs (recently created or frequently accessed)
+- ~80% cache hit rate expected for popular URLs
+- TTL of 24h with LRU eviction
+
+### Database Scaling
+- Shard by short_code hash for even distribution
+- Read replicas for redirect traffic
+
+## Tradeoffs & Decisions
+
+<TradeoffCard
+  pros={[
+    "Simple, fast reads with caching (sub-10ms redirects)",
+    "Horizontally scalable with sharding",
+    "Base62 gives compact, human-readable short codes"
+  ]}
+  cons={[
+    "Hash collisions require detection and retry logic",
+    "Custom aliases add complexity to uniqueness checks",
+    "Expiration/cleanup requires background job infrastructure"
+  ]}
+/>
+
+## Interview Answer Template
+
+<InterviewAnswer>
+### Design a URL Shortener
+
+**1. Requirements:** Shorten URLs, redirect with low latency, handle 100M+ URLs, 99.99% availability.
+
+**2. API:** POST /shorten (create), GET /:code (redirect with 301).
+
+**3. Storage:** Key-value mapping (short_code → original_url). Use NoSQL or sharded SQL.
+
+**4. URL Generation:** Base62 encode an auto-increment counter. 7 chars supports 3.5T URLs.
+
+**5. Optimization:** Redis cache for hot URLs (80% hit rate). Read replicas for DB scaling. Shard by short_code.
+
+**6. Tradeoffs:** Base62 vs MD5 (simplicity vs no sequential exposure), SQL vs NoSQL (joins vs scale), cache invalidation on URL deletion.
+</InterviewAnswer>
+
+## Key Takeaways
+
+<KeyTakeaways items={[
+  "URL shorteners are read-heavy — optimize the redirect path with caching.",
+  "Base62 encoding of auto-increment IDs is the simplest, most scalable approach.",
+  "Always estimate capacity: storage, bandwidth, and QPS before designing.",
+  "Sharding by short_code ensures even distribution across database nodes."
+]} />
+
+## Related Topics
+
+<RelatedTopics slugs={["caching-strategies", "database-sharding", "indexing"]} />
