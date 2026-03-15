@@ -1,0 +1,105 @@
+---
+title: "Horizontal vs Vertical Scaling"
+slug: "horizontal-vs-vertical"
+category: "scaling"
+difficulty: "easy"
+order: 1
+tags: ["scaling", "architecture", "availability"]
+relatedTopics: ["load-balancers", "database-sharding", "consistency-models"]
+diagramId: "scaling-basics"
+---
+
+## Introduction
+Scaling is the process of increasing the capacity of a system to handle more traffic, data, or computational load. In distributed systems, this is primarily achieved through two distinct strategies: **Vertical Scaling** (Scale Up) and **Horizontal Scaling** (Scale Out).
+
+## Problem & Context
+As an application grows, it eventually hits the limits of its initial hardware. A single server that handled 1,000 users will struggle with 100,000. The challenge is deciding whether to buy a "bigger" computer or to add "more" computers to the network. Each choice has profound implications on cost, complexity, and reliability.
+
+## Core Theory
+### Vertical Scaling (Scale Up)
+Vertical scaling means adding more power (CPU, RAM, SSD) to an existing server. It's like upgrading your laptop to handle video editing.
+- **Limit:** You eventually hit a "hardware ceiling" where no matter how much money you have, a bigger CPU doesn't exist.
+- **Complexity:** Low. The system architecture remains unchanged.
+
+### Horizontal Scaling (Scale Out)
+Horizontal scaling means adding more servers to your pool of resources. It's like hiring more delivery drivers instead of getting one giant truck.
+- **Limit:** Virtually infinite, but introduces network complexity.
+- **Complexity:** High. Requires load balancers, service discovery, and stateless application design.
+
+## Architecture & Components
+Visual comparison of a single high-spec server vs. a distributed fleet.
+<ArchitectureCanvas configId="scaling-basics" />
+
+## Interactive Visualization & Flow
+Use the interactive tool below to see the impact of scaling. Watch how a single server hits its threshold (Vertical) compared to how load is distributed across nodes (Horizontal).
+<SimulationEmbed type="scaling-comparison" />
+
+## Tradeoffs
+<TradeoffCard 
+  pros={[
+    "Simple - No architectural changes needed",
+    "Low network latency (processes stay on one box)",
+    "Consistent data (no distributed state to sync)"
+  ]} 
+  cons={[
+    "Hard hardware limits (Ceiling)",
+    "Single Point of Failure (SPOF)",
+    "Downtime usually required for upgrades"
+  ]} 
+/>
+
+## Real-World Application
+
+### Level 1: Foundational (Vertical)
+Startups and internal tools often start with vertical scaling. A single powerful AWS EC2 instance (e.g., `m5.4xlarge`) can handle significant traffic without the overhead of distributed systems complexity.
+
+### Level 2: Enterprise (Horizontal)
+Hyperscale platforms like Netflix, Uber, or Amazon scale horizontally. They use thousands of small commodity servers, allowing them to handle millions of requests while ensuring that the failure of any single server doesn't take down the entire system.
+
+## Implementation Patterns
+<KnowledgeSnippet title="The 80/20 Scaling Rule">
+Standard practice is to scale **vertically** as far as it is cost-effective (avoiding complexity), but shift to **horizontal** scaling before hitting the performance ceiling to ensure high availability and elastic growth.
+</KnowledgeSnippet>
+
+## Common Questions (Q&A)
+<FAQAccordion items={[
+  { 
+    question: "Can I do both?", 
+    answer: "Yes! High-performance systems often use 'Horizontal scaling of Vertical instances'—clustering multiple high-spec nodes to maximize both efficiency and reliability." 
+  },
+  { 
+    question: "Which is cheaper?", 
+    answer: "Initially, vertical is cheaper due to lower engineering overhead. At massive scale, horizontal is cheaper because it uses commodity hardware rather than specialized, ultra-high-end components." 
+  }
+]} />
+
+## Interview Notes
+<InterviewAnswer>
+### How to explain Scaling strategies in an interview?
+
+1. **Deployment Strategy**
+   Vertical scaling (Scale Up) involves increasing the resources of a single node, while Horizontal scaling (Scale Out) involves adding more nodes to the system.
+
+2. **Distributed Storage**
+   Vertical scaling keeps data centralized on one disk, whereas horizontal scaling requires data partitioning (sharding) across multiple nodes to avoid bottlenecks.
+
+3. **Algorithm Protocol**
+   Horizontal scaling necessitates a Load Balancer and architectural changes to handle stateless request routing and session management across the fleet.
+
+4. **Distributed Challenges**
+   Horizontal scaling introduces network overhead, data consistency challenges (CAP Theorem), and higher operational complexity (monitoring many nodes instead of one).
+
+5. **Observability & UX**
+   Horizontal scaling offers superior availability; if one node fails, the system continues. Vertical scaling creates a Single Point of Failure (SPOF) during hardware issues or upgrades.
+</InterviewAnswer>
+
+## Summary & Takeaways
+<KeyTakeaways items={[
+  "Vertical scaling is easier to implement but has a hard limit and a SPOF.",
+  "Horizontal scaling is 'infinitely' scalable but requires load balancing.",
+  "Stateful applications are easier to scale vertically; stateless are better for horizontal.",
+  "Modern cloud architectures favor horizontal scaling for elasticity and reliability."
+]} />
+
+## Next Steps & Related Topics
+<RelatedTopics slugs={["load-balancers", "database-sharding", "consistency-models"]} />

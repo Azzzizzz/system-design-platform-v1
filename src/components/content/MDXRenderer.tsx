@@ -14,6 +14,7 @@ import { TopicNotFound } from "./TopicNotFound";
 import { InterviewAnswer } from "./InterviewAnswer";
 
 import { RateLimitingSim } from "../simulation/RateLimitingSim";
+import { ScalingComparison } from "../simulation/ScalingComparison";
 
 // Import all MDX files
 const mdxModules = import.meta.glob("../../content/**/*.mdx");
@@ -37,6 +38,7 @@ const mdxComponents = {
     if (type === 'cap-theorem') return <CapTheoremSim />;
     if (type === 'consistency-models') return <ConsistencyModelsSim />;
     if (type === 'rate-limiting') return <RateLimitingSim />;
+    if (type === 'scaling-comparison') return <ScalingComparison />;
     return (
       <div className="w-full h-64 border border-white/[0.08] bg-black/40 rounded-xl flex items-center justify-center text-sm text-white/50 my-8">
         SimulationEmbed: {type} (Pending Phase 4)

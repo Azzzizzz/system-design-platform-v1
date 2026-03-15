@@ -143,16 +143,16 @@ Each topic must meet the following criteria before being marked as complete:
 
 ### Execution
 
-| # | Topic | New Infra Needed | Content File |
-|---|---|---|---|
-| 3.1 | Horizontal vs Vertical | Scaling comparison viz | `src/content/scaling/horizontal-vs-vertical.mdx` |
-| 3.2 | Database Sharding | Hash ring viz, `QueueNode` | `src/content/scaling/database-sharding.mdx` |
-| 3.3 | Database Replication | `ReplicationEdge`, leader-follower anim | `src/content/scaling/database-replication.mdx` |
-| 3.4 | Caching Strategies | `CacheNode`, `CacheFlowSim.tsx` | `src/content/scaling/caching-strategies.mdx` |
-| 3.5 | Indexing | B-tree traversal viz | `src/content/databases/indexing.mdx` |
-| 3.6 | Partitioning | Partition routing viz | `src/content/databases/partitioning.mdx` |
-| 3.7 | SQL vs NoSQL | Comparison matrix component | `src/content/databases/sql-vs-nosql.mdx` |
-| 3.8 | ACID vs BASE | — | `src/content/databases/acid-base.mdx` |
+| # | Topic | New Infra Needed | Content File | Status |
+|---|---|---|---|---|
+| 3.1 | Horizontal vs Vertical | Scaling comparison viz | `src/content/scaling/horizontal-vs-vertical.mdx` | ✅ |
+| 3.2 | Database Sharding | Hash ring viz, `QueueNode` | `src/content/scaling/database-sharding.mdx` | [ ] |
+| 3.3 | Database Replication | `ReplicationEdge`, leader-follower anim | `src/content/scaling/database-replication.mdx` | [ ] |
+| 3.4 | Caching Strategies | `CacheNode`, `CacheFlowSim.tsx` | `src/content/scaling/caching-strategies.mdx` | [ ] |
+| 3.5 | Indexing | B-tree traversal viz | `src/content/databases/indexing.mdx` | [ ] |
+| 3.6 | Partitioning | Partition routing viz | `src/content/databases/partitioning.mdx` | [ ] |
+| 3.7 | SQL vs NoSQL | Comparison matrix component | `src/content/databases/sql-vs-nosql.mdx` | [ ] |
+| 3.8 | ACID vs BASE | — | `src/content/databases/acid-base.mdx` | [ ] |
 
 ### New Components Built
 

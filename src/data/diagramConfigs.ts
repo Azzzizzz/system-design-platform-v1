@@ -50,5 +50,22 @@ export const diagramConfigs: Record<string, DiagramConfig> = {
       { ...defaultEdge("e-gw-s2", "gateway", "service2", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-gw-s3", "gateway", "service3", true), sourceHandle: "right", targetHandle: "left" },
     ]
+  },
+  "scaling-basics": {
+    id: "scaling-basics",
+    nodes: [
+      { id: "v-server", type: "service", position: { x: 50, y: 125 }, data: { label: "Monolithic Server", sublabel: "Scale Up Target", status: "healthy" } },
+      
+      { id: "h-lb", type: "lb", position: { x: 450, y: 125 }, data: { label: "Load Balancer", sublabel: "Scale Out Entry", status: "healthy" } },
+      
+      { id: "h-s1", type: "service", position: { x: 750, y: 0 }, data: { label: "Node A", status: "healthy" } },
+      { id: "h-s2", type: "service", position: { x: 750, y: 125 }, data: { label: "Node B", status: "healthy" } },
+      { id: "h-s3", type: "service", position: { x: 750, y: 250 }, data: { label: "Node C", status: "healthy" } },
+    ],
+    edges: [
+      { ...defaultEdge("e-h-lb-s1", "h-lb", "h-s1", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-h-lb-s2", "h-lb", "h-s2", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-h-lb-s3", "h-lb", "h-s3", true), sourceHandle: "right", targetHandle: "left" },
+    ]
   }
 };
