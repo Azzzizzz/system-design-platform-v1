@@ -12,6 +12,7 @@ import { ServiceNode } from "./nodes/ServiceNode";
 import { ClientNode } from "./nodes/ClientNode";
 import { LoadBalancerNode } from "./nodes/LoadBalancerNode";
 import { DatabaseNode } from "./nodes/DatabaseNode";
+import { LaneNode } from "./nodes/LaneNode";
 import { AnimatedEdge } from "./edges/AnimatedEdge";
 import { diagramConfigs } from "../../data/diagramConfigs";
 
@@ -20,6 +21,7 @@ const nodeTypes: NodeTypes = {
   client: ClientNode,
   lb: LoadBalancerNode,
   database: DatabaseNode,
+  lane: LaneNode,
 };
 
 const edgeTypes: EdgeTypes = {
@@ -41,7 +43,7 @@ export function ArchitectureCanvas({ configId }: { configId: string }) {
   }
 
   return (
-    <div className="w-full h-[500px] border border-[rgba(255,255,255,0.06)] rounded-xl overflow-hidden glass-panel relative my-10">
+    <div className="w-full h-[550px] border border-white/5 rounded-2xl overflow-hidden glass-panel relative my-12 bg-[#050505]/40 shadow-2xl">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -50,25 +52,40 @@ export function ArchitectureCanvas({ configId }: { configId: string }) {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.3 }}
         proOptions={{ hideAttribution: true }}
-        minZoom={0.5}
-        maxZoom={2}
+        minZoom={0.2}
+        maxZoom={1.5}
+        panOnScroll={false}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
+        panOnDrag={true}
       >
-        <Background gap={16} size={1} color="rgba(255,255,255,0.15)" />
+        <Background gap={20} size={1} color="rgba(112, 93, 232, 0.1)" />
         <Controls 
           showInteractive={false} 
+          className="bg-[#0A0A0A]/80 border-white/10 rounded-lg overflow-hidden backdrop-blur-md"
         />
-        {/*
-        <MiniMap 
-          nodeColor="#ffffff10" 
-          maskColor="#00000080" 
-          className="!bg-[#0A0A0A] !border-white/10" 
-        />
-        */}
       </ReactFlow>
-      <div className="absolute top-4 left-4 text-[10px] font-mono uppercase tracking-widest text-primary/70 bg-primary/10 px-2 py-1 flex items-center gap-2 rounded border border-primary/20 backdrop-blur-md pointer-events-none">
-        <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+      
+      {/* Zone Indicators */}
+      <div className="absolute bottom-6 left-6 flex gap-6 z-10 pointer-events-none opacity-40">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-blue-500" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">Client Zone</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-primary" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">Network Layer</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">Infrastructure</span>
+        </div>
+      </div>
+
+      <div className="absolute top-6 left-6 text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1.5 flex items-center gap-2.5 rounded-lg border border-primary/20 backdrop-blur-xl pointer-events-none shadow-lg">
+        <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(112,93,232,0.8)]" />
         Live Architecture
       </div>
     </div>

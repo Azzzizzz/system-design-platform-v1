@@ -54,15 +54,41 @@ export const diagramConfigs: Record<string, DiagramConfig> = {
   "scaling-basics": {
     id: "scaling-basics",
     nodes: [
-      { id: "v-server", type: "service", position: { x: 50, y: 125 }, data: { label: "Monolithic Server", sublabel: "Scale Up Target", status: "healthy" } },
+      // --- Lane Groups (Containers) ---
+      { 
+        id: "lane-v", 
+        type: "lane", 
+        position: { x: 0, y: 0 }, 
+        style: { width: 550, height: 230 },
+        data: { label: "Approach A", sublabel: "Vertical Scaling", type: "vertical" },
+        draggable: false, selectable: false,
+      },
+      { 
+        id: "lane-h", 
+        type: "lane", 
+        position: { x: 0, y: 260 }, 
+        style: { width: 920, height: 320 },
+        data: { label: "Approach B", sublabel: "Horizontal Scaling", type: "horizontal" },
+        draggable: false, selectable: false,
+      },
+
+      // --- Top Row: Vertical Scaling (Monolith) ---
+      { id: "v-visitors", type: "client", position: { x: 60, y: 70 }, parentId: "lane-v", extent: "parent", data: { label: "Public Visitors", sublabel: "Internet Traffic", status: "healthy" } },
+      { id: "v-server", type: "service", position: { x: 350, y: 70 }, parentId: "lane-v", extent: "parent", data: { label: "Monolithic Server", sublabel: "Scale Up Target", status: "healthy" } },
       
-      { id: "h-lb", type: "lb", position: { x: 450, y: 125 }, data: { label: "Load Balancer", sublabel: "Scale Out Entry", status: "healthy" } },
-      
-      { id: "h-s1", type: "service", position: { x: 750, y: 0 }, data: { label: "Node A", status: "healthy" } },
-      { id: "h-s2", type: "service", position: { x: 750, y: 125 }, data: { label: "Node B", status: "healthy" } },
-      { id: "h-s3", type: "service", position: { x: 750, y: 250 }, data: { label: "Node C", status: "healthy" } },
+      // --- Bottom Row: Horizontal Scaling (Fleet) ---
+      { id: "h-visitors", type: "client", position: { x: 60, y: 110 }, parentId: "lane-h", extent: "parent", data: { label: "Public Visitors", sublabel: "Internet Traffic", status: "healthy" } },
+      { id: "h-lb", type: "lb", position: { x: 350, y: 110 }, parentId: "lane-h", extent: "parent", data: { label: "Load Balancer", sublabel: "Traffic Dispatcher", status: "healthy" } },
+      { id: "h-s1", type: "service", position: { x: 700, y: 20 }, parentId: "lane-h", extent: "parent", data: { label: "Node A", sublabel: "Processing Unit", status: "healthy" } },
+      { id: "h-s2", type: "service", position: { x: 700, y: 125 }, parentId: "lane-h", extent: "parent", data: { label: "Node B", sublabel: "Processing Unit", status: "healthy" } },
+      { id: "h-s3", type: "service", position: { x: 700, y: 230 }, parentId: "lane-h", extent: "parent", data: { label: "Node C", sublabel: "Processing Unit", status: "healthy" } },
     ],
     edges: [
+      // Vertical Path
+      { ...defaultEdge("e-v-path", "v-visitors", "v-server", true), sourceHandle: "right", targetHandle: "left" },
+      
+      // Horizontal Path
+      { ...defaultEdge("e-h-entry", "h-visitors", "h-lb", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-h-lb-s1", "h-lb", "h-s1", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-h-lb-s2", "h-lb", "h-s2", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-h-lb-s3", "h-lb", "h-s3", true), sourceHandle: "right", targetHandle: "left" },
