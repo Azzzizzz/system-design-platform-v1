@@ -1,6 +1,22 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Server, Cpu, Layers, AlertTriangle, Users, ShieldCheck, Network, GitMerge } from "lucide-react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { motion } from "framer-motion";
+import { Server, AlertTriangle, Users, ShieldCheck, Network, GitMerge } from "lucide-react";
+import { 
+  ReactFlow, 
+  Handle, 
+  Position, 
+  getBezierPath, 
+  BaseEdge, 
+  EdgeLabelRenderer,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  useReactFlow
+} from "@xyflow/react";
+import type { EdgeProps, NodeProps, Node, Edge } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+
+// --- Custom Constants & Tiers ---
 
 interface SpecTier {
   name: string;
@@ -19,32 +35,296 @@ const CLOUD_SPECS: SpecTier[] = [
   { name: "CEILING", cpu: "128 (MAX)", ram: "512 (MAX)", cost: "$$$$$", label: "Limit", rps: "50k+" },
 ];
 
+// --- Node Data Types ---
+
+interface ServerData extends Record<string, unknown> {
+  id: number;
+  label: string;
+  utilization: number;
+  isMonolith?: boolean;
+}
+
+// --- Custom Nodes ---
+
+const VisitorsNode = () => (
+  <div className="flex flex-col items-center gap-2">
+    <motion.div 
+      animate={{ scale: [1, 1.1, 1] }} 
+      transition={{ repeat: Infinity, duration: 2 }}
+      className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shadow-[0_0_30px_rgba(112,93,232,0.2)] backdrop-blur-md"
+    >
+      <Users className="w-6 h-6 text-primary" />
+    </motion.div>
+    <div className="text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">Visitors</div>
+    <Handle type="source" position={Position.Right} className="opacity-0" />
+  </div>
+);
+
+const GatewayNode = () => (
+  <div className="flex flex-col items-center gap-2">
+     <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-md">
+        <GitMerge className="w-6 h-6 text-primary" />
+     </div>
+     <div className="text-[8px] font-black text-primary/60 uppercase tracking-widest whitespace-nowrap">Load Balancer</div>
+     <Handle type="target" position={Position.Left} className="opacity-0" />
+     <Handle type="source" position={Position.Right} className="opacity-0" />
+  </div>
+);
+
+const ServerNode = ({ data }: NodeProps<Node<ServerData>>) => (
+  <div className="relative group">
+    <motion.div
+      animate={data.utilization >= 100 ? {
+        borderColor: "rgba(239, 68, 68, 0.5)",
+        boxShadow: "0 0 40px rgba(239,68,68,0.2)",
+        x: [0, -1, 1, -1, 0]
+      } : {
+        borderColor: "rgba(112, 93, 232, 0.3)",
+        boxShadow: "0 0 20px rgba(112,93,232,0.1)",
+        x: 0
+      }}
+      transition={data.utilization >= 100 ? { x: { repeat: Infinity, duration: 0.1 } } : {}}
+      className={`${data.isMonolith ? 'w-44 h-52' : 'w-24 h-28'} rounded-2xl border-2 bg-white/[0.03] backdrop-blur-xl flex flex-col items-center justify-center p-4 relative overflow-hidden`}
+    >
+      <Server className={`${data.isMonolith ? 'w-12 h-12 mb-3' : 'w-6 h-6 mb-2'} ${data.utilization >= 100 ? 'text-red-500' : 'text-primary'}`} />
+      
+      <div className="w-full space-y-1.5">
+         <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+            <motion.div animate={{ width: `${data.utilization}%` }} className={`h-full ${data.utilization >= 100 ? 'bg-red-500' : 'bg-primary'}`} />
+         </div>
+         <div className="flex justify-between text-[8px] font-black text-white/20 uppercase tracking-widest">
+            <span>Utilization</span>
+            <span className={data.utilization >= 100 ? 'text-red-500' : ''}>{data.utilization}%</span>
+         </div>
+      </div>
+
+      {data.utilization >= 100 && (
+        <div className="absolute inset-0 bg-red-900/20 flex flex-col items-center justify-center backdrop-blur-[2px]">
+           <AlertTriangle className="text-red-500 w-8 h-8 mb-1" />
+           <span className="text-[10px] font-black text-white uppercase tracking-widest bg-red-500 px-2 rounded">OVERLOAD</span>
+        </div>
+      )}
+    </motion.div>
+    
+    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[8px] font-bold text-white/20 uppercase tracking-[0.2em] whitespace-nowrap">
+      {data.label}
+    </div>
+
+    {data.isMonolith && (
+      <div className="absolute -top-3 -right-3 px-3 py-1 bg-red-500 rounded-full text-[8px] font-black text-white uppercase tracking-widest shadow-xl z-20">SPOF</div>
+    )}
+    
+    <Handle type="target" position={Position.Left} className="opacity-0" />
+  </div>
+);
+
+// --- Custom Edge with Particles ---
+
+const TrafficEdge = ({
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  style = {},
+  markerEnd,
+  data,
+}: EdgeProps) => {
+  const [edgePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  return (
+    <>
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={{ ...style, stroke: 'rgba(112, 93, 232, 0.2)', strokeWidth: 2, strokeDasharray: '6,4' }} />
+      <EdgeLabelRenderer>
+         <ParticleSystem edgePath={edgePath} scale={data?.scale as number ?? 1} />
+      </EdgeLabelRenderer>
+    </>
+  );
+};
+
+const ParticleSystem = ({ edgePath, scale }: { edgePath: string; scale: number }) => {
+  const [particles, setParticles] = useState<{ id: number; key: number }[]>([]);
+
+  useEffect(() => {
+    // Dynamic interval: Starter (1000ms) down to Limit (~200ms)
+    const intervalTime = Math.max(200, 600 - (scale - 1) * 200);
+    const interval = setInterval(() => {
+      setParticles((prev) => [...prev.slice(-12), { id: Math.random(), key: Date.now() }]);
+    }, intervalTime);
+    return () => clearInterval(interval);
+  }, [scale]);
+
+  return (
+    <>
+      <svg style={{ position: 'absolute', width: '100%', height: '100%', overflow: 'visible', pointerEvents: 'none', top: 0, left: 0 }}>
+        <defs>
+          <radialGradient id="particle-glow">
+            <stop offset="0%" stopColor="#705DE8" />
+            <stop offset="100%" stopColor="transparent" />
+          </radialGradient>
+        </defs>
+        {particles.map((p) => (
+          <Particle key={p.key} path={edgePath} />
+        ))}
+      </svg>
+    </>
+  );
+};
+
+const Particle = ({ path }: { path: string }) => {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    let start: number;
+    const duration = 2000;
+    
+    const animate = (time: number) => {
+      if (!start) start = time;
+      const progress = (time - start) / duration;
+      
+      if (progress < 1) {
+        if (pathRef.current) {
+          const point = pathRef.current.getPointAtLength(progress * pathRef.current.getTotalLength());
+          setPos({ x: point.x, y: point.y });
+          setVisible(true);
+        }
+        requestAnimationFrame(animate);
+      } else {
+        setVisible(false);
+      }
+    };
+    
+    const raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [path]);
+
+  return (
+    <>
+       <path ref={pathRef} d={path} fill="none" style={{ display: 'none' }} />
+       {visible && (
+         <g transform={`translate(${pos.x}, ${pos.y})`}>
+           <circle r="3" fill="#705DE8" className="shadow-lg" />
+           <circle r="6" fill="url(#particle-glow)" opacity="0.4" />
+         </g>
+       )}
+    </>
+  );
+};
+
+// --- Main Component ---
+
+const nodeTypes = {
+  visitors: VisitorsNode,
+  gateway: GatewayNode,
+  server: ServerNode,
+};
+
+const edgeTypes = {
+  traffic: TrafficEdge,
+};
+
 export function ScalingComparison() {
+  return (
+    <ReactFlowProvider>
+      <ScalingComparisonInner />
+    </ReactFlowProvider>
+  );
+}
+
+function ScalingComparisonInner() {
   const [mode, setMode] = useState<"vertical" | "horizontal">("vertical");
   const [scale, setScale] = useState(1);
-  const [traffic, setTraffic] = useState<{ id: number; nodeIdx?: number }[]>([]);
-
-  // Generate traffic particles
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const id = Date.now() + Math.random();
-      const numNodes = mode === "horizontal" ? scale * 3 - 2 : 1;
-      const nodeIdx = Math.floor(Math.random() * numNodes);
-      
-      setTraffic((prev) => [...prev.slice(-20), { id, nodeIdx }]);
-    }, 400 / scale);
-    return () => clearInterval(interval);
-  }, [scale, mode]);
+  const { fitView } = useReactFlow();
 
   const currentSpec = CLOUD_SPECS[scale - 1];
 
+  const graphData = useMemo(() => {
+    const nodes: Node<any>[] = [
+      {
+        id: 'visitors',
+        type: 'visitors',
+        position: { x: 50, y: 300 },
+        data: {},
+      }
+    ];
+
+    const edges: Edge[] = [];
+
+    if (mode === "vertical") {
+      nodes.push({
+        id: 'server-monolith',
+        type: 'server',
+        position: { x: 450, y: 220 },
+        data: { id: 1, label: 'Monolith Server', utilization: scale * 20, isMonolith: true },
+      } as Node<ServerData>);
+      edges.push({
+        id: 'e-v-1',
+        source: 'visitors',
+        target: 'server-monolith',
+        type: 'traffic',
+        data: { scale }
+      });
+    } else {
+      nodes.push({
+        id: 'gateway',
+        type: 'gateway',
+        position: { x: 250, y: 305 },
+        data: {},
+      });
+      edges.push({
+        id: 'e-h-source',
+        source: 'visitors',
+        target: 'gateway',
+        type: 'traffic',
+        data: { scale }
+      });
+
+      const numNodes = scale * 3 - 2;
+      const verticalSpacing = 140;
+      const startY = 300 - ((numNodes - 1) * verticalSpacing) / 2;
+
+      for (let i = 0; i < numNodes; i++) {
+        const nodeId = `server-${i}`;
+        nodes.push({
+          id: nodeId,
+          type: 'server',
+          position: { x: 550, y: startY + i * verticalSpacing },
+          data: { id: i + 1, label: `Active Node ${i + 1}`, utilization: 25 },
+        } as Node<ServerData>);
+        edges.push({
+          id: `e-h-${i}`,
+          source: 'gateway',
+          target: nodeId,
+          type: 'traffic',
+          data: { scale }
+        });
+      }
+    }
+
+    return { nodes, edges };
+  }, [mode, scale]);
+
+  useEffect(() => {
+    fitView({ duration: 400, padding: 0.2 });
+  }, [graphData.nodes.length, mode, scale, fitView]);
+
   return (
-    <div className="glass-panel p-8 rounded-3xl border border-white/10 my-8 overflow-hidden relative min-h-[600px] flex flex-col">
+    <div className="glass-panel p-8 rounded-3xl border border-white/10 my-8 overflow-hidden relative min-h-[900px] flex flex-col">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none" />
       
       {/* Header Section */}
-      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center mb-16 gap-6">
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2 mb-1">
             <div className="p-1.5 bg-primary/10 rounded-lg">
@@ -81,233 +361,71 @@ export function ScalingComparison() {
         </div>
       </div>
 
-      {/* Main Simulation Area: Left to Right */}
-      <div className="flex-1 flex items-center justify-between gap-4 relative py-12 px-4 bg-black/40 rounded-[2rem] border border-white/5 overflow-hidden">
+      {/* Main Simulation Area: React Flow */}
+      <div className="w-full h-[600px] bg-black/40 rounded-[2.5rem] border border-white/5 overflow-hidden relative shadow-inner">
+        <ReactFlow
+          nodes={graphData.nodes}
+          edges={graphData.edges}
+          nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          style={{ width: '100%', height: '100%' }}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          panOnDrag={true}
+          zoomOnScroll={true}
+          zoomOnPinch={true}
+          panOnScroll={false}
+          nodesDraggable={false}
+          elementsSelectable={false}
+          preventScrolling={false}
+        >
+          <Background color="rgba(112, 93, 232, 0.05)" gap={20} />
+          <Controls 
+            showInteractive={false} 
+            className="bg-black/20 border-white/5! rounded-lg overflow-hidden backdrop-blur-md"
+          />
+        </ReactFlow>
         
-        {/* LEFT: TRAFFIC SOURCE */}
-        <div className="flex flex-col items-center gap-4 z-20 min-w-[80px]">
-          <div className="relative">
-            <motion.div 
-              animate={{ scale: [1, 1.1, 1] }} 
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="w-14 h-14 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center shadow-[0_0_30px_rgba(112,93,232,0.2)]"
-            >
-              <Users className="w-6 h-6 text-primary" />
-            </motion.div>
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-black text-white/40 uppercase tracking-[0.2em]">
-              Visitors
-            </div>
-          </div>
-        </div>
-
-        {/* MIDDLE: LOAD BALANCER / GATEWAY */}
-        <div className="relative flex flex-col items-center z-20 min-w-[100px]">
-          <AnimatePresence mode="wait">
-             {mode === "horizontal" && (
-               <motion.div
-                 initial={{ opacity: 0, scale: 0.8 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 exit={{ opacity: 0, scale: 0.8 }}
-                 className="flex flex-col items-center gap-3"
-               >
-                 <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl backdrop-blur-md group-hover:border-primary transition-colors">
-                    <GitMerge className="w-6 h-6 text-primary/60 group-hover:text-primary" />
-                 </div>
-                 <div className="text-[8px] font-black text-primary/60 uppercase tracking-widest whitespace-nowrap">Load Balancer</div>
-               </motion.div>
-             )}
-          </AnimatePresence>
-          
-          {/* SVG Connection Lines */}
-          <div className="absolute inset-x-0 h-full w-[400px] -translate-x-1/2 pointer-events-none overflow-visible">
-            <svg className="w-full h-full">
-              <defs>
-                <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="transparent" />
-                  <stop offset="50%" stopColor="rgba(112, 93, 232, 0.4)" />
-                  <stop offset="100%" stopColor="transparent" />
-                </linearGradient>
-              </defs>
-
-              {/* Source -> Mid */}
-              <line x1="12%" y1="50%" x2="50%" y2="50%" stroke="rgba(112, 93, 232, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
-
-              {/* Mid -> Destination */}
-              {mode === "vertical" ? (
-                <line x1="50%" y1="50%" x2="88%" y2="50%" stroke="url(#flow-gradient)" strokeWidth="2" strokeDasharray="4 4" className="opacity-40" />
-              ) : (
-                <>
-                  {Array.from({ length: scale * 3 - 2 }).map((_, i) => {
-                    const numNodes = scale * 3 - 2;
-                    const targetY = (i / (numNodes - 1 || 1)) * 100;
-                    return (
-                      <motion.path
-                        key={`line-${i}`}
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        d={`M 50% 50% C 70% 50%, 70% ${targetY}%, 88% ${targetY}%`}
-                        stroke="rgba(112, 93, 232, 0.15)"
-                        strokeWidth="1"
-                        fill="none"
-                      />
-                    );
-                  })}
-                </>
-              )}
-            </svg>
-
-            {/* Traffic Particles */}
-            <AnimatePresence>
-              {traffic.map((req) => (
-                <motion.div
-                  key={req.id}
-                  initial={{ left: "12%", top: "50%", opacity: 1, scale: 0.5 }}
-                  animate={mode === 'vertical' ? {
-                    left: ["12%", "50%", "88%"],
-                    top: "50%",
-                    opacity: [1, 1, 0]
-                  } : {
-                    left: ["12%", "50%", "88%"],
-                    top: ["50%", "50%", `${(req.nodeIdx! / (scale * 3 - 2 - 1 || 1)) * 100}%`],
-                    opacity: [1, 1, 0]
-                  }}
-                  transition={{ duration: 1.2, ease: "linear" }}
-                  className="absolute w-1.5 h-1.5 -ml-0.5 -mt-0.5 rounded-full bg-primary shadow-[0_0_12px_rgba(112,93,232,1)] z-30 pointer-events-none"
-                />
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* RIGHT: DESTINATION */}
-        <div className="flex flex-col items-center justify-center min-w-[320px] gap-4 z-20">
-           <AnimatePresence mode="wait">
-             {mode === "vertical" ? (
-               <motion.div
-                 key="vertical-target"
-                 initial={{ opacity: 0, x: 20 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 exit={{ opacity: 0, x: -20 }}
-                 className="flex flex-col items-center gap-6"
-               >
-                 <div className="relative">
-                   <motion.div
-                     animate={scale === 5 ? {
-                       borderColor: "rgba(239, 68, 68, 0.5)",
-                       boxShadow: "0 0 40px rgba(239,68,68,0.2)",
-                       x: [0, -1, 1, -1, 0]
-                     } : {
-                       borderColor: "rgba(112, 93, 232, 0.3)",
-                       boxShadow: "0 0 20px rgba(112,93,232,0.1)",
-                       x: 0
-                     }}
-                     transition={scale === 5 ? { x: { repeat: Infinity, duration: 0.1 } } : {}}
-                     className="w-40 h-48 rounded-3xl border-2 bg-white/[0.03] backdrop-blur-xl flex flex-col items-center justify-center p-6 relative overflow-hidden"
-                   >
-                     <Server className={`w-12 h-12 mb-4 ${scale === 5 ? 'text-red-500' : 'text-primary'}`} />
-                     
-                     <div className="w-full space-y-2">
-                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                           <motion.div animate={{ width: `${scale * 20}%` }} className={`h-full ${scale === 5 ? 'bg-red-500' : 'bg-primary'}`} />
-                        </div>
-                        <div className="flex justify-between text-[8px] font-black text-white/20 uppercase tracking-widest">
-                           <span>Utilization</span>
-                           <span className={scale === 5 ? 'text-red-500' : ''}>{scale * 20}%</span>
-                        </div>
-                     </div>
-
-                     {scale === 5 && (
-                       <div className="absolute inset-0 bg-red-900/10 flex flex-col items-center justify-center backdrop-blur-[2px]">
-                          <AlertTriangle className="text-red-500 w-8 h-8 mb-1" />
-                          <span className="text-[10px] font-black text-white uppercase tracking-widest bg-red-500 px-1.5 rounded">Hardware Limit</span>
-                       </div>
-                     )}
-                   </motion.div>
-                   
-                   <div className="absolute -top-3 -right-3 px-2.5 py-1 bg-red-500 rounded-full text-[8px] font-black text-white uppercase tracking-widest shadow-xl">SPOF</div>
-                 </div>
-
-                 <div className="grid grid-cols-2 gap-2 w-full max-w-[180px]">
-                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/5 flex flex-col items-center">
-                       <Cpu className="w-3 h-3 text-white/10 mb-1" />
-                       <span className="text-[10px] font-mono text-white/60">{currentSpec.cpu}</span>
-                    </div>
-                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/5 flex flex-col items-center">
-                       <Layers className="w-3 h-3 text-white/10 mb-1" />
-                       <span className="text-[10px] font-mono text-white/60">{currentSpec.ram}</span>
-                    </div>
-                 </div>
-               </motion.div>
-             ) : (
-               <motion.div
-                 key="horizontal-target"
-                 initial={{ opacity: 0, x: 20 }}
-                 animate={{ opacity: 1, x: 0 }}
-                 exit={{ opacity: 0, x: -20 }}
-                 className="flex flex-wrap items-center justify-center gap-3 w-full max-w-[380px]"
-               >
-                 <AnimatePresence>
-                   {Array.from({ length: scale * 3 - 2 }).map((_, i) => (
-                     <motion.div
-                       key={`node-${i}`}
-                       initial={{ scale: 0, opacity: 0 }}
-                       animate={{ scale: 1, opacity: 1 }}
-                       exit={{ scale: 0, opacity: 0 }}
-                       className="w-16 h-20 rounded-2xl border border-white/10 bg-white/[0.02] flex flex-col items-center justify-center gap-1.5 relative group hover:border-primary/40 transition-colors"
-                     >
-                       <Server className="w-5 h-5 text-primary/30 group-hover:text-primary transition-colors" />
-                       <div className="w-6 h-0.5 bg-white/5 rounded-full overflow-hidden">
-                          <div className="h-full bg-green-500/40 w-[30%]" />
-                       </div>
-                       <span className="text-[7px] font-bold text-white/10 uppercase tracking-widest">Node {i+1}</span>
-                     </motion.div>
-                   ))}
-                 </AnimatePresence>
-                 
-                 {scale >= 3 && (
-                   <motion.div 
-                     initial={{ opacity: 0, y: 15 }}
-                     animate={{ opacity: 1, y: 0 }}
-                     className="absolute -top-10 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-2 shadow-[0_0_20px_rgba(34,197,94,0.1)]"
-                   >
-                     <ShieldCheck className="w-3.5 h-3.5 text-green-500" />
-                     <span className="text-[9px] font-black text-green-500 uppercase tracking-widest">Elastic Resilience</span>
-                   </motion.div>
-                 )}
-               </motion.div>
-             )}
-           </AnimatePresence>
-        </div>
+        {mode === "horizontal" && scale >= 3 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-8 left-1/2 -translate-x-1/2 z-30 px-4 py-2 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-2 shadow-[0_0_30px_rgba(34,197,94,0.15)] backdrop-blur-md"
+          >
+            <ShieldCheck className="w-4 h-4 text-green-500" />
+            <span className="text-[10px] font-black text-green-500 uppercase tracking-widest">Elastic High Availability</span>
+          </motion.div>
+        )}
       </div>
 
       {/* Control Footer */}
-      <div className="relative z-10 mt-auto pt-10 space-y-6">
+      <div className="relative z-10 mt-auto pt-10 space-y-8">
         <div className="flex justify-between items-end px-4">
            <div className="space-y-1">
               <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em] block leading-none">Throughput Capacity (RPS)</span>
               <div className="flex items-center gap-4">
                  <div className="flex items-center gap-2">
-                   <span className="text-3xl font-bold text-white tracking-tighter">{currentSpec.rps}</span>
-                   <span className="text-white/40 text-xs font-semibold uppercase tracking-wider">RPS</span>
+                   <span className="text-4xl font-bold text-white tracking-tighter">{currentSpec.rps}</span>
+                   <span className="text-white/40 text-sm font-semibold uppercase tracking-wider">RPS</span>
                  </div>
-                 <span className="text-[10px] text-primary font-black py-0.5 px-2 bg-primary/10 rounded-md border border-primary/20 uppercase tracking-widest">{currentSpec.label}</span>
+                 <span className="text-[10px] text-primary font-black py-0.5 px-3 bg-primary/10 rounded-md border border-primary/20 uppercase tracking-[0.2em]">{currentSpec.label}</span>
               </div>
            </div>
            
            <div className="flex flex-col items-end gap-1">
-              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Relative Cost</span>
+              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Monthly Infrastructure Cost</span>
               <motion.span 
                 key={currentSpec.cost}
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="text-2xl font-black text-primary font-mono tracking-tighter"
+                className="text-3xl font-black text-primary font-mono tracking-tighter"
               >
                 {currentSpec.cost}
               </motion.span>
            </div>
         </div>
 
-        <div className="px-4 pb-6">
+        <div className="px-4 pb-8">
            <input 
               type="range" 
               min="1" 
@@ -317,11 +435,11 @@ export function ScalingComparison() {
               onChange={(e) => setScale(Number(e.target.value))}
               className="w-full h-1.5 bg-white/5 rounded-full accent-primary appearance-none cursor-pointer hover:bg-white/10 transition-colors"
            />
-           <div className="flex justify-between mt-4 px-1">
+           <div className="flex justify-between mt-5 px-1">
               {CLOUD_SPECS.map((s, i) => (
                 <div key={i} className="flex flex-col items-center gap-2">
-                   <div className={`w-1 h-1 rounded-full transition-colors ${scale >= i + 1 ? 'bg-primary' : 'bg-white/10'}`} />
-                   <span className={`text-[9px] font-black uppercase tracking-tighter transition-colors ${scale === i + 1 ? 'text-primary' : 'text-white/20'}`}>
+                   <div className={`w-1.5 h-1.5 rounded-full transition-colors ${scale >= i + 1 ? 'bg-primary' : 'bg-white/10'}`} />
+                   <span className={`text-[10px] font-black uppercase tracking-tighter transition-colors ${scale === i + 1 ? 'text-primary' : 'text-white/20'}`}>
                       {s.label}
                    </span>
                 </div>
