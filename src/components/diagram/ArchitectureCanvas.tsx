@@ -60,7 +60,6 @@ export function ArchitectureCanvas({ configId }: { configId: string }) {
         zoomOnScroll={true}
         zoomOnPinch={true}
         panOnDrag={true}
-        attributionPosition="bottom-left"
       >
         <Background gap={20} size={1} color="rgba(112, 93, 232, 0.1)" />
         <Controls 

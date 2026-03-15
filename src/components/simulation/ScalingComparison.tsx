@@ -378,7 +378,7 @@ function ScalingComparisonInner() {
           nodesDraggable={false}
           elementsSelectable={false}
           preventScrolling={false}
-          attributionPosition="bottom-left"
+          proOptions={{ hideAttribution: true }}
         >
           <Background color="rgba(112, 93, 232, 0.05)" gap={20} />
           <Controls 
