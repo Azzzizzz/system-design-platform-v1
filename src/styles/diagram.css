@@ -26,38 +26,6 @@
   }
 }
 
-/* Remove default focus outlines and use Linear style focus */
-.react-flow__node:focus, .react-flow__node:focus-visible {
-  outline: none;
-}
-.react-flow__node.selected {
-  outline: none;
-  /* Glow is handled dynamically in the node components based on `highlighted` prop */
-}
-
-/* TARGET REACT FLOW CONTROLS INTERNALS */
-.react-flow__controls {
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
-  backdrop-filter: blur(12px) !important;
-}
-
-.react-flow__controls-button {
-  background: rgba(10, 10, 10, 0.8) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  fill: rgba(255, 255, 255, 0.7) !important;
-}
-
-.react-flow__controls-button:hover {
-  background: rgba(255, 255, 255, 0.05) !important;
-}
-
-.react-flow__controls-button svg {
-  fill: currentColor !important;
-}
-
 /* SIMULATION BACKGROUND PATHS */
 .sim-path {
   stroke: rgba(255, 255, 255, 0.03);

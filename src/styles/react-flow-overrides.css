@@ -1,0 +1,70 @@
+/* --- Global React Flow Overrides (Highest Priority) --- */
+
+/* Target both reactflow and @xyflow/react naming conventions if they differ, though usually they share .react-flow prefix */
+
+.react-flow .react-flow__controls {
+  display: flex !important;
+  flex-direction: row !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  box-shadow: 
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 
+    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.react-flow .react-flow__controls-button {
+  background: rgba(10, 10, 10, 0.8) !important;
+  border-bottom: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  fill: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  width: 20px !important;
+  height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.react-flow .react-flow__controls-button:last-child {
+  border-right: none !important;
+}
+
+.react-flow .react-flow__controls-button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: white !important;
+}
+
+.react-flow .react-flow__controls-button svg {
+  fill: currentColor !important;
+  width: 12px !important;
+  height: 12px !important;
+}
+
+.react-flow .react-flow__attribution {
+  background: transparent !important;
+  border: none !important;
+  opacity: 0.3 !important;
+  transition: opacity 0.2s !important;
+}
+
+.react-flow .react-flow__attribution:hover {
+  opacity: 0.8 !important;
+}
+
+.react-flow .react-flow__attribution a {
+  color: white !important;
+  text-decoration: none !important;
+  font-size: 8px !important;
+}
+
+.react-flow .react-flow__node:focus, 
+.react-flow .react-flow__node:focus-visible {
+  outline: none !important;
+}
+
+.react-flow .react-flow__background {
+  opacity: 0.15 !important;
+}

@@ -60,11 +60,13 @@ export function ArchitectureCanvas({ configId }: { configId: string }) {
         zoomOnScroll={true}
         zoomOnPinch={true}
         panOnDrag={true}
+        attributionPosition="bottom-left"
       >
         <Background gap={20} size={1} color="rgba(112, 93, 232, 0.1)" />
         <Controls 
           showInteractive={false} 
-          className="bg-[#0A0A0A]/80 border-white/10 rounded-lg overflow-hidden backdrop-blur-md"
+          position="bottom-right"
+          className="!m-6"
         />
       </ReactFlow>
       

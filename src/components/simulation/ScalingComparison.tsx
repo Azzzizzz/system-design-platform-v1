@@ -378,11 +378,13 @@ function ScalingComparisonInner() {
           nodesDraggable={false}
           elementsSelectable={false}
           preventScrolling={false}
+          attributionPosition="bottom-left"
         >
           <Background color="rgba(112, 93, 232, 0.05)" gap={20} />
           <Controls 
             showInteractive={false} 
-            className="bg-black/20 border-white/5! rounded-lg overflow-hidden backdrop-blur-md"
+            position="bottom-right"
+            className="!m-6"
           />
         </ReactFlow>
         
