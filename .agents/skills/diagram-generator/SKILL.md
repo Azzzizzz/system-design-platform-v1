@@ -7,6 +7,10 @@ description: Generates React Flow node and edge definitions based on a natural l
 
 You generate JSON configurations specifically formatted for the `system-design-platform` React Flow diagrams. When a user asks you to "design a diagram for X", you return a `DiagramConfig` object to append to `src/data/diagramConfigs.ts`.
 
+## 🏆 The Golden Rule
+1. **React Flow ONLY**: Do not use ad-hoc SVGs or CSS for architecture visualizations. All diagrams, simulations, and flows must use the React Flow engine.
+2. **Reuse First**: Always check `src/components/diagram/nodes/` for existing `ServiceNode`, `DatabaseNode`, etc., before requesting new ones.
+
 ## 1. The React Flow Configuration Schema
 Every diagram is defined declaratively. NEVER write JSX for individual diagrams.
 

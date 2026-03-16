@@ -8,11 +8,16 @@
 
 Each topic must meet the following criteria before being marked as complete:
 1.  **Content**: All 12 sections followed as per the refined 12-section MDX schema (including Level 1/2 examples, FAQ accordion, and Interview Notes).
-2.  **Visualization**: Working interactive diagram + logic-verified simulation.
-3.  **Unit Tests**: All core simulation logic and utility functions covered by Vitest.
-4.  **E2E Tests**: Critical paths (navigation, interactive sliders, algorithm switching) verified by Playwright.
-- **Visual Testing**: Restrict Visual Regression snapshots to macOS environments to ensure consistency.
-- **Hybrid Verification**: Adopt a dual-track (Antigravity UX + Playwright Regression) approach for every topic.
+2.  **Visualization**: **React Flow** must be used for ALL architecture diagrams, simulations, and interactive visualizations to ensure a unified and consistent design system.
+3.  **Code Reusability**: Maximize use of shared components (e.g., `ServiceNode`, `LaneNode`, `AnimatedEdge`) and global CSS utilities. Do not duplicate logic or styles across topics.
+4.  **Pedagogical Standards (Beginner-Friendly)**:
+    - **Tone**: Simplified, analogy-driven explanations.
+    - **Visuals**: Self-explanatory React Flow diagrams.
+    - **Section Limits**: EXACTLY 4-6 points for Tradeoffs, Q&A, and Summaries.
+5.  **Testing Policy**:
+    - **NO Automated Tests**: Do not write Unit Tests (Vitest) or E2E Tests (Playwright) unless explicitly requested by the USER.
+    - **NO Browser Research**: Do not use browser-based research or manual testing tools (Antigravity browser control) unless explicitly requested by the USER.
+    - **Visual Verification**: All manual verification must be done via code inspection and provided browser screenshots/recordings only when asked.
 
 ---
 
@@ -125,7 +130,7 @@ Each topic must meet the following criteria before being marked as complete:
 | 2.3 | Consistency Models | Timeline diagram | `src/content/fundamentals/consistency-models.mdx` | ✅ |
 | 2.4 | Rate Limiting | Token bucket sim (`RateLimitingSim.tsx`) | `src/content/fundamentals/rate-limiting.mdx` | ✅ |
 | 2.5 | Diagram configs for all 4 | — | `src/data/diagramConfigs.ts` (update) | ✅ |
-| 2.6 | **Testing Suite** | Comprehensive tests for Phase 2 | `tests/fundamentals.spec.ts` | ✅ |
+| 2.6 | **Testing Suite** | — | — | (Removed per User Request) |
 
 ### Verification
 
@@ -296,11 +301,10 @@ Each topic must meet the following criteria before being marked as complete:
     - [ ] Implement Hybrid Verification Suite (Antigravity UX + Playwright) for all prior phases.
     - [ ] Comprehensive A11y & Performance Audit.
 
-### Verification
+### Verification (Manual only if asked)
 
-- [ ] All Cypress tests pass
-- [ ] Lighthouse: Performance > 90, Accessibility > 95
-- [ ] Bundle size < 500KB gzipped (initial load)
+- [ ] All topics render correctly via code inspection
+- [ ] No automated test regressions (tests inactive per request)
 - [ ] Production build completes cleanly
 
 ---

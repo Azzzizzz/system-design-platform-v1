@@ -1,13 +1,14 @@
----
-name: Topic Generator
-description: Generates a new MDX topic file for the System Design Platform following the standard 12-section schema or the Case Study schema.
----
-
-# Topic Generator Skill
-
-This skill teaches you how to generate a new MDX learning topic for the platform. When asked to "create a topic about X", you must rigorously follow the correct MDX schema based on the topic category.
+## 🏆 Pedagogical Golden Rules (CRITICAL)
+1. **Beginner First**: All explanations MUST use simple analogies and avoid jargon where possible. If a technical term is used, explain it immediately.
+2. **Self-Explaining Visuals**: All React Flow diagrams and simulations must be intuitive. Use labels, clear colors, and logical positioning so a beginner can understand the flow at a glance.
+3. **Strict Section Counts**:
+   - **Tradeoffs**: Minimum 4, Maximum 6 points.
+   - **Q&A / Interview Notes**: Minimum 4, Maximum 6 questions/points.
+   - **Summary / Takeaways**: Minimum 4, Maximum 6 points.
+4. **Accessible Real-World Apps**: Use day-to-day examples (e.g., Netflix, WhatsApp, Uber) and explain their scaling in easy-to-follow steps.
 
 ## 1. File Location
+... (rest of the file)
 Topics must be saved as `[slug].mdx` inside the appropriate category folder under `src/content/`:
 - `src/content/fundamentals/`
 - `src/content/scaling/`

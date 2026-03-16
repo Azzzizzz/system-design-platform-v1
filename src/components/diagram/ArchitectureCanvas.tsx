@@ -28,7 +28,13 @@ const edgeTypes: EdgeTypes = {
   animated: AnimatedEdge,
 };
 
-export function ArchitectureCanvas({ configId }: { configId: string }) {
+export function ArchitectureCanvas({ 
+  configId, 
+  showZones = true 
+}: { 
+  configId: string; 
+  showZones?: boolean;
+}) {
   const config = diagramConfigs[configId];
   
   const [nodes, , onNodesChange] = useNodesState(config?.nodes || []);
@@ -70,20 +76,22 @@ export function ArchitectureCanvas({ configId }: { configId: string }) {
       </ReactFlow>
       
       {/* Zone Indicators */}
-      <div className="absolute bottom-6 left-6 flex gap-6 z-10 pointer-events-none opacity-40">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-white">Client Zone</span>
+      {showZones && (
+        <div className="absolute bottom-6 left-6 flex gap-6 z-10 pointer-events-none opacity-40">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-blue-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white">Client Zone</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white">Network Layer</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-white">Infrastructure</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-primary" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-white">Network Layer</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <span className="text-[10px] font-black uppercase tracking-widest text-white">Infrastructure</span>
-        </div>
-      </div>
+      )}
 
       <div className="absolute top-6 left-6 text-[10px] font-black uppercase tracking-[0.2em] text-primary bg-primary/10 px-3 py-1.5 flex items-center gap-2.5 rounded-lg border border-primary/20 backdrop-blur-xl pointer-events-none shadow-lg">
         <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(112,93,232,0.8)]" />

@@ -1,3 +1,27 @@
+# System Design Learning Platform
+
+This platform is a high-fidelity, interactive system design learning tool built with React, TypeScript, and Vite.
+
+## 🏆 Project Golden Rules
+
+To maintain the quality and consistency of this platform, the following rules MUST be followed without exception:
+
+1.  **Unified Visualization**: **React Flow** is the mandatory engine for ALL architecture diagrams and visualizations. Do not use generic CSS or SVG for diagrams.
+2.  **Strict Testing Policy**:
+    - **No Automated Tests**: Never write unit tests (Vitest) or E2E tests (Playwright) unless explicitly asked by the USER.
+    - **No Browser Control**: Never use the Antigravity browser control or manual testing tools unless explicitly asked.
+3.  **Maximum Reusability**: Actively reuse nodes (`ServiceNode`, etc.), edges, and global CSS utilities. Do not duplicate code across different topics.
+4.  **Premium Aesthetics**: Maintain the Linear-inspired glassmorphism design across all components.
+
+## 🎓 Content & UX Standards
+
+1.  **Beginner-Friendly Tone**: Use simplified language and analogies. "Explain like I'm five" for the base concept.
+2.  **Self-Explanatory Diagrams**: Architecture must be visually logical without needing a manual.
+3.  **Strict Point Limits**: 4 to 6 points MAX for Tradeoffs, Q&A, and Summaries. No more, no less.
+4.  **Simple Real-World Context**: Connect every complex system to a simple app the user knows.
+
+---
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
