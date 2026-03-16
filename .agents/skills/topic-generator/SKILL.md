@@ -1,3 +1,8 @@
+---
+name: Topic Generator
+description: Guidelines for generating new educational topics and case studies for the platform.
+---
+
 ## 🏆 Pedagogical Golden Rules (CRITICAL)
 1. **Beginner First**: All explanations MUST use simple analogies and avoid jargon where possible. If a technical term is used, explain it immediately.
 2. **Self-Explaining Visuals**: All React Flow diagrams and simulations must be intuitive. Use labels, clear colors, and logical positioning so a beginner can understand the flow at a glance.
