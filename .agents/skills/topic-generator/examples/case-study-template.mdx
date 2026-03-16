@@ -15,6 +15,29 @@ diagramId: "system-slug-arch"
 
 2-3 beginner-friendly sentences explaining what this system does and why it matters at scale.
 
+## Why This Matters & Prerequisites
+
+<!-- 🟢 BEGINNER LAYER — ensures newcomers have enough context before diving in -->
+
+### Why This Matters
+Explain in 2-3 paragraphs WHY this system exists in the real world:
+- What problem does it solve for businesses and users?
+- What happens WITHOUT this system? (paint the pain)
+- Which companies rely heavily on this? (concrete examples)
+
+### Who Should Read This
+- **Beginners**: You'll learn the fundamentals of [core concepts]. No prior system design experience needed.
+- **Intermediate**: You'll deepen your understanding of [specific patterns] and practice capacity estimation.
+- **Advanced**: You'll explore production failure scenarios, scaling edge cases, and interview-ready depth.
+
+### Prerequisites
+Before reading this case study, make sure you're comfortable with:
+- [Concept 1](/topics/concept-1) — Brief explanation of why it's needed here
+- [Concept 2](/topics/concept-2) — Brief explanation
+- [Concept 3](/topics/concept-3) — Brief explanation
+
+> **💡 New to system design?** Start with our [Fundamentals](/fundamentals) track first. This case study builds on those concepts.
+
 ## Requirements
 
 ### Functional Requirements
@@ -123,6 +146,47 @@ analytics (
 - Replication setup (sync/async, read replicas)
 - Hot spot mitigation
 
+## Implementation Patterns
+
+<!-- 🟡 INTERMEDIATE LAYER — actual code examples for hands-on learners -->
+
+### Core Implementation
+
+<KnowledgeSnippet title="[Algorithm/Pattern] Implementation" language="typescript">
+```typescript
+// Example: Core algorithm implementation
+// Show the key logic in clean, readable code
+// Include comments explaining WHY, not just WHAT
+
+async function coreOperation(input: Input): Promise<Output> {
+  // Step 1: Validate input
+  // Step 2: Core logic
+  // Step 3: Persist result
+  // Step 4: Update cache
+}
+```
+</KnowledgeSnippet>
+
+### Key Integration Code
+
+<KnowledgeSnippet title="Redis / Database Integration" language="typescript">
+```typescript
+// Example: How to integrate with Redis/DB
+// Show connection setup, error handling, and best practices
+
+// Redis Lua script for atomic operations (if applicable)
+const luaScript = `
+  local current = redis.call('INCR', KEYS[1])
+  if current == 1 then
+    redis.call('EXPIRE', KEYS[1], ARGV[1])
+  end
+  return current
+`;
+```
+</KnowledgeSnippet>
+
+> **💡 Language note**: Examples are in TypeScript/Node.js for readability. The same patterns apply to Python, Go, Java, etc.
+
 ## Scaling Strategy
 
 ### Stage 1: 0 → 10K Users
@@ -146,6 +210,31 @@ analytics (
 - Global load balancing
 - Dedicated analytics pipeline
 - Feature flags for gradual rollouts
+
+## Failure Scenarios & Production Considerations
+
+<!-- 🔴 ADVANCED LAYER — what breaks in production and how real systems handle it -->
+
+### What Can Go Wrong?
+
+| Failure | Impact | Mitigation |
+|---|---|---|
+| Cache layer goes down | All requests hit DB → potential overload | Circuit breaker on cache, fail open, DB can handle 10x burst for 5 min |
+| Database primary fails | Writes unavailable | Auto-failover to replica (< 30s), promote replica to primary |
+| Network partition | Split-brain risk in distributed components | Quorum-based writes, conflict resolution strategy |
+| Sudden traffic spike (10x) | Service degradation, timeouts | Auto-scaling, rate limiting, load shedding, circuit breakers |
+
+### Production Monitoring
+- **Key metrics to watch**: p99 latency, error rate, cache hit rate, DB connection pool usage, queue depth
+- **Alert thresholds**: Error rate > 1% for 2 min, p99 > 500ms for 5 min, cache hit rate < 70%
+- **Runbooks**: Document the top 5 incident types and their resolution steps
+
+### How Real Systems Differ
+> **⚠️ Simplification disclaimer**: Our design is a clean, interview-ready version. Real production systems at [Company] differ:
+- Real system has [additional component] for [reason]
+- Real system uses [custom technology] instead of [generic option] because [reason]
+- Real system handles [edge case] that we simplified away
+- At scale, [unexpected challenge] becomes the dominant concern
 
 ## System Flows (Interactive)
 
