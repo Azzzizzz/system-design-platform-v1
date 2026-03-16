@@ -38,22 +38,26 @@ For topics in categories 1–5 (Fundamentals, Scaling, Databases, Messaging, Pat
 12. **## Key Takeaways:** A `<KeyTakeaways items={[...]} />` with 3–5 revision bullets.
 13. **## Related Topics:** A `<RelatedTopics slugs={[...]} />` linking to connected concepts.
 
-## 4. Case Study Schema (Separate Template)
+## 4. Case Study Schema (Enhanced Template — 15 Sections)
 
 For topics in the `case-studies` category, use this structure instead:
 
-1.  **Frontmatter (YAML):** Same as standard.
-2.  **## Requirements:** Functional and non-functional requirements.
-3.  **## Capacity Estimation:** Read/write ratio, storage, bandwidth calculations.
-4.  **## API Design:** Endpoint signatures and auth approach.
-5.  **## Data Model:** Schema design with database selection rationale.
-6.  **## High-Level Architecture:** `<ArchitectureCanvas configId="[diagramId]" />`
-7.  **## Read & Write Paths:** Step-by-step creation and retrieval flows.
-8.  **## Deep Dives:** Caching, scaling, and key algorithmic decisions.
-9.  **## Tradeoffs & Decisions:** `<TradeoffCard pros={[...]} cons={[...]} />`
-10. **## Interview Answer Template:** `<InterviewAnswer>` with structured answer.
-11. **## Key Takeaways:** `<KeyTakeaways items={[...]} />`
-12. **## Related Topics:** `<RelatedTopics slugs={[...]} />`
+1.  **Frontmatter (YAML):** Same as standard + difficulty must be `easy`, `medium`, or `hard`.
+2.  **## Introduction:** Real-world analogy + 2-3 beginner-friendly sentences.
+3.  **## Requirements:** Functional (4-5 items) and non-functional (latency, availability, scale, security).
+4.  **## Capacity Estimation:** Table with Read/Write ratio, QPS, storage, bandwidth. Include back-of-envelope reasoning.
+5.  **## API Design:** Endpoint signatures with auth approach, versioning, and design rationale.
+6.  **## Data Model:** Schema design with database selection rationale (SQL vs NoSQL).
+7.  **## High-Level Architecture:** `<ArchitectureCanvas configId="[diagramId]" />` with React Flow.
+8.  **## Read & Write Paths:** Step-by-step creation and retrieval flows.
+9.  **## Deep Dives:** Key algorithm, caching strategy, and database scaling decisions.
+10. **## Scaling Strategy:** 4-stage growth plan (0→10K, 10K→1M, 1M→100M, 100M→1B users).
+11. **## System Flows (Interactive):** `<SimulationEmbed>` or enriched ArchitectureCanvas showing key flow in action.
+12. **## Tradeoffs & Decisions:** `<TradeoffCard pros={[...]} cons={[...]} />` (4-6 points each).
+13. **## Common Questions (FAQ):** `<FAQAccordion>` with 4-6 questions.
+14. **## Interview Answer Template:** `<InterviewAnswer>` with 5-point structured answer.
+15. **## Key Takeaways:** `<KeyTakeaways items={[...]}/>` with 4-6 bullets.
+16. **## Related Topics:** `<RelatedTopics slugs={[...]} />` cross-links.
 
 ## 5. Content Reference
 

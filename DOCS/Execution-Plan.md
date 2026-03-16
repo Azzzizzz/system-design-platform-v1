@@ -219,25 +219,56 @@ Each topic must meet the following criteria before being marked as complete:
 
 ## Phase 5: Case Studies Sprint
 
-**Goal:** Complete all 6 case studies using the separate case study MDX template.
+**Goal:** Complete 16 case studies (4 Easy · 5 Medium · 7 Hard) using the enhanced case study MDX template.
 
 ### Execution
 
-| # | Topic | Content File |
-|---|---|---|
-| 5.1 | URL Shortener | `src/content/case-studies/url-shortener.mdx` |
-| 5.2 | WhatsApp | `src/content/case-studies/whatsapp.mdx` |
-| 5.3 | Uber | `src/content/case-studies/uber.mdx` |
-| 5.4 | Netflix | `src/content/case-studies/netflix.mdx` |
-| 5.5 | YouTube | `src/content/case-studies/youtube.mdx` |
-| 5.6 | Amazon | `src/content/case-studies/amazon.mdx` |
+#### Easy (⭐ Foundational)
+
+| # | Topic | Unique Concepts | Content File |
+|---|---|---|---|
+| 5.1 | URL Shortener | Hashing, base62, redirect, analytics | `src/content/case-studies/url-shortener.mdx` |
+| 5.2 | Rate Limiter Service | Token bucket, sliding window, Redis | `src/content/case-studies/rate-limiter.mdx` |
+| 5.3 | Distributed Cache | Eviction policies, consistent hashing, cache coherence | `src/content/case-studies/distributed-cache.mdx` |
+| 5.4 | Logging / Metrics Pipeline | Kafka ingestion, aggregation, time-series DB | `src/content/case-studies/logging-metrics-pipeline.mdx` |
+
+#### Medium (⭐⭐ Multi-Component)
+
+| # | Topic | Unique Concepts | Content File |
+|---|---|---|---|
+| 5.5 | Twitter/X (News Feed) | Fan-out, timelines, celebrity problem, caching | `src/content/case-studies/twitter-news-feed.mdx` |
+| 5.6 | Notification System | Multi-channel (push/SMS/email), priority queues | `src/content/case-studies/notification-system.mdx` |
+| 5.7 | Instagram | Image processing, CDN, feed ranking, stories | `src/content/case-studies/instagram.mdx` |
+| 5.8 | Chat System (Slack/Discord) | WebSocket, channels, presence, message persistence | `src/content/case-studies/chat-system.mdx` |
+| 5.9 | Web Crawler | URL frontier, BFS crawling, politeness, dedup | `src/content/case-studies/web-crawler.mdx` |
+
+#### Hard (⭐⭐⭐ Full-Scale Distributed)
+
+| # | Topic | Unique Concepts | Content File |
+|---|---|---|---|
+| 5.10 | WhatsApp | E2E encryption, delivery guarantees, group chat | `src/content/case-studies/whatsapp.mdx` |
+| 5.11 | Uber | Geospatial (QuadTree), matching, surge pricing | `src/content/case-studies/uber.mdx` |
+| 5.12 | YouTube | User-generated content, transcoding, live streaming | `src/content/case-studies/youtube.mdx` |
+| 5.13 | Netflix | Adaptive bitrate, CDN, recommendation engine | `src/content/case-studies/netflix.mdx` |
+| 5.14 | Zoom / Google Meet | WebRTC, SFU/MCU, recording, screen sharing | `src/content/case-studies/zoom-google-meet.mdx` |
+| 5.15 | Google Drive / Dropbox | File sync, chunking, conflict resolution, versioning | `src/content/case-studies/google-drive.mdx` |
+| 5.16 | Amazon (E-Commerce) | Full-stack: search, cart, payments, inventory — Capstone | `src/content/case-studies/amazon.mdx` |
+
+### New Components Built
+
+| Component | Purpose |
+|---|---|
+| `CapacityEstimationCard.tsx` | Visual capacity calculation (reads, writes, storage, bandwidth) |
+| Enhanced Case Study Template | 15-section template with Scaling Strategy, System Flows, and FAQ |
 
 ### Verification
 
-- [ ] All 6 case studies render using the case study template
+- [ ] All 16 case studies render using the enhanced case study template
 - [ ] Each has: Requirements, Capacity Estimation, API Design, Data Model, Architecture Diagram
-- [ ] Architecture diagrams are interactive and match Linear aesthetic
-- [ ] All 28/28 topics complete
+- [ ] Each has: Read/Write Paths, Deep Dives, Scaling Strategy, System Flows (interactive)
+- [ ] Architecture diagrams are interactive React Flow with reusable nodes
+- [ ] Difficulty progression flows naturally (Easy → Medium → Hard)
+- [ ] All topics complete (Phases 1-4: 28 conceptual + Phase 5: 16 case studies = 44 total)
 
 ---
 

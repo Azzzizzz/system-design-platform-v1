@@ -1,139 +1,227 @@
 ---
-title: "URL Shortener"
-slug: "url-shortener"
+title: "System Name"
+slug: "system-slug"
 category: "case-studies"
-difficulty: "medium"
+difficulty: "easy" # easy | medium | hard
 order: 1
-tags: ["hashing", "caching", "api-design", "database"]
-relatedTopics: ["caching-strategies", "database-sharding"]
-diagramId: "url-shortener-arch"
+tags: ["tag1", "tag2", "tag3"]
+relatedTopics: ["related-slug-1", "related-slug-2"]
+diagramId: "system-slug-arch"
 ---
+
+## Introduction
+
+> **"Real-world analogy"** — One-sentence comparison that makes the system instantly relatable.
+
+2-3 beginner-friendly sentences explaining what this system does and why it matters at scale.
 
 ## Requirements
 
 ### Functional Requirements
-- Given a long URL, generate a unique short URL
-- Redirect a short URL to the original long URL
-- Allow users to set a custom alias (optional)
-- Set a TTL / expiration on short URLs (optional)
+1. Core feature 1 (e.g., Given a long URL, generate a unique short URL)
+2. Core feature 2
+3. Core feature 3
+4. Optional feature (nice-to-have)
 
 ### Non-Functional Requirements
-- Low latency redirects (< 100ms p99)
-- High availability (99.99% uptime)
-- Short URLs should not be guessable (no sequential IDs)
-- System should handle 100M+ URLs
+1. **Latency**: Target p99 latency (e.g., < 100ms)
+2. **Availability**: Target uptime (e.g., 99.99%)
+3. **Scale**: Target scale (e.g., 100M+ records)
+4. **Security**: Key security requirements (e.g., no guessable IDs)
 
 ## Capacity Estimation
-- **Read:Write ratio:** ~100:1 (reads dominate)
-- **Writes per second:** ~1,000 new URLs/sec
-- **Reads per second:** ~100,000 redirects/sec
-- **Storage (5 years):** ~15 TB assuming 500 bytes per record
-- **Bandwidth:** ~50 MB/s for reads
+
+| Metric | Value | Calculation |
+|---|---|---|
+| Read:Write Ratio | ~100:1 | Reads dominate |
+| Writes/sec | ~1,000 | 86M writes/day |
+| Reads/sec | ~100,000 | 100x write rate |
+| Storage (5 years) | ~15 TB | 86M × 500 bytes × 365 × 5 |
+| Bandwidth (reads) | ~50 MB/s | 100K × 500 bytes |
+
+> **💡 Back-of-envelope tip**: Always start with daily active users → requests/day → requests/sec. Then multiply by record size for storage.
 
 ## API Design
 
 ```
-POST /api/v1/shorten
-  Body: { url: string, customAlias?: string, ttl?: number }
-  Response: { shortUrl: string, expiresAt: string }
+POST /api/v1/resource
+  Headers: Authorization: Bearer <token>
+  Body: { field1: string, field2?: number }
+  Response: 201 { id: string, createdAt: string }
 
-GET /:shortCode
-  Response: 301 Redirect to original URL
+GET /api/v1/resource/:id
+  Response: 200 { ...resourceData }
+
+DELETE /api/v1/resource/:id
+  Response: 204 No Content
 ```
+
+> **Design decisions**: RESTful vs GraphQL rationale. Auth approach (JWT, API Keys, OAuth). Rate limiting headers.
 
 ## Data Model
 
 ```sql
-urls (
+-- Primary table
+resources (
   id          BIGINT PRIMARY KEY,
-  short_code  VARCHAR(8) UNIQUE INDEX,
-  original_url TEXT NOT NULL,
+  key_field   VARCHAR(8) UNIQUE INDEX,
+  data_field  TEXT NOT NULL,
   user_id     BIGINT,
-  created_at  TIMESTAMP,
+  created_at  TIMESTAMP DEFAULT NOW(),
   expires_at  TIMESTAMP,
-  click_count INT DEFAULT 0
+  metadata    JSONB
+)
+
+-- Supporting table (if needed)
+analytics (
+  id          BIGINT PRIMARY KEY,
+  resource_id BIGINT REFERENCES resources(id),
+  event_type  VARCHAR(50),
+  created_at  TIMESTAMP DEFAULT NOW()
 )
 ```
 
-**Database Choice:** NoSQL (e.g., DynamoDB) for simple key-value lookups at massive scale, or PostgreSQL with sharding for relational needs.
+**Database Choice**: Rationale for SQL vs NoSQL. Consider: query patterns, scale requirements, consistency needs, and operational complexity.
 
 ## High-Level Architecture
 
-<ArchitectureCanvas configId="url-shortener-arch" />
+<ArchitectureCanvas configId="system-slug-arch" />
+
+> This diagram should use React Flow with existing node types (ClientNode, ServiceNode, DatabaseNode, LoadBalancerNode, CacheNode, QueueNode). Every component should have descriptive sublabels.
 
 ## Read & Write Paths
 
-### Write Path (URL Creation)
-1. Client sends POST request with long URL
-2. API server generates short code (Base62 encoding of auto-increment ID or MD5 hash)
-3. Check for collision in DB
-4. Store mapping in database
-5. Return short URL to client
+### Write Path (Creation)
+1. Client sends request to API Gateway
+2. API Gateway authenticates and rate-limits
+3. Service validates input and generates unique identifier
+4. Data is written to primary database
+5. Cache is updated/invalidated
+6. Response returned to client
 
-### Read Path (Redirect)
-1. Client hits GET /:shortCode
-2. Check Redis cache first (cache-aside pattern)
+### Read Path (Retrieval)
+1. Client sends request to API Gateway
+2. Check cache first (cache-aside pattern)
 3. If cache miss → query database
-4. If found → populate cache, return 301 redirect
+4. If found → populate cache, return response
 5. If not found → return 404
 
 ## Deep Dives
 
-### URL Generation Strategy
-- **Base62 encoding:** Convert auto-increment ID to Base62 (a-z, A-Z, 0-9). 7 chars = 3.5 trillion unique URLs.
-- **MD5 hash:** Hash the URL, take first 7 characters. Handle collisions with retry or append.
+### Key Algorithm / Strategy
+- Explain the core algorithmic decision (e.g., Base62 encoding, QuadTree, fan-out strategy)
+- Show alternatives considered and why this was chosen
+- Complexity analysis: time and space
 
-### Caching
-- **Redis cache** for hot URLs (recently created or frequently accessed)
-- ~80% cache hit rate expected for popular URLs
-- TTL of 24h with LRU eviction
+### Caching Strategy
+- What to cache, cache key design, TTL policy
+- Expected hit rate and reasoning
+- Eviction strategy (LRU, LFU, etc.)
 
 ### Database Scaling
-- Shard by short_code hash for even distribution
-- Read replicas for redirect traffic
+- Sharding strategy (key, range, or hash-based)
+- Replication setup (sync/async, read replicas)
+- Hot spot mitigation
+
+## Scaling Strategy
+
+### Stage 1: 0 → 10K Users
+- Single server, single database
+- Local caching (in-memory)
+
+### Stage 2: 10K → 1M Users
+- Separate DB from application server
+- Add Redis cache layer
+- Introduce load balancer + 2-3 app servers
+- Read replicas for DB
+
+### Stage 3: 1M → 100M Users
+- Database sharding
+- CDN for static assets
+- Message queue for async processing
+- Microservices extraction for hot paths
+
+### Stage 4: 100M → 1B Users
+- Multi-region deployment
+- Global load balancing
+- Dedicated analytics pipeline
+- Feature flags for gradual rollouts
+
+## System Flows (Interactive)
+
+<SimulationEmbed type="system-slug-flow" />
+
+> This section should contain an interactive simulation or enriched ArchitectureCanvas showing the key system flow in action. Use animated edges, status changes, and user controls to make the flow self-explanatory.
+
+**Key flows to visualize:**
+1. Primary user flow (e.g., creating a short URL → redirect)
+2. Edge case flow (e.g., cache miss, failure scenario)
+3. Scaling flow (e.g., how a request routes across shards)
 
 ## Tradeoffs & Decisions
 
 <TradeoffCard
   pros={[
-    "Simple, fast reads with caching (sub-10ms redirects)",
-    "Horizontally scalable with sharding",
-    "Base62 gives compact, human-readable short codes"
+    "Tradeoff pro 1 — explain WHY it's beneficial",
+    "Tradeoff pro 2",
+    "Tradeoff pro 3",
+    "Tradeoff pro 4"
   ]}
   cons={[
-    "Hash collisions require detection and retry logic",
-    "Custom aliases add complexity to uniqueness checks",
-    "Expiration/cleanup requires background job infrastructure"
+    "Tradeoff con 1 — explain the cost",
+    "Tradeoff con 2",
+    "Tradeoff con 3",
+    "Tradeoff con 4"
   ]}
 />
+
+## Common Questions (FAQ)
+
+<FAQAccordion items={[
+  {
+    question: "Common interview clarification question 1?",
+    answer: "Detailed answer with reasoning."
+  },
+  {
+    question: "Common interview clarification question 2?",
+    answer: "Detailed answer with reasoning."
+  },
+  {
+    question: "Common interview clarification question 3?",
+    answer: "Detailed answer with reasoning."
+  },
+  {
+    question: "Common interview clarification question 4?",
+    answer: "Detailed answer with reasoning."
+  }
+]} />
 
 ## Interview Answer Template
 
 <InterviewAnswer>
-### Design a URL Shortener
+### Design [System Name]
 
-**1. Requirements:** Shorten URLs, redirect with low latency, handle 100M+ URLs, 99.99% availability.
+**1. Requirements & Scale:** Summarize functional + non-functional requirements and target scale.
 
-**2. API:** POST /shorten (create), GET /:code (redirect with 301).
+**2. API & Data Model:** Key endpoints, schema, and database choice with rationale.
 
-**3. Storage:** Key-value mapping (short_code → original_url). Use NoSQL or sharded SQL.
+**3. High-Level Architecture:** Walk through the major components and how they connect.
 
-**4. URL Generation:** Base62 encode an auto-increment counter. 7 chars supports 3.5T URLs.
+**4. Key Design Decisions:** The 2-3 most important architectural choices and their tradeoffs.
 
-**5. Optimization:** Redis cache for hot URLs (80% hit rate). Read replicas for DB scaling. Shard by short_code.
-
-**6. Tradeoffs:** Base62 vs MD5 (simplicity vs no sequential exposure), SQL vs NoSQL (joins vs scale), cache invalidation on URL deletion.
+**5. Scaling & Optimization:** How the system evolves from MVP to billion-user scale. Key optimizations (caching, sharding, CDN).
 </InterviewAnswer>
 
 ## Key Takeaways
 
 <KeyTakeaways items={[
-  "URL shorteners are read-heavy — optimize the redirect path with caching.",
-  "Base62 encoding of auto-increment IDs is the simplest, most scalable approach.",
-  "Always estimate capacity: storage, bandwidth, and QPS before designing.",
-  "Sharding by short_code ensures even distribution across database nodes."
+  "Takeaway 1 — the single most important insight from this case study.",
+  "Takeaway 2 — a key architectural pattern that applies broadly.",
+  "Takeaway 3 — a common mistake to avoid.",
+  "Takeaway 4 — how this connects to other system design topics.",
+  "Takeaway 5 — what interviewers are really looking for in this question."
 ]} />
 
 ## Related Topics
 
-<RelatedTopics slugs={["caching-strategies", "database-sharding", "indexing"]} />
+<RelatedTopics slugs={["related-concept-1", "related-concept-2", "related-concept-3"]} />
