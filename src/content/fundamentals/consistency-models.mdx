@@ -28,7 +28,7 @@ A middle ground where the system ensures that operations that are "causally rela
 ## Architecture & Components: PACELC
 Consistency models are the choice we make during both network failures and normal operations.
 
-<ArchitectureCanvas configId="load-balancer-flow" />
+<ArchitectureCanvas configId="consistency-models-flow" />
 
 - **Strong Consistency**: Prioritizes "C" (Consistency) over "L" (Latency) during normal operation.
 - **Eventual Consistency**: Prioritizes "L" (Latency) and "A" (Availability) over absolute correctness.
@@ -43,12 +43,14 @@ Use the toggle below to switch between Strong and Eventual consistency. Watch ho
   pros={[
     "Strong Consistency prevents double-spending and ensure trust",
     "Eventual Consistency enables massive scale (e.g. social media)",
-    "Causal Consistency provides a good balance for collaborative apps"
+    "Causal Consistency provides a good balance for collaborative apps",
+    "Consistent models simplify client-side conflict resolution"
   ]}
   cons={[
     "Strong Consistency can significantly increase request latency",
     "Eventual Consistency requires developers to handle conflicts",
-    "Stale reads can lead to confusing UX if not handled well"
+    "Stale reads can lead to confusing UX if not handled well",
+    "Causal models are difficult to implement correctly at scale"
   ]}
 />
 
@@ -76,6 +78,18 @@ Use **Strong Consistency** when data integrity is critical and the number of wri
   {
     question: "How do you resolve conflicts in eventual consistency?",
     answer: "Common strategies include 'Last Write Wins' (using timestamps), 'Vector Clocks', or 'CRDTs' which allow nodes to merge state mathematically without a central leader."
+  },
+  {
+    question: "What is 'Read-Your-Writes' consistency?",
+    answer: "It's a model where a user who just saved their profile immediately sees their own update upon refreshing, even if other users (using a regular read path) might still see the old version."
+  },
+  {
+    question: "Is Strong Consistency the same as 'Zero Latency'?",
+    answer: "No, quite the opposite. Strong consistency often increases latency because the system must wait for multiple replicas to confirm the data before responding to the user."
+  },
+  {
+    question: "What is Monotonic Read consistency?",
+    answer: "It guarantees that if a user reads data, any subsequent reads will return the same or a newer value. It prevents the 'time travel' bug where a user sees an update and then, on refresh, sees old data again."
   }
 ]} />
 

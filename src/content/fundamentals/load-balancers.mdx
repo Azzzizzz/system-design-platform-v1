@@ -85,6 +85,14 @@ Never deploy just one load balancer. Use **Active-Passive** pairs with a **Float
   {
     question: "When should I use Sticky Sessions?",
     answer: "Only for stateful applications. However, it is better to make your app stateless (using Redis for sessions) to allow better distribution."
+  },
+  {
+    question: "How does a health check know if a server is actually working?",
+    answer: "A good health check doesn't just check if the port is open; it hits a specific /health endpoint that verifies the database, cache, and other essential dependencies are reachable."
+  },
+  {
+    question: "Can I load balance without an IP address?",
+    answer: "Yes, using DNS-based load balancing (GSLB) or a Service Mesh like Istio, which routes traffic between services based on their service names rather than static IPs."
   }
 ]} />
 

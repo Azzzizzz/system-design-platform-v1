@@ -93,5 +93,34 @@ export const diagramConfigs: Record<string, DiagramConfig> = {
       { ...defaultEdge("e-h-lb-s2", "h-lb", "h-s2", true), sourceHandle: "right", targetHandle: "left" },
       { ...defaultEdge("e-h-lb-s3", "h-lb", "h-s3", true), sourceHandle: "right", targetHandle: "left" },
     ]
+  },
+  "cap-theorem-flow": {
+    id: "cap-theorem-flow",
+    nodes: [
+      { id: "client", type: "client", position: { x: 50, y: 150 }, data: { label: "User App", sublabel: "Making Request", status: "healthy" } },
+      { id: "node-a", type: "service", position: { x: 400, y: 50 }, data: { label: "Storage Node A", status: "healthy" } },
+      { id: "node-b", type: "service", position: { x: 400, y: 250 }, data: { label: "Storage Node B", status: "healthy" } },
+      { id: "node-c", type: "service", position: { x: 750, y: 150 }, data: { label: "Isolated Node C", status: "down" } },
+    ],
+    edges: [
+      { ...defaultEdge("e-c-a", "client", "node-a", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-c-b", "client", "node-b", true), sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-a-b", "node-a", "node-b", true), sourceHandle: "bottom", targetHandle: "top" },
+      { ...defaultEdge("e-b-c", "node-b", "node-c", false), label: "Network Partition", sourceHandle: "right", targetHandle: "left" },
+    ]
+  },
+  "consistency-models-flow": {
+    id: "consistency-models-flow",
+    nodes: [
+      { id: "client", type: "client", position: { x: 50, y: 150 }, data: { label: "Client", status: "healthy" } },
+      { id: "leader", type: "service", position: { x: 400, y: 150 }, data: { label: "Primary (Leader)", sublabel: "Writes Go Here", status: "healthy" } },
+      { id: "follower1", type: "service", position: { x: 750, y: 50 }, data: { label: "Replica 1", sublabel: "Strong Sync", status: "healthy" } },
+      { id: "follower2", type: "service", position: { x: 750, y: 250 }, data: { label: "Replica 2", sublabel: "Eventual Lag", status: "healthy" } },
+    ],
+    edges: [
+      { ...defaultEdge("e-c-l", "client", "leader", true), label: "Write Request", sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-l-f1", "leader", "follower1", true), label: "Sync Replication", sourceHandle: "right", targetHandle: "left" },
+      { ...defaultEdge("e-l-f2", "leader", "follower2", true), label: "Async Propagation", sourceHandle: "right", targetHandle: "left", data: { active: true, label: "Lagging..." } },
+    ]
   }
 };

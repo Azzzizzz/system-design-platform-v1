@@ -48,12 +48,14 @@ Adjust the sliders below to see how Latency (speed of travel) and Throughput (fr
   pros={[
     "Optimizing latency improves user-perceived speed and responsiveness",
     "Optimizing throughput allows the system to handle more concurrent users",
-    "Monitoring both helps identify bottlenecks before they cause outages"
+    "Monitoring both helps identify bottlenecks before they cause outages",
+    "Optimizing throughput reduces the number of server instances needed"
   ]}
   cons={[
     "Lowering latency often requires expensive hardware or simpler features",
     "Increasing throughput can increase latency if the system becomes congested",
-    "There is often a 'threshold' where increasing throughput causes latency to spike"
+    "There is often a 'threshold' where increasing throughput causes latency to spike",
+    "Excessive batching (to help throughput) can kill real-time latency"
   ]}
 />
 
@@ -88,6 +90,14 @@ In every system, there is a point where increasing **Throughput** causes **Laten
   {
     question: "Which one is more important for APIs?",
     answer: "It depends. For a search-as-you-type API, Latency is critical. For a bulk data export API, Throughput is the priority."
+  },
+  {
+    question: "Does adding more servers always increase throughput?",
+    answer: "Only if the system is designed to scale horizontally. If there's a shared resource like a single database lock, adding more servers might actually decrease throughput due to contention."
+  },
+  {
+    question: "What is the 'Bandwidth-Delay Product'?",
+    answer: "It's the product of throughput (bandwidth) and latency (delay). It identifies the maximum amount of data that can be 'in flight' on the network at any given time."
   }
 ]} />
 

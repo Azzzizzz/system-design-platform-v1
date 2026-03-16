@@ -60,7 +60,7 @@ export const FAQAccordion: React.FC<FAQAccordionProps> = ({ items }) => {
                 >
                   <div className="px-11 pb-5 pt-0">
                     <div className="h-px w-full bg-white/[0.05] mb-4" />
-                    <div className="text-sm leading-relaxed text-white/50 bg-gradient-to-r from-white/60 to-white/40 bg-clip-text text-transparent">
+                    <div className="text-sm leading-relaxed bg-gradient-to-r from-white/60 to-white/40 bg-clip-text text-transparent">
                       {item.answer}
                     </div>
                   </div>

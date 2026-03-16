@@ -99,6 +99,14 @@ In a distributed system, two gateways might check a counter simultaneously. To s
   {
     question: "Can rate limiting be used for monetization?",
     answer: "Yes, it is the primary mechanism for 'Tiered Pricing'. You can allow 1,000 requests/month for free users and 1,000,000 for enterprise users by using their API key as the rate-limiting identifier."
+  },
+  {
+    question: "What is 'Throttling' vs 'Rate Limiting'?",
+    answer: "Rate limiting is a hard cap (e.g., 60 req/min). Throttling is a dynamic adjustment of speed based on system health—like slowing down traffic because the database is getting too hot."
+  },
+  {
+    question: "How do I test my rate limits without getting banned?",
+    answer: "Use staging environments or custom 'Test API Keys' that have higher limits. Many systems also support a 'Dry Run' mode where the rate limiter logs what it WOULD have blocked without actually dropping traffic."
   }
 ]} />
 

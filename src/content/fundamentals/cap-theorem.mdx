@@ -6,6 +6,7 @@ difficulty: "medium"
 order: 2
 tags: ["distributed-systems", "theory", "fundamentals"]
 relatedTopics: ["consistency-models", "load-balancers"]
+diagramId: "cap-theorem-flow"
 ---
 
 ## Introduction
@@ -28,7 +29,7 @@ The system continues to operate despite an arbitrary number of messages being dr
 ## Architecture & Components
 CAP is a fundamental property of how nodes communicate. Modern systems are designed to handle "Network Partitions" by choosing a side of the triangle.
 
-<ArchitectureCanvas configId="load-balancer-flow" />
+<ArchitectureCanvas configId="cap-theorem-flow" />
 
 - **CP (Consistency + Partition Tolerance)**: When a partition happens, the system shuts down or returns errors to ensure data remains consistent.
 - **AP (Availability + Partition Tolerance)**: When a partition happens, nodes keep serving requests, but they risk returning old data.
@@ -43,12 +44,14 @@ The CAP Theorem is often visualized as a triangle. Pick an edge between two prop
   pros={[
     "Provides a clear framework for database selection",
     "Forces architects to consider failure modes early",
-    "Categorizes complex systems into understandable profiles"
+    "Categorizes complex systems into understandable profiles",
+    "Helps define clear SLAs for data integrity and uptime"
   ]}
   cons={[
     "Over-simplifies reality: C and A are often a spectrum",
     "Does not account for Latency (see PACELC)",
-    "The 'CA' category is impossible in true distributed systems"
+    "The 'CA' category is impossible in true distributed systems",
+    "Focuses ONLY on network partitions, ignoring other failure types"
   ]}
 />
 
@@ -76,6 +79,18 @@ If your business logic requires **exactness** (e.g., Inventory counts, Payments)
   {
     question: "Why is CA considered a myth?",
     answer: "Because network partitions are inevitable in distributed systems. If you claim to be CA, you have no strategy for when nodes can't talk to each other. You will be forced to choose C or A at runtime anyway."
+  },
+  {
+    question: "Can a system change its CAP profile at runtime?",
+    answer: "Yes. Some advanced databases allow you to set consistency levels per-query. You might choose CP for payments and AP for user comments within the same database engine."
+  },
+  {
+    question: "What is Quorum in a CP system?",
+    answer: "Quorum is the minimum number of nodes that must agree on a operation. In a CP system, you typically need (N/2 + 1) nodes online to maintain consistency during a partition."
+  },
+  {
+    question: "How does CAP relate to ACID?",
+    answer: "ACID is about local database transactions. CAP is about distributed data. A 'Consistent' write in CAP means all nodes see the same data; 'Consistency' in ACID means the database follows predefined rules like schema constraints."
   }
 ]} />
 
