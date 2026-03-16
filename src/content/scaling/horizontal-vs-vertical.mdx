@@ -35,16 +35,16 @@ Use the interactive tool below to see the impact of scaling. Watch how a single 
 <SimulationEmbed type="scaling-comparison" />
 
 ## Tradeoffs
-<TradeoffCard 
-  pros={[
     "Simple - No architectural changes needed",
     "Low network latency (processes stay on one box)",
-    "Consistent data (no distributed state to sync)"
+    "Consistent data (no distributed state to sync)",
+    "Ideal for monolithic apps or early-stage development"
   ]} 
   cons={[
     "Hard hardware limits (Ceiling)",
     "Single Point of Failure (SPOF)",
-    "Downtime usually required for upgrades"
+    "Downtime usually required for upgrades",
+    "Costs increase exponentially at the high end of hardware specs"
   ]} 
 />
 
@@ -70,6 +70,14 @@ Standard practice is to scale **vertically** as far as it is cost-effective (avo
   { 
     question: "Which is cheaper?", 
     answer: "Initially, vertical is cheaper due to lower engineering overhead. At massive scale, horizontal is cheaper because it uses commodity hardware rather than specialized, ultra-high-end components." 
+  },
+  { 
+    question: "How does 'Auto-scaling' fit in?", 
+    answer: "Auto-scaling is most effective with horizontal scaling. The system can automatically add or remove nodes based on CPU/RAM usage, ensuring you only pay for what you use." 
+  },
+  { 
+    question: "What is 'Statelessness' in scaling?", 
+    answer: "For horizontal scaling to work, servers should not store user data (sessions) locally. If Node A fails, Node B should be able to process the request without needing local state from Node A." 
   }
 ]} />
 
