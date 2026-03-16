@@ -135,9 +135,9 @@ Each topic must meet the following criteria before being marked as complete:
 ### Verification
 
 - [x] All 5 Fundamentals topics accessible and rendering correctly
-- [x] Each topic has a working diagram
+- [x] Each topic has a working diagram (CAP/Consistency now have dedicated configs)
 - [x] Rate Limiting simulation works (token bucket fill/drain)
-- [x] Related Topics links between Fundamentals topics work
+- [x] Pedagogical Alignment: All sections have 4-6 points (Q&A/Tradeoffs)
 - [x] No regressions on Load Balancers page
 
 ---
@@ -151,8 +151,9 @@ Each topic must meet the following criteria before being marked as complete:
 | # | Topic | New Infra Needed | Content File | Status |
 |---|---|---|---|---|
 | 3.1 | Horizontal vs Vertical | Scaling comparison viz | `src/content/scaling/horizontal-vs-vertical.mdx` | ✅ |
-| 3.2 | Database Sharding | Hash ring viz, `QueueNode` | `src/content/scaling/database-sharding.mdx` | [ ] |
-| 3.3 | Database Replication | `ReplicationEdge`, leader-follower anim | `src/content/scaling/database-replication.mdx` | [ ] |
+| 3.2 | Consistent Hashing | Interactive Hash Ring | `src/content/scaling/consistent-hashing.mdx` | ✅ |
+| 3.3 | Database Sharding | Hash ring viz, `QueueNode` | `src/content/scaling/database-sharding.mdx` | [ ] |
+| 3.4 | Database Replication | `ReplicationEdge`, leader-follower anim | `src/content/scaling/database-replication.mdx` | [ ] |
 | 3.4 | Caching Strategies | `CacheNode`, `CacheFlowSim.tsx` | `src/content/scaling/caching-strategies.mdx` | [ ] |
 | 3.5 | Indexing | B-tree traversal viz | `src/content/databases/indexing.mdx` | [ ] |
 | 3.6 | Partitioning | Partition routing viz | `src/content/databases/partitioning.mdx` | [ ] |
