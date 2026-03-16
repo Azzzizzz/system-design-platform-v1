@@ -767,6 +767,18 @@ INSERT INTO metrics_1m
 - **1M→100M:** Multi-topic Kafka, partitioned by service. Elasticsearch cluster with hot/warm/cold tiers. S3 archival
 - **100M→1B:** Multi-region Kafka + Elasticsearch per DC. Centralized Grafana with federation. Automated log sampling (only store 10% of debug logs)
 
+### Failure Scenarios & Production Considerations
+| Failure | Impact | Mitigation |
+|---|---|---|
+| Kafka cluster down | Logs buffered locally on app servers, risk of loss | Local file buffer (rotate after 1GB). App continues serving. Replay when Kafka recovers |
+| Elasticsearch overloaded | Logs queue up in Kafka (increasing lag) | Kafka retains logs for 7 days. Scale ES cluster or enable sampling |
+| Alert engine false positive | On-call woken up unnecessarily | Add "for" duration to rules ("error > 5% FOR 2 minutes"). Review alert fatigue metrics |
+| Disk full on log node | Node stops indexing, data loss | Monitor disk usage. Hot/warm/cold tiering. Alert at 80% capacity |
+| Log volume spike (incident) | 10x normal volume during outage | Dynamic sampling: increase sampling rate for DEBUG/INFO during spikes. Always keep 100% of ERROR |
+
+**Production Monitoring:** Kafka consumer lag, ES indexing rate, storage usage per tier, alert noise ratio
+**How Netflix/Uber Differ:** Netflix processes 1+ PB of logs/day using custom pipelines. They use Kafka → Apache Druid for real-time analytics and a separate pipeline for batch processing. Uber uses Jaeger for distributed tracing integrated with their logging pipeline.
+
 ### System Flows (Interactive)
 Use `<ArchitectureCanvas>` with **event trigger**:
 - **"Generate Error" button** → animates a log flowing from Service A → Kafka → Processor → Elasticsearch AND → Alert Engine → Slack notification
