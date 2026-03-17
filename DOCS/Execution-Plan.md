@@ -219,7 +219,7 @@ Each topic must meet the following criteria before being marked as complete:
 
 ## Phase 5: Case Studies Sprint
 
-**Goal:** Complete 16 case studies (4 Easy · 5 Medium · 7 Hard) using the enhanced case study MDX template.
+**Goal:** Complete 18 case studies (4 Easy · 5 Medium · 9 Hard) using the enhanced 18-section case study MDX template.
 
 ### Execution
 
@@ -242,33 +242,39 @@ Each topic must meet the following criteria before being marked as complete:
 | 5.8 | Chat System (Slack/Discord) | WebSocket, channels, presence, message persistence | `src/content/case-studies/chat-system.mdx` |
 | 5.9 | Web Crawler | URL frontier, BFS crawling, politeness, dedup | `src/content/case-studies/web-crawler.mdx` |
 
-#### Hard (⭐⭐⭐ Full-Scale Distributed)
+#### Hard (⭐⭐⭐ Full-Scale Distributed) — 3 Waves
 
-| # | Topic | Unique Concepts | Content File |
-|---|---|---|---|
-| 5.10 | WhatsApp | E2E encryption, delivery guarantees, group chat | `src/content/case-studies/whatsapp.mdx` |
-| 5.11 | Uber | Geospatial (QuadTree), matching, surge pricing | `src/content/case-studies/uber.mdx` |
-| 5.12 | YouTube | User-generated content, transcoding, live streaming | `src/content/case-studies/youtube.mdx` |
-| 5.13 | Netflix | Adaptive bitrate, CDN, recommendation engine | `src/content/case-studies/netflix.mdx` |
-| 5.14 | Zoom / Google Meet | WebRTC, SFU/MCU, recording, screen sharing | `src/content/case-studies/zoom-google-meet.mdx` |
-| 5.15 | Google Drive / Dropbox | File sync, chunking, conflict resolution, versioning | `src/content/case-studies/google-drive.mdx` |
-| 5.16 | Amazon (E-Commerce) | Full-stack: search, cart, payments, inventory — Capstone | `src/content/case-studies/amazon.mdx` |
+| # | Topic | Unique Concepts | Content File | Wave |
+|---|---|---|---|---|
+| 5.10 | WhatsApp | E2E encryption, delivery guarantees, group chat | `src/content/case-studies/whatsapp.mdx` | 1 |
+| 5.11 | Uber | Geospatial (QuadTree), matching, surge pricing | `src/content/case-studies/uber.mdx` | 1 |
+| 5.12 | YouTube | User-generated content, transcoding, live streaming | `src/content/case-studies/youtube.mdx` | 1 |
+| 5.13 | Netflix | Adaptive bitrate, CDN, recommendation engine | `src/content/case-studies/netflix.mdx` | 2 |
+| 5.14 | Zoom / Google Meet | WebRTC, SFU/MCU, recording, screen sharing | `src/content/case-studies/zoom-google-meet.mdx` | 2 |
+| 5.15 | Google Docs | Real-time collaboration, OT/CRDT, cursor sync | `src/content/case-studies/google-docs.mdx` | 2 |
+| 5.16 | Google Drive / Dropbox | File sync, chunking, conflict resolution, versioning | `src/content/case-studies/google-drive.mdx` | 3 |
+| 5.17 | Search Engine | Web indexing, ranking (PageRank), query processing | `src/content/case-studies/search-engine.mdx` | 3 |
+| 5.18 | Amazon (E-Commerce) | Full-stack: search, cart, payments, inventory — Capstone | `src/content/case-studies/amazon.mdx` | 3 |
 
 ### New Components Built
 
 | Component | Purpose |
 |---|---|
 | `CapacityEstimationCard.tsx` | Visual capacity calculation (reads, writes, storage, bandwidth) |
-| Enhanced Case Study Template | 15-section template with Scaling Strategy, System Flows, and FAQ |
+| Enhanced Case Study Template | 18-section template with layered content (Beginner → Advanced) |
+| `FeedFanoutSim` | Dual-lane fanout-on-write vs fanout-on-read comparison |
+| `PresenceDeliverySim` | Presence dots + delivery/read receipts + channel fallback |
+| `CrawlerFrontierSim` | URL frontier with politeness timers + Bloom filter dedup |
 
 ### Verification
 
-- [ ] All 16 case studies render using the enhanced case study template
-- [ ] Each has: Requirements, Capacity Estimation, API Design, Data Model, Architecture Diagram
-- [ ] Each has: Read/Write Paths, Deep Dives, Scaling Strategy, System Flows (interactive)
-- [ ] Architecture diagrams are interactive React Flow with reusable nodes
+- [ ] All 18 case studies render using the enhanced 18-section case study template
+- [ ] Each has: Introduction, Why This Matters, Requirements, Capacity, API, Data Model, Architecture
+- [ ] Each has: Read/Write Paths, Deep Dives, Implementation Patterns, Scaling Strategy
+- [ ] Each has: Failure Scenarios, System Flows (interactive), Tradeoffs, FAQ, Interview Notes, Takeaways, Related
+- [ ] Architecture diagrams are interactive React Flow with sublabeled nodes and animated edges
 - [ ] Difficulty progression flows naturally (Easy → Medium → Hard)
-- [ ] All topics complete (Phases 1-4: 28 conceptual + Phase 5: 16 case studies = 44 total)
+- [ ] All topics complete (Phases 1-4: 28 conceptual + Phase 5: 18 case studies = 46 total)
 
 ---
 
@@ -359,7 +365,7 @@ Phase 3  ▶ Scaling + Databases Sprint (+8 topics = 13 total)
 Phase 4  ▶ Messaging + Patterns Sprint (+9 topics = 22 total)
   │        🎯 Milestone: All concept topics done
   │
-Phase 5  ▶ Case Studies Sprint (+6 topics = 28 total)
+Phase 5  ▶ Case Studies Sprint (+18 topics = 40 total)
   │        🎯 Milestone: All content complete
   │
 Phase 6  ▶ UX Polish (search, progress, animations)

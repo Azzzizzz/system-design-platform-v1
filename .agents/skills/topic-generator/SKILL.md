@@ -82,4 +82,17 @@ Before writing content for any topic, consult `DOCS/SD-Plan.md` Section 5.3 (Ful
 
 Review the example templates in this skill's `examples` folder before generating any content:
 - `topic-template.mdx` — Standard 12-section topic
-- `case-study-template.mdx` — Case study topic
+## 6. Plan Synchronization Rule (MANDATORY)
+
+Whenever a change is made to a high-level planning document, all other synchronized plans **MUST** be updated immediately to maintain a single source of truth.
+
+**Primary Planning Documents:**
+- `DOCS/SD-Plan.md`: The technical vision and full topic roadmap.
+- `DOCS/Execution-Plan.md`: The phase-by-phase implementation strategy and counts.
+- `task.md` (Artifact): The current active sprint tracking.
+
+**Synchronization Workflow:**
+1. If the **number of topics** changes, update topic counts in `SD-Plan.md` and `Execution-Plan.md`.
+2. If a **template** changes (e.g., from 12 to 18 sections), update the schema definitions in `SKILL.md`, `SD-Plan.md`, and all active sprint plans.
+3. If a **feature** is added to the roadmap, ensure it is reflected in the phase breakdown of both `SD-Plan.md` and `Execution-Plan.md`.
+4. Always verify that difficulty labels and topic slugs are identical across all planning files.

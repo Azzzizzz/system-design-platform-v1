@@ -431,7 +431,30 @@ Crucial production details and senior-level insights.
 
 ### 5.2 Case Study MDX Schema (Separate Template)
 
-Case studies (topics 23–28) follow a **different template** that mirrors an actual system design interview answer structure:
+Case studies follow an **enhanced 18-section template** designed specifically for the System Design Interview (SDI) format. This template uses a layered approach (Beginner → Core → Advanced) to cater to all experience levels within a single page.
+
+| # | Section | Level | Purpose |
+|---|---|---|---|
+| 1 | **Introduction** | 🟢 | High-level analogy and simple hook |
+| 2 | **Why This Matters** | 🟢 | Relevance to real-world software and careers |
+| 3 | **Requirements** | 🟢 | Functional and Non-functional specifications |
+| 4 | **Capacity Estimation** | 🟡 | Data volume, storage, and throughput math |
+| 5 | **API Design** | 🟡 | Endpoint definitions and communication types |
+| 6 | **Data Model** | 🟡 | Schema design and Database choice rationale |
+| 7 | **Architecture Diagram** | 🟡 | Interactive React Flow system map |
+| 8 | **Read & Write Paths** | 🟡 | Step-by-step request/data lifecycle |
+| 9 | **Deep Dives** | 🔴 | Specific technical challenges (e.g., QuadTree, Sharding) |
+| 10| **Implementation Patterns**| 🔴 | Senior-level code snippets and best practices |
+| 11| **Scaling Strategy** | 🔴 | Phase-by-phase scaling (0 to 2B+ users) |
+| 12| **Failure Scenarios** | 🔴 | Resilience and production "Gotchas" table |
+| 13| **System Flows (Viz)** | 🟡 | Detailed interactive behavior simulation |
+| 14| **Tradeoffs** | 🔴 | Engineering compromises and decision logs |
+| 15| **FAQ** | 🟢 | Clarifying questions for common confusion |
+| 16| **Interview Notes** | 🟡 | Structured answer script for the interview |
+| 17| **Key Takeaways** | 🟢 | Minimalist summary for quick recall |
+| 18| **Related Topics** | 🟢 | Forward/back links to conceptual foundational topics |
+
+#### Case Study Template (18 Sections)
 
 ```mdx
 ---
@@ -550,16 +573,28 @@ Below is the detailed content outline for every topic. Each bullet maps to conte
 | 21 | **API Gateway** | Request routing, authentication, rate limiting, aggregation, cross-cutting concerns, gateway flow visualization |
 | 22 | **Service Discovery** | Client-side vs server-side, registry concepts, heartbeats, health checks, discovery flow visualization |
 
-#### Category 6: Case Studies
+#### Category 6: Case Studies (18 Topics)
 
-| # | Topic | Key Content Points |
-|---|---|---|
-| 23 | **URL Shortener** | Capacity estimation, API design, data model, URL generation strategy (Base62 vs MD5), read/write path, caching, DB scaling |
-| 24 | **WhatsApp** | Real-time messaging, WebSocket connections, message delivery pipeline, presence/status, storage, fan-out strategy |
-| 25 | **Uber** | Driver-rider matching, location updates, dispatch flow, real-time trip state, surge, event-driven components |
-| 26 | **Netflix** | CDN/edge delivery, content ingestion, recommendation overview, microservices, playback flow, caching/resilience |
-| 27 | **YouTube** | Upload flow, video storage, transcoding pipeline, metadata service, streaming delivery, CDN, recommendations |
-| 28 | **Amazon** | Product catalog, search, cart, order workflow, payment, inventory, notification flow, microservice decomposition |
+| # | Topic | Key Content Points | Difficulty |
+|---|---|---|---|
+| 23 | **URL Shortener** | Capacity estimation, base62, redirect flow, analytics | Easy |
+| 24 | **Rate Limiter Service**| Token bucket vs leaky bucket, Redis counters | Easy |
+| 25 | **Distributed Cache** | Eviction, consistent hashing, replication | Easy |
+| 26 | **Logging / Metrics** | Kafka ingestion, time-series DB, aggregation | Easy |
+| 27 | **Twitter (News Feed)** | Fan-out, timelines, pull vs push models | Medium |
+| 28 | **Notification System**| Push/SMS/Email, priority queues, retry logic | Medium |
+| 29 | **Instagram** | Image processing, storage, feed ranking | Medium |
+| 30 | **Chat System** | WebSockets, message persistence, presence | Medium |
+| 31 | **Web Crawler** | URL frontier, politeness, Bloom filter dedup | Medium |
+| 32 | **WhatsApp** | E2E encryption (Signal), delivery guarantees | Hard |
+| 33 | **Uber/Lyft** | Geospatial (QuadTree), matching, surge pricing | Hard |
+| 34 | **YouTube** | Upload flow, transcoding, CDN delivery | Hard |
+| 35 | **Netflix** | ABR streaming, CDN, recommendation engine | Hard |
+| 36 | **Zoom / GMeet** | WebRTC, media servers (SFU/MCU), recording | Hard |
+| 37 | **Google Docs** | Real-time collab, OT vs CRDT, cursor sync | Hard |
+| 38 | **Google Drive** | File sync, chunking, conflict resolution | Hard |
+| 39 | **Search Engine** | Web indexing, PageRank, query processing | Hard |
+| 40 | **Amazon (Capstone)** | Product, Search, Cart, Orders, Inventory | Hard |
 
 ---
 
@@ -631,12 +666,24 @@ export const topicTree: TopicCategory[] = [
     label: "Case Studies",
     icon: "Briefcase",
     topics: [
-      { slug: "url-shortener", label: "URL Shortener",  difficulty: "medium" },
-      { slug: "whatsapp",      label: "WhatsApp",       difficulty: "hard" },
-      { slug: "uber",          label: "Uber",           difficulty: "hard" },
-      { slug: "netflix",       label: "Netflix",        difficulty: "hard" },
-      { slug: "youtube",       label: "YouTube",        difficulty: "hard" },
-      { slug: "amazon",        label: "Amazon",         difficulty: "hard" },
+      { slug: "url-shortener",       label: "URL Shortener",        difficulty: "easy" },
+      { slug: "rate-limiter",        label: "Rate Limiter",         difficulty: "easy" },
+      { slug: "distributed-cache",   label: "Distributed Cache",    difficulty: "easy" },
+      { slug: "logging-metrics",     label: "Logging & Metrics",    difficulty: "easy" },
+      { slug: "twitter-news-feed",   label: "Twitter (News Feed)",  difficulty: "medium" },
+      { slug: "notification-system", label: "Notification System",  difficulty: "medium" },
+      { slug: "instagram",           label: "Instagram",            difficulty: "medium" },
+      { slug: "chat-system",         label: "Chat (Slack/Discord)", difficulty: "medium" },
+      { slug: "web-crawler",         label: "Web Crawler",          difficulty: "medium" },
+      { slug: "whatsapp",            label: "WhatsApp",             difficulty: "hard" },
+      { slug: "uber",                label: "Uber/Lyft",            difficulty: "hard" },
+      { slug: "youtube",             label: "YouTube",              difficulty: "hard" },
+      { slug: "netflix",             label: "Netflix",              difficulty: "hard" },
+      { slug: "zoom-google-meet",    label: "Zoom / Google Meet",   difficulty: "hard" },
+      { slug: "google-docs",         label: "Google Docs",          difficulty: "hard" },
+      { slug: "google-drive",        label: "Google Drive/Dropbox", difficulty: "hard" },
+      { slug: "search-engine",       label: "Search Engine",        difficulty: "hard" },
+      { slug: "amazon",              label: "Amazon (Capstone)",    difficulty: "hard" },
     ],
   },
 ];
@@ -894,16 +941,23 @@ SimulationProvider (Context)
 | API Gateway            | Request routing + auth + rate limiting             | ❌          |
 | Service Discovery      | Service registry with heartbeat pulses             | ❌          |
 
-### Phase 5 — Case Studies
+### Phase 5 — Case Studies (18 Topics)
 
-| Case Study   | Architecture                                          |
-| ------------ | ----------------------------------------------------- |
-| URL Shortener| Hash service → DB → redirect flow                    |
-| WhatsApp     | WebSocket gateway → message broker → delivery        |
-| Uber         | Location service → matching → trip flow              |
-| Netflix      | CDN → API Gateway → microservices → caching          |
-| YouTube      | Upload pipeline → transcoding → CDN → streaming     |
-| Amazon       | Cart → Order → Payment → Inventory → Shipping       |
+| #  | Topic | Complexity | Simulation |
+|----|---|---|---|
+| 5.1| URL Shortener | Easy | ❌ |
+| 5.2| Rate Limiter | Easy | ❌ |
+| 5.3| Distributed Cache | Easy | ❌ |
+| 5.4| Logging / Metrics | Easy | ❌ |
+| 5.5| News Feed | Medium | ✅ (Fanout) |
+| 5.6| Notification Sys | Medium | ❌ |
+| 5.7| Instagram | Medium | ❌ |
+| 5.8| Chat System | Medium | ✅ (Presence) |
+| 5.9| Web Crawler | Medium | ✅ (Frontier) |
+| 5.10| WhatsApp | Hard | ✅ (Signal) |
+| 5.11| Uber | Hard | ✅ (Geo) |
+| 5.12| YouTube | Hard | ✅ (ABR) |
+| ... | 6 More Topics | Hard | ... |
 
 ---
 
@@ -1055,8 +1109,8 @@ export const slideInLeft = {
 
 | Feature                          | Priority | Complexity |
 | -------------------------------- | -------- | ---------- |
-| All 25+ topic pages              | P2       | High       |
-| 6 case study pages               | P2       | High       |
+| All 40+ topic pages              | P2       | High       |
+| 18 case study pages              | P2       | High       |
 | Full Interview Mode              | P2       | High       |
 | Whiteboard mode                  | P3       | Very High  |
 | Traffic simulation               | P3       | Very High  |
