@@ -578,18 +578,18 @@ Below is the detailed content outline for every topic. Each bullet maps to conte
 | 25 | **Rate Limiter Service**| Token bucket vs leaky bucket, Redis counters | Easy |
 | 26 | **Distributed Cache** | Eviction, consistent hashing, replication | Easy |
 | 27 | **Logging / Metrics** | Kafka ingestion, time-series DB, aggregation | Easy |
-| 28 | **Twitter (News Feed)** | Fan-out, timelines, pull vs push models | Medium |
+| 28 | **Twitter/X (News Feed)** | Fan-out, timelines, pull vs push models | Medium |
 | 29 | **Notification System**| Push/SMS/Email, priority queues, retry logic | Medium |
 | 30 | **Instagram** | Image processing, storage, feed ranking | Medium |
 | 31 | **Chat System** | WebSockets, message persistence, presence | Medium |
 | 32 | **Web Crawler** | URL frontier, politeness, Bloom filter dedup | Medium |
 | 33 | **WhatsApp** | E2E encryption (Signal), delivery guarantees | Hard |
-| 34 | **Uber/Lyft** | Geospatial (QuadTree), matching, surge pricing | Hard |
+| 34 | **Uber** | Geospatial (QuadTree), matching, surge pricing | Hard |
 | 35 | **YouTube** | Upload flow, transcoding, CDN delivery | Hard |
 | 36 | **Netflix** | ABR streaming, CDN, recommendation engine | Hard |
-| 37 | **Zoom / GMeet** | WebRTC, media servers (SFU/MCU), recording | Hard |
+| 37 | **Zoom / Google Meet** | WebRTC, media servers (SFU/MCU), recording | Hard |
 | 38 | **Google Docs** | Real-time collab, OT vs CRDT, cursor sync | Hard |
-| 39 | **Google Drive** | File sync, chunking, conflict resolution | Hard |
+| 39 | **Google Drive / Dropbox** | File sync, chunking, conflict resolution | Hard |
 | 40 | **Search Engine** | Web indexing, PageRank, query processing | Hard |
 | 41 | **Amazon (Capstone)** | Product, Search, Cart, Orders, Inventory | Hard |
 
@@ -668,18 +668,18 @@ export const topicTree: TopicCategory[] = [
       { slug: "rate-limiter",        label: "Rate Limiter",         difficulty: "easy" },
       { slug: "distributed-cache",   label: "Distributed Cache",    difficulty: "easy" },
       { slug: "logging-metrics",     label: "Logging & Metrics",    difficulty: "easy" },
-      { slug: "twitter-news-feed",   label: "Twitter (News Feed)",  difficulty: "medium" },
+      { slug: "twitter-news-feed",   label: "Twitter/X (News Feed)", difficulty: "medium" },
       { slug: "notification-system", label: "Notification System",  difficulty: "medium" },
       { slug: "instagram",           label: "Instagram",            difficulty: "medium" },
       { slug: "chat-system",         label: "Chat (Slack/Discord)", difficulty: "medium" },
       { slug: "web-crawler",         label: "Web Crawler",          difficulty: "medium" },
       { slug: "whatsapp",            label: "WhatsApp",             difficulty: "hard" },
-      { slug: "uber",                label: "Uber/Lyft",            difficulty: "hard" },
+      { slug: "uber",                label: "Uber",                 difficulty: "hard" },
       { slug: "youtube",             label: "YouTube",              difficulty: "hard" },
       { slug: "netflix",             label: "Netflix",              difficulty: "hard" },
       { slug: "zoom-google-meet",    label: "Zoom / Google Meet",   difficulty: "hard" },
       { slug: "google-docs",         label: "Google Docs",          difficulty: "hard" },
-      { slug: "google-drive",        label: "Google Drive/Dropbox", difficulty: "hard" },
+      { slug: "google-drive",        label: "Google Drive / Dropbox", difficulty: "hard" },
       { slug: "search-engine",       label: "Search Engine",        difficulty: "hard" },
       { slug: "amazon",              label: "Amazon (Capstone)",    difficulty: "hard" },
     ],
@@ -1228,12 +1228,15 @@ Quick-review system with spaced repetition:
 [ ] Interview answers for all topics
 ```
 
-### Phase 5 — Interview Mode + Case Studies (Week 9-10)
+### Phase 5 — Case Studies + Shared Visual Prerequisites (Week 9-10)
 
 ```
-[ ] Interview Mode layout
-[ ] Step-by-step architecture builder
-[ ] Answer templates with copy-to-clipboard
+[ ] Extend ArchitectureCanvas for case studies: hover explainers, click inspection, scenario toggles, replay/reset, visible legends
+[ ] Register case-study React Flow primitives (`CacheNode`, `QueueNode`)
+[ ] Standardize case-study visual grammar (edge labels, badge states, lane/zone colors, scenario vocabulary, overview-to-node parity)
+[ ] Add case-study diagram config IDs for Easy, Medium, Hard Wave 1, Hard Wave 2, Hard Wave 3
+[ ] Scope shared simulation primitives before reuse claims (`PresenceDeliverySim`, `FeedFanoutSim`, `TranscodingPipelineSim`, `ConferenceMediaSim`, `RealtimeCollabSim`, `FileSyncSim`, `SearchPipelineSim`, `CommerceFlowSim`)
+[ ] Approve pilot visual QA gates before parallel case-study implementation
 [ ] URL Shortener case study
 [ ] WhatsApp case study
 [ ] Netflix case study
@@ -1265,8 +1268,13 @@ interface ArchitectureCanvasProps {
   interactive?: boolean;         // Allow drag/zoom (default: true)
   showMinimap?: boolean;         // Show minimap (default: false)
   showControls?: boolean;        // Show zoom controls (default: true)
+  showLegend?: boolean;          // Show diagram legend (default: true for case studies)
+  scenario?: string;             // Active scenario / visual mode
+  scenarios?: { label: string; value: string }[];
   highlightPath?: string[];      // Node IDs to highlight in sequence
   onNodeClick?: (nodeId: string) => void;
+  onEdgeClick?: (edgeId: string) => void;
+  onScenarioChange?: (scenario: string) => void;
   className?: string;
 }
 ```

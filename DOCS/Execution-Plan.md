@@ -230,12 +230,14 @@ Each topic must meet the following criteria before being marked as complete:
 | 5.0.1 | Extend `ArchitectureCanvas` with hover explanations, click inspection, scenario toggles, replay/reset, and visible legend support | `src/components/diagram/ArchitectureCanvas.tsx`, diagram UI components |
 | 5.0.2 | Register case-study React Flow primitives: `CacheNode` and `QueueNode` | `src/components/diagram/nodes/*.tsx`, `ArchitectureCanvas.tsx` |
 | 5.0.3 | Build `CapacityEstimationCard.tsx` for case-study capacity sections | `src/components/ui/CapacityEstimationCard.tsx` |
-| 5.0.4 | Standardize case-study visual grammar: edge labels, badge states, lane colors, and scenario vocabulary | `src/styles/diagram.css`, simulation/content conventions |
+| 5.0.4 | Standardize case-study visual grammar: edge labels, badge states, lane/zone colors, scenario vocabulary, and overview-to-node parity rules | `src/styles/diagram.css`, simulation/content conventions |
 | 5.0.5 | Add Easy case-study diagram config IDs | `src/data/diagramConfigs.ts` |
 | 5.0.6 | Add Medium case-study diagram config IDs | `src/data/diagramConfigs.ts` |
 | 5.0.7 | Add Hard Wave 1 diagram config IDs | `src/data/diagramConfigs.ts` |
-| 5.0.8 | Scope shared simulation primitives before reuse claims (`PresenceDeliverySim`, `FeedFanoutSim`, `TranscodingPipelineSim`) | `src/components/simulation/*.tsx`, sprint plans |
-| 5.0.9 | Approve pilot visual QA gates before parallel case-study implementation begins | `DOCS/Phase-5-*.md`, `DOCS/Execution-Plan.md` |
+| 5.0.8 | Add Hard Wave 2 diagram config IDs | `src/data/diagramConfigs.ts` |
+| 5.0.9 | Add Hard Wave 3 diagram config IDs | `src/data/diagramConfigs.ts` |
+| 5.0.10 | Scope shared simulation primitives before reuse claims (`PresenceDeliverySim`, `FeedFanoutSim`, `TranscodingPipelineSim`, `ConferenceMediaSim`, `RealtimeCollabSim`, `FileSyncSim`, `SearchPipelineSim`, `CommerceFlowSim`) | `src/components/simulation/*.tsx`, sprint plans |
+| 5.0.11 | Approve pilot visual QA gates before parallel case-study implementation begins | `DOCS/Phase-5-*.md`, `DOCS/Execution-Plan.md` |
 
 #### Easy (⭐ Foundational)
 
@@ -282,6 +284,11 @@ Each topic must meet the following criteria before being marked as complete:
 | `E2EEncryptionSim` | Signal protocol key exchange + encrypted delivery flow |
 | `GeoMatchingSim` | Geospatial driver-rider matching with map overlays and surge zones |
 | `TranscodingPipelineSim` | Media upload → transcode → CDN delivery with adaptive bitrate states |
+| `ConferenceMediaSim` | Live meeting join → SFU fan-out → recording → reconnect simulation |
+| `RealtimeCollabSim` | Concurrent editing, convergence, and offline replay simulation |
+| `FileSyncSim` | Chunk upload, delta sync, conflict resolution, version restore, and offline replay simulation |
+| `SearchPipelineSim` | Ingest/index pipeline plus shard fan-out, ranking, and degraded partial-result simulation |
+| `CommerceFlowSim` | Browse/search/cart/checkout orchestration with payment, inventory, and compensation paths |
 
 ### Verification
 
@@ -289,6 +296,8 @@ Each topic must meet the following criteria before being marked as complete:
 - [ ] `ArchitectureCanvas` supports hover, click inspection, scenario toggles, replay/reset, and visible legends for case-study diagrams
 - [ ] `CacheNode`, `QueueNode`, and `CapacityEstimationCard` exist and are wired into the case-study stack
 - [ ] Active sprint diagram config IDs are defined before MDX implementation starts
+- [ ] Hard Wave 1-3 overview diagrams match their node and edge specs before implementation begins
+- [ ] Lane/zone requirements in Hard-wave dependency matrices match the corresponding visual grammar for each topic
 - [ ] Shared simulations are explicitly scoped by topic mode or wrapper before reuse is claimed
 - [ ] Case-study visual QA rubric passes: main path clear in 10 seconds, interactions meaningful, fallback path distinct, legend self-explanatory, presentation feels product-grade
 - [ ] All 18 case studies render using the enhanced 18-section case study template

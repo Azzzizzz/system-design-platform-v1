@@ -1,14 +1,14 @@
 # Phase 5 (Hard): Case Studies Sprint Plan — Part 1
 
-> **Goal:** Define implementation-ready specs for Wave 1 of the Hard case studies: WhatsApp, Uber/Lyft, and YouTube. These topics set the premium interaction bar for the most complex system flows in the product.
+> **Goal:** Define implementation-ready specs for Wave 1 of the Hard case studies: WhatsApp, Uber, and YouTube. These topics set the premium interaction bar for the most complex system flows in the product.
 
 ---
 
 ## Wave Strategy (Hard — 9 Topics, 3 Waves)
 
-- **Wave 1 (This doc):** WhatsApp, Uber/Lyft, YouTube — real-time + geospatial + streaming
-- **Wave 2 (Part 2):** Netflix, Zoom/Google Meet, Google Docs — media + collaboration
-- **Wave 3 (Part 3):** Google Drive, Search Engine, Amazon — storage + search + capstone
+- **Wave 1 (This doc):** WhatsApp, Uber, YouTube — real-time + geospatial + streaming
+- **Wave 2 (Part 2):** Netflix, Zoom / Google Meet, Google Docs — media + collaboration
+- **Wave 3 (Part 3):** Google Drive / Dropbox, Search Engine, Amazon — storage + search + capstone
 - **Part 1 Scope:** Covers Wave 1 so later Hard waves can inherit proven interaction patterns for encryption, geospatial matching, and media pipelines
 - **Gate:** Each wave must pass verification before the next begins.
 
@@ -107,6 +107,45 @@ These items must be complete before Hard Wave 1 implementation starts.
 - Treat as a shared media-pipeline primitive across Hard waves.
 - `youtube` teaches upload, transcode queue, progressive variant readiness, CDN hit/miss, and adaptive bitrate playback.
 - Later Netflix reuse must add a playback-focused wrapper or mode. It must not ship as a renamed YouTube upload simulation.
+
+---
+
+## Topic-Specific Visual Grammar
+
+These rules are mandatory for Wave 1 so the hardest concepts stay readable without relying on surrounding prose.
+
+### WhatsApp
+
+- **Default view = one 1:1 encrypted message path**. Group fan-out, media transfer, and first-contact key exchange appear only through scenario controls.
+- **Edge styling must be explicit**:
+  - Blue = session bootstrap / key exchange / client request
+  - Green = healthy delivery / decrypt / receipt progression
+  - Amber = offline queue / reconnect / delayed delivery
+  - Red = intercept attempt / blocked delivery / failure state
+- **Plaintext vs ciphertext must be visually impossible to confuse**: plaintext appears only on sender/recipient nodes. The server path must always show encrypted blobs or lock-state badges.
+- **Receipt progression must stay visible on the canvas**: `✓`, `✓✓`, and `✓✓ blue` are part of the system behavior, not decorative icons.
+
+### Uber
+
+- **Control plane and motion plane must be visually separated**: rider request / match state should not look identical to high-frequency location ingestion.
+- **Edge styling must be explicit**:
+  - Blue = rider request / rider-facing tracking
+  - Green = healthy match / accepted route / active trip state
+  - Amber = search expansion / surge / rejection cascade / degraded location freshness
+  - Red = no-driver or failed-match state
+- **Map overlays are mandatory**: the mini-map must always show the search radius, active drivers, and the spatial index overlay or zone model that explains why the match was chosen.
+- **Default scenario must stay small**: one rider and a small driver set first. Density, surge, and rejection cascades expand through controls so the first read stays understandable.
+
+### YouTube
+
+- **Default view = upload-to-first-playable path**. Recommendations, long-tail cache behavior, and live-streaming edge cases appear only through scenario toggles or secondary focus.
+- **Edge styling must be explicit**:
+  - Blue = upload / manifest request / viewer-facing control flow
+  - Green = successful transcode / ready variant / CDN hit / healthy playback
+  - Amber = queue backlog / cache miss / variant warming / degraded bandwidth
+  - Red = failed transcode / stalled pipeline / playback risk state
+- **Variant readiness must be visible on the canvas**: the user should see which qualities are ready, pending, retrying, or skipped without reading the paragraph below.
+- **ABR state must be visually tied to playback**: the quality gauge, segment size change, and buffering badge need to feel like one system, not separate UI ornaments.
 
 ---
 
@@ -267,9 +306,9 @@ groups (
 [Alice (Client)] ─ws─→ [Connection Gateway]
                               ↓
                         [Message Router]
-                         ↙         ↘
-               [Message Queue]    [Key Server]
-               (Cassandra)        (Pre-key bundles)
+                      ↙     ↓      ↘
+               [Message Queue] [Presence / Routing Cache] [Key Server]
+               (Cassandra)          (Redis)              (Pre-key bundles)
                     ↓
               [Delivery Workers]
                     ↓
@@ -448,7 +487,7 @@ async function deliverPendingMessages(userId: string, gateway: WebSocket) {
 
 ---
 
-## Topic 2: Uber/Lyft
+## Topic 2: Uber
 
 **File:** `src/content/case-studies/uber.mdx`
 **Difficulty:** Hard | **Wave:** 1 | **Order:** 2
@@ -562,16 +601,16 @@ surge_zones (
 ### Architecture Diagram (`uber-arch`)
 
 ```
-[Rider App] → [API Gateway] → [Ride Service] → [Matching Engine]
-                                    ↓                ↓
-                              [Surge Service]   [Location Service]
-                                    ↓                ↓
-                              [Pricing DB]      [QuadTree Index (Redis)]
-                                                     ↑
-[Driver App] → [Location Ingestion] → [Stream (Kafka)] → [QuadTree Updater]
+[Rider App] → [API Gateway] → [Ride Service] → [Ride Store]
+                                    ↓
+                              [Matching Engine] → [QuadTree Index (Redis)]
+                                    ↓                      ↑
+                              [Surge Service]        [QuadTree Updater] ← [Stream (Kafka)] ← [Location Ingestion] ← [Driver App]
+                                    ↓
+                              [Pricing Store]
 
-[Tracking:]
-[Rider App] ←ws← [Tracking Gateway] ←── [Location Service]
+                         [Location Service] → [Tracking Gateway] ─ws─→ [Rider App]
+
 ```
 
 **Nodes:**
@@ -861,19 +900,13 @@ watch_history (
 ### Architecture Diagram (`youtube-arch`)
 
 ```
-[Creator] → [Upload Service] → [Blob Store (GCS)] → [Transcode Queue]
-                                                          ↓
-                                                    [Transcode Workers]
-                                                          ↓
-                                                    [Variant Store (GCS)]
-                                                          ↓
-                                                    [CDN (Edge Caches)]
-                                                          ↓
-[Viewer] → [API Gateway] → [Video Service] → [Manifest Generator]
+[Creator] → [Upload Service] → [Raw Blob Store] → [Transcode Queue] → [Transcode Workers] → [Variant Store] → [CDN]
+                                                                                                              ↓
+[Viewer] → [API Gateway] → [Video Service] → [Manifest Generator] --------------------------------------→ [Viewer]
+                                ↓                  ↓
+                          [Video Metadata DB]   [Hot Video Cache]
                                 ↓
-                          [Recommendation Service]
-                                ↓
-                          [Watch History (BigTable)]
+                       [Recommendation Service] → [Watch History]
 ```
 
 **Nodes:**
@@ -1136,6 +1169,9 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 - [ ] Hover, click, scenario toggle, and replay/reset interactions are present and meaningful
 - [ ] Primary path and fallback/degraded path are visually distinguishable
 - [ ] Legends, labels, badges, and overlays are sufficient to understand the diagram without extra decoding
+- [ ] WhatsApp clearly separates plaintext/key exchange from the server-side encrypted relay path
+- [ ] Uber / Lyft clearly separates location ingest from match / trip state
+- [ ] YouTube clearly separates upload/transcode pipeline state from playback/CDN delivery state
 - [ ] The visualization feels like a product feature, not a static diagram with motion layered on top
 
 ### Per-Topic Checklist
