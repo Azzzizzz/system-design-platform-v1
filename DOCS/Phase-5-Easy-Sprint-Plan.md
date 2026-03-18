@@ -6,7 +6,7 @@
 
 ## Reusable Asset Inventory
 
-### Existing Components (from Phase 1-4)
+### Reusable Visual Primitives (existing or required before sprint start)
 | Node/Edge | Reused As |
 |---|---|
 | `ClientNode` | Users, API callers, log producers |
@@ -23,7 +23,78 @@
 |---|---|---|---|
 | `CapacityEstimationCard` | UI Component | Visual table for back-of-envelope calculations | All 16 case studies |
 
-> **Zero new node types or simulations needed.** All 4 Easy topics reuse existing React Flow components and simulations from Phases 1-4. This is intentional — Easy topics teach the case study format, not new visual paradigms.
+> **Planning rule:** Easy topics should introduce the case study format with minimal new visual paradigms. Reuse existing React Flow primitives first, but only claim reuse for components that actually exist in the codebase at sprint start.
+
+---
+
+## Visualization Contract (Mandatory For All 4 Topics)
+
+These diagrams are a core product feature, not decorative support. Every Easy case study must use React Flow in a way that teaches the system visually, not just renders boxes and arrows.
+
+### Required Interaction Model
+
+| Interaction | Required Behavior | Learning Purpose |
+|---|---|---|
+| Hover | Show a short explanation for the node/edge (`what it is` + `why it exists`) | Makes the diagram self-explanatory |
+| Click | Open an inspect panel or inline details state for the selected component | Lets users explore architecture intentionally |
+| Scenario Toggle | Switch between at least 3 states: `primary path`, `alternative path`, `failure or fallback path` | Helps users compare system behavior |
+| Replay / Reset | Replay the active system flow and reset back to baseline | Supports repetition and interview prep |
+| Visible Legend | Explain colors, line styles, status badges, and zones | Prevents interpretation ambiguity |
+
+### Required Visual Grammar
+
+- Every node must have a clear label and a short sublabel.
+- Every important edge must be labeled with the action or payload (`cache hit`, `INCR`, `redirect`, `async ingest`).
+- Use a consistent state language across topics:
+  - Green: success / cache hit / allowed path
+  - Amber: fallback / retry / miss / degraded path
+  - Red: blocked / failure / rejected path
+  - Blue: client/read-facing activity
+- Show only one primary teaching story at a time. Avoid turning the default view into a dense all-paths-at-once network.
+- Each diagram must answer one learning question immediately, e.g. `"How does a cache miss recover?"` or `"What happens when a request is rate-limited?"`
+
+---
+
+## React Flow Readiness Checklist
+
+These items must be completed before the Easy sprint is considered executable.
+
+- [ ] `ArchitectureCanvas` supports hover explanations, click inspection, scenario toggles, and replay/reset behavior
+- [ ] `CacheNode` is registered and available in the React Flow node type registry
+- [ ] `QueueNode` is registered and available in the React Flow node type registry
+- [ ] `diagramConfigs.ts` contains:
+  - [ ] `url-shortener-arch`
+  - [ ] `rate-limiter-arch`
+  - [ ] `distributed-cache-arch`
+  - [ ] `logging-pipeline-arch`
+- [ ] Every reuse claim maps to a real component name in the codebase
+- [ ] If a claimed reusable simulation does not exist, replace the claim with explicit planned work before sprint execution
+- [ ] Edge labels, badge states, and legend rules are standardized before topic implementation begins
+
+### Current Planning Assumptions
+
+- `RateLimitingSim.tsx` exists and can be reused for Rate Limiter concepts.
+- `ConsistentHashingSim.tsx` exists and can support ring-based key distribution teaching.
+- Cache-specific and logging-specific case-study flows should not be marked as reused unless a concrete reusable component exists.
+
+---
+
+## Pilot Topic Decision
+
+Use **Distributed Cache** as the Easy-sprint visualization pilot before implementing all 4 topics.
+
+### Why This Topic First
+
+- It exercises the widest set of visual requirements: topology, key routing, cache hit, cache miss, invalidation, and fallback.
+- It is more representative of the product's visual learning value than URL Shortener, which is structurally simpler.
+- It establishes the visual grammar needed later for Medium and Hard case studies.
+
+### Pilot Exit Criteria
+
+- The diagram clearly teaches both `cache hit` and `cache miss` without relying on surrounding prose.
+- Users can inspect why a key maps to a specific cache node.
+- Failure mode is visible (`node down` or `miss to DB fallback`) rather than described only in text.
+- The interaction pattern is good enough to reuse across the other Easy topics without redesign.
 
 ---
 
@@ -181,9 +252,11 @@ async function redirect(shortCode: string): Promise<string> {
 **How Real Bitly Differs:** Custom domains, team workspaces, detailed geo/device analytics, branded links, QR codes, and A/B testing on link destinations
 
 ### System Flows (Interactive)
-Use `<ArchitectureCanvas>` with **dual-flow demonstration**:
-- **"Shorten URL" button** → animates write path: Client → Gateway → Service → DB → return short code
-- **"Redirect" button** → animates read path: Client → Gateway → Service → Cache (hit: green) or DB (miss: amber) → 301
+Use `<ArchitectureCanvas>` with **scenario states**, not just one animation:
+- **"Shorten URL"** → write path: Client → Gateway → Service → DB → return short code
+- **"Redirect (Cache Hit)"** → read path where Redis answers immediately
+- **"Redirect (Cache Miss)"** → miss path: Service → DB → cache populate → 301
+- **"Hot Link Spike"** → highlight cache pressure and why hot links should stay served from cache/CDN
 
 ### Tradeoffs (4/4)
 **Pros:** Simple reads with caching (sub-10ms), horizontally scalable via sharding, Base62 gives compact human-readable codes, stateless service enables easy scaling
@@ -371,7 +444,11 @@ async function rateLimitMiddleware(req, res, next) {
 **How Stripe/GitHub Differ:** Stripe uses a sophisticated multi-tier system with per-key, per-IP, and global limits. GitHub uses a "primary" + "secondary" rate limit with separate pools for authenticated vs anonymous. Both return rich headers with reset timestamps.
 
 ### System Flows (Interactive)
-Reuse `<TokenBucketSim />` from Phase 2 (Rate Limiting topic) — it already demonstrates token bucket visually. Additionally, use `<ArchitectureCanvas>` where clicking "Send Request" shows the rate check flow, and after N rapid clicks the edge turns red (429 blocked).
+Reuse `<RateLimitingSim />` for algorithm intuition, and pair it with `<ArchitectureCanvas>` scenario states:
+- **"Allowed Request"** → request flows through limiter to backend
+- **"Burst Traffic"** → repeated requests drain available capacity
+- **"Blocked Request"** → edge turns red, `429` badge appears, and headers update
+- **"Limiter Down"** → fail-open fallback path is shown explicitly
 
 ### Tradeoffs (4/4)
 **Pros:** Protects backend from overload and abuse, enables fair usage across users/tiers, Redis-based solution is fast (< 1ms per check), built-in headers inform clients of their limits
@@ -563,7 +640,13 @@ function getNode(key: string, nodes: CacheNode[]): CacheNode {
 **How Facebook/Netflix Differ:** Facebook's Memcached layer handles 1B+ requests/sec across thousands of servers with custom consistent hashing. Netflix uses EVCache (built on Memcached) with multi-region replication and automatic zone-aware failover.
 
 ### System Flows (Interactive)
-Reuse `<CacheFlowSim />` from Phase 3 (Caching Strategies topic) — demonstrating cache hit (green) / miss (red → DB → populate). Add consistent hashing ring visualization showing which node gets each key.
+This is the **pilot topic** for the Easy sprint. Use `<ArchitectureCanvas>` plus focused scenario states:
+- **"Cache Hit"** → key routes to the owning node and returns immediately
+- **"Cache Miss"** → request falls through to DB, then populates the owning node
+- **"Node Rebalance"** → show how consistent hashing remaps only a subset of keys
+- **"Node Failure"** → degraded path highlights misses and fallback behavior
+
+Use `ConsistentHashingSim.tsx` concepts for the ring interaction. If no reusable cache-flow component exists at sprint start, plan a dedicated minimal flow layer instead of claiming reuse.
 
 ### Tradeoffs (4/4)
 **Pros:** Sub-millisecond reads (100-1000x faster than DB), reduces DB load dramatically, consistent hashing enables seamless horizontal scaling, rich data structures (sets, sorted sets, hashes) beyond simple key-value
@@ -780,10 +863,13 @@ INSERT INTO metrics_1m
 **How Netflix/Uber Differ:** Netflix processes 1+ PB of logs/day using custom pipelines. They use Kafka → Apache Druid for real-time analytics and a separate pipeline for batch processing. Uber uses Jaeger for distributed tracing integrated with their logging pipeline.
 
 ### System Flows (Interactive)
-Use `<ArchitectureCanvas>` with **event trigger**:
-- **"Generate Error" button** → animates a log flowing from Service A → Kafka → Processor → Elasticsearch AND → Alert Engine → Slack notification
-- **"Normal Traffic" button** → shows metrics flowing through the metrics pipeline to Grafana
-- Kafka node shows growing queue depth when "Burst" is clicked, demonstrating the buffer
+Use `<ArchitectureCanvas>` with explicit observability scenarios:
+- **"Generate Error"** → error log flows from service → Kafka → processor → Elasticsearch and Alert Engine
+- **"Normal Metrics"** → metrics flow through the metrics branch to InfluxDB/Grafana
+- **"Burst Traffic"** → Kafka depth increases and buffering value becomes visible
+- **"Elasticsearch Slow"** → logs continue buffering in Kafka while the app remains unaffected
+
+The default view should visually separate the `logs path` and `metrics path` so beginners can parse them quickly.
 
 ### Tradeoffs (4/4)
 **Pros:** Kafka buffer protects applications from logging infrastructure failures, full-text search in Elasticsearch enables fast debugging, time-series DB + downsampling handles metrics at massive scale, centralized logging with trace IDs enables distributed tracing
@@ -818,10 +904,17 @@ Use `<ArchitectureCanvas>` with **event trigger**:
 
 | Priority | Topic | Key Reuse | Estimated Effort |
 |---|---|---|---|
-| 1 | URL Shortener | Existing nodes + diagram config | Low |
-| 2 | Rate Limiter Service | Reuse `TokenBucketSim` from Phase 2 | Low |
-| 3 | Distributed Cache | Reuse `CacheFlowSim` from Phase 3 + hash ring | Low |
-| 4 | Logging / Metrics Pipeline | Reuse `QueueNode` from Phase 4 + new diagram config | Low→Medium |
+| 1 | Distributed Cache | `ConsistentHashingSim` concepts + new case-study flow states | Medium |
+| 2 | URL Shortener | Existing nodes + new case-study diagram config | Low |
+| 3 | Rate Limiter Service | Reuse `RateLimitingSim` + new case-study diagram config | Low |
+| 4 | Logging / Metrics Pipeline | Queue visualization + dual-path logs/metrics diagram config | Medium |
+
+### Ordering Rationale
+
+- **Distributed Cache first** sets the quality bar for topology, branching behavior, and fallback visualization.
+- **URL Shortener second** is simpler and benefits from the visual grammar established by the pilot.
+- **Rate Limiter third** reuses the same scenario-toggle pattern for allowed vs blocked behavior.
+- **Logging / Metrics fourth** is visually denser, so it should inherit the established interaction rules instead of inventing them.
 
 ---
 
@@ -831,12 +924,35 @@ Use `<ArchitectureCanvas>` with **event trigger**:
 |---|---|---|
 | `CapacityEstimationCard` | UI Component | `src/components/ui/CapacityEstimationCard.tsx` |
 
-> **Zero new simulations.** All 4 Easy topics reuse existing simulations and node types. The only new component is `CapacityEstimationCard` for the capacity estimation section, which will be reused across all 16 case studies.
+> **Planning note:** The only guaranteed new UI component is `CapacityEstimationCard`. Additional case-study flow logic may still be needed if reuse targets are not present or do not meet the visualization contract above.
+
+---
+
+## Visual QA Rubric
+
+Every Easy topic must pass this rubric before the next one starts.
+
+| Criterion | Pass Condition |
+|---|---|
+| Easy to Follow | A new user can identify the main path within 10 seconds without reading the prose below |
+| Highly Understandable | Components, relationships, and data movement are labeled clearly enough that the architecture can be narrated directly from the diagram |
+| Interactive | The user can inspect nodes, switch scenarios, and replay/reset a flow without leaving the diagram area |
+| Self-Explanatory | Legend, labels, badges, and state colors explain the visualization without relying on a paragraph to decode it |
+| Visually Creative and Engaging | Motion is purposeful, layout feels premium, and the diagram looks like a product feature rather than a static doc embed |
+
+### Hard Stop Rules
+
+- Do not mark a topic complete if the diagram is only pan/zoom with no meaningful interaction.
+- Do not mark a topic complete if the primary path and fallback path cannot be visually distinguished.
+- Do not mark a topic complete if a user must read the prose first to understand what each node does.
+- Do not mark a topic complete if the diagram becomes cluttered when all states are shown at once.
 
 ---
 
 ## Verification Plan (Manual Only)
 
+- [ ] React Flow readiness checklist completed before topic implementation
+- [ ] Distributed Cache approved as the pilot visualization benchmark
 - [ ] All 4 Easy case studies render with correct 18-section structure
 - [ ] Each has: Introduction, Why This Matters & Prerequisites, Requirements, Capacity Estimation, API Design, Data Model
 - [ ] Each has: Architecture diagram (React Flow), Read/Write Paths, Deep Dives
@@ -845,7 +961,8 @@ Use `<ArchitectureCanvas>` with **event trigger**:
 - [ ] Each has: System Flows (interactive), Tradeoffs (4+/4+)
 - [ ] Each has: FAQ (4+ questions), Interview Notes (5 points), Key Takeaways (5 points)
 - [ ] URL Shortener reuses existing nodes and diagram config
-- [ ] Rate Limiter reuses `TokenBucketSim` from Phase 2
-- [ ] Distributed Cache reuses `CacheFlowSim` from Phase 3
-- [ ] Logging Pipeline reuses `QueueNode` from Phase 4
+- [ ] Rate Limiter reuses `RateLimitingSim` from existing fundamentals infrastructure
+- [ ] Distributed Cache uses approved pilot interaction pattern
+- [ ] Logging Pipeline visually separates logs and metrics branches
+- [ ] All 4 topics pass the Visual QA Rubric
 - [ ] All Related Topics links work bidirectionally

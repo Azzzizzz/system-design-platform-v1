@@ -1,6 +1,6 @@
 # Phase 5 (Medium): Case Studies Sprint Plan — Part 1
 
-> **Goal:** Complete 3 of 5 Medium case studies (Twitter, Notification System, Instagram) using the enhanced 18-section template.
+> **Goal:** Define implementation-ready specs for Topics 1-3 of the Medium case studies: Notification System, Chat System, and Twitter/X News Feed.
 
 ---
 
@@ -8,12 +8,13 @@
 
 - **Wave 1 (Lower risk):** Notification System, Chat System (Slack/Discord)
 - **Wave 2 (Higher complexity):** Twitter/X (News Feed), Instagram, Web Crawler
+- **Part 1 Scope:** Covers Topics 1-3 so Wave 1 can be implemented first and Wave 2 can start with a proven feed simulation design
 
 ---
 
 ## Reusable Asset Inventory
 
-### Existing Components (Phases 1-5 Easy)
+### Reusable Visual Primitives (existing or required before sprint start)
 | Node/Edge/Sim | Reused As |
 |---|---|
 | `ClientNode` | Users, publishers, subscribers, crawlers |
@@ -33,6 +34,100 @@
 | `PresenceDeliverySim` | Simulation | Presence dots + delivery/read receipts + multi-channel fallback | Chat System, Notification System |
 | `CrawlerFrontierSim` | Simulation | URL frontier queue with per-host politeness timers + Bloom filter dedup | Web Crawler |
 
+> **Planning rule:** Reuse should only be claimed when the base primitive exists and the topic-specific teaching story remains clear. Shared simulations should be treated as base primitives with topic modes or wrappers, not one-size-fits-all drop-ins.
+
+---
+
+## Visualization Contract (Mandatory For All 5 Medium Topics)
+
+Medium case studies are where the architecture visual layer becomes a core product feature. Every React Flow visualization must teach a system behavior through interaction, not just render topology.
+
+### Required Interaction Model
+
+| Interaction | Required Behavior | Learning Purpose |
+|---|---|---|
+| Hover | Short explanation for `what this component does` and `why it exists` | Makes dense systems readable |
+| Click | Open inspect state for the selected node/edge with role, hot path, and failure role | Supports active exploration |
+| Scenario Toggle | Switch between at least 3 meaningful states: `normal`, `alternate strategy`, `failure/degraded` | Teaches tradeoffs visually |
+| Replay / Reset | Replay active flow and reset to baseline | Supports repetition and interview prep |
+| Visible Legend | Explain colors, line styles, badges, queue states, and zones | Prevents hidden meaning |
+
+### Required Visual Grammar
+
+- Every node must have a clear label and short sublabel.
+- Every important edge must name the action or payload (`post.created`, `retry`, `fanout`, `merge at read`, `robots check`).
+- Use one dominant teaching story per scenario. Do not show every branch at once by default.
+- Keep the main path readable before secondary systems are highlighted.
+- State colors must be consistent:
+  - Green: success / delivered / hot path success
+  - Amber: fallback / merge / deferred / degraded
+  - Red: blocked / failure / retry / reject
+  - Blue: client-facing / request / read path
+
+---
+
+## React Flow Readiness Checklist
+
+These items must be complete before Medium implementation starts.
+
+- [ ] `ArchitectureCanvas` supports hover explanations, click inspection, scenario toggles, and replay/reset behavior
+- [ ] `CacheNode` is registered in the React Flow node registry
+- [ ] `QueueNode` is registered in the React Flow node registry
+- [ ] `CapacityEstimationCard` exists for case-study capacity sections
+- [ ] `diagramConfigs.ts` contains:
+  - [ ] `notification-system-arch`
+  - [ ] `chat-system-arch`
+  - [ ] `twitter-news-feed-arch`
+  - [ ] `instagram-arch`
+  - [ ] `web-crawler-arch`
+- [ ] Shared simulation primitives are explicitly scoped:
+  - [ ] `PresenceDeliverySim` supports `notification` mode
+  - [ ] `PresenceDeliverySim` supports `chat` mode
+  - [ ] `FeedFanoutSim` supports `twitter` mode
+  - [ ] `FeedFanoutSim` supports `instagram` mode or is wrapped by an Instagram-specific media pipeline layer
+  - [ ] `CrawlerFrontierSim` is specified as a dedicated topic simulation
+- [ ] Edge labels, badges, lane colors, and fallback-state language are standardized before topic implementation
+
+---
+
+## Shared Simulation Strategy
+
+### `PresenceDeliverySim`
+
+- Treat as a shared primitive with two topic modes:
+  - `notification`: priority lanes, channel fallback, quiet hours, provider failure
+  - `chat`: presence, reconnect sync, delivery/read receipts, offline replay
+- The UI copy, badges, and scenarios must change by topic. Do not present it as the same simulation with renamed buttons.
+
+### `FeedFanoutSim`
+
+- Treat as a feed primitive for fanout strategy only.
+- `twitter` mode teaches hybrid fanout, celebrity bypass, ranking fallback, and read-vs-write cost.
+- `instagram` mode must not stop at feed fanout. It needs an Instagram-specific media pipeline layer or wrapper for upload, transcode, CDN miss, and story expiry.
+
+### `CrawlerFrontierSim`
+
+- This is a dedicated topic simulation, not a reusable primitive.
+- It must teach scheduling, politeness, normalization, dedup, and robots.txt as first-class concepts.
+
+---
+
+## Pilot Sequence
+
+Use a staged pilot approach instead of implementing all five topics in parallel.
+
+### Stage 1: `PresenceDeliverySim` Pilot
+
+- Start with **Notification System** as the first implementation target.
+- Use it to validate priority lanes, fallback logic, and queue-driven delivery visuals.
+- Only after that interaction model is proven should Chat System reuse the same primitive in `chat` mode.
+
+### Stage 2: `FeedFanoutSim` Pilot
+
+- Use **Twitter/X** as the feed-systems pilot.
+- Twitter should set the visual standard for dual-lane comparisons, cost counters, and strategy toggles.
+- Only after Twitter is approved should Instagram reuse the feed primitive and add its media-pipeline-specific layer.
+
 ---
 
 ## Pedagogical Rules (Same as Phase 3-5 Easy)
@@ -41,6 +136,7 @@
 - **Self-Explaining Visuals**: React Flow diagrams must be understandable at a glance
 - **Strict Counts**: Tradeoffs (4-6), FAQ (4-6), Interview Notes (5), Takeaways (4-6)
 - **18-Section Template**: Introduction, Why This Matters, Requirements, Capacity, API, Data Model, Architecture, Read/Write Paths, Deep Dives, Implementation Patterns, Scaling Strategy, Failure Scenarios, System Flows, Tradeoffs, FAQ, Interview Notes, Takeaways, Related Topics
+- **Inherited Quality Bar**: The Medium sprint must pass the same visualization contract and review rigor established in the Easy sprint before being marked complete
 
 ---
 
@@ -163,8 +259,7 @@ notification_attempts (
 - Gateway → API: animated
 - API → Priority Queue: animated, label "Enqueue by priority"
 - Queue → Router: animated, color-coded by priority (red/orange/blue/grey)
-- Router → Workers: animated, label "Channel dispatch"
-- Router → Workers: animated, label "Channel dispatch"
+- Router → Push/SMS/Email Workers: animated, label "Channel dispatch"
 - Workers → Providers: animated, label "External API call"
 - Workers → Delivery Store: animated, label "Status update"
 - Workers → Retry Queue: dim/amber edge, label "Transient failure → retry"
@@ -237,7 +332,7 @@ async function isNewNotification(key: string): Promise<boolean> {
 **Production Monitoring:** p99 enqueue latency, delivery success rate per channel, retry rate, DLQ depth, provider cost per notification
 **How Real Systems Differ:** Slack sends 5B+ notifications/day using a custom priority queue with 7 priority levels. They run a dedicated abuse detection pipeline that blocks spam notifications before they enter the queue.
 
-### System Flows (Interactive) — `<PresenceDeliverySim />`
+### System Flows (Interactive) — `<PresenceDeliverySim mode="notification" />`
 
 **Controls:**
 - **"Send Critical" button** → Fires a notification with red priority badge
@@ -468,7 +563,7 @@ async function syncHistory(conversationId: string, afterSeq: number, limit = 50)
 **Production Monitoring:** WS connection count per gateway, message delivery p99, fanout lag, presence accuracy, reconnection rate
 **How Slack/Discord Differ:** Slack uses a custom "message queue" (not Kafka) optimized for small group delivery. Discord uses Elixir/Erlang for their real-time gateway, handling 1M+ events/sec per node. Both support "threads" as a separate message stream within channels.
 
-### System Flows (Interactive) — `<PresenceDeliverySim />`
+### System Flows (Interactive) — `<PresenceDeliverySim mode="chat" />`
 
 **Controls:**
 - **"Send Message" button** → Alice sends a message to a group conversation
@@ -698,7 +793,7 @@ async function getTimeline(userId: string, cursor?: string, limit = 20) {
 **Production Monitoring:** Timeline p99, fanout lag, cache hit rate, ranking latency, celebrity post throughput
 **How Twitter Actually Works:** Twitter uses a hybrid approach similar to our design. Celebrity accounts (verified, >500K followers) use fanout-on-read. Twitter's ranking model considers 1000+ features and runs on specialized ML infrastructure. They serve 35B+ timeline requests/day across multiple data centers.
 
-### System Flows (Interactive) — `<FeedFanoutSim />`
+### System Flows (Interactive) — `<FeedFanoutSim mode="twitter" />`
 
 **Controls:**
 - **"Post (Normal User)" button** → Normal user with 200 followers publishes

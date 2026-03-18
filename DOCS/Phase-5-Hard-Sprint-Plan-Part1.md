@@ -1,6 +1,6 @@
 # Phase 5 (Hard): Case Studies Sprint Plan — Part 1
 
-> **Goal:** Complete Wave 1 of the Hard case studies (WhatsApp, Uber, YouTube) using the enhanced 18-section template. All visualizations must meet Phase 3-4 Premium quality bar.
+> **Goal:** Define implementation-ready specs for Wave 1 of the Hard case studies: WhatsApp, Uber/Lyft, and YouTube. These topics set the premium interaction bar for the most complex system flows in the product.
 
 ---
 
@@ -9,13 +9,14 @@
 - **Wave 1 (This doc):** WhatsApp, Uber/Lyft, YouTube — real-time + geospatial + streaming
 - **Wave 2 (Part 2):** Netflix, Zoom/Google Meet, Google Docs — media + collaboration
 - **Wave 3 (Part 3):** Google Drive, Search Engine, Amazon — storage + search + capstone
+- **Part 1 Scope:** Covers Wave 1 so later Hard waves can inherit proven interaction patterns for encryption, geospatial matching, and media pipelines
 - **Gate:** Each wave must pass verification before the next begins.
 
 ---
 
 ## Reusable Asset Inventory
 
-### Existing Components (Phases 1-5 Medium)
+### Reusable Visual Primitives (existing or required before wave start)
 | Node/Edge/Sim | Reused As |
 |---|---|
 | `ClientNode` | Users, drivers, riders, viewers, uploaders |
@@ -34,6 +35,109 @@
 | `E2EEncryptionSim` | Simulation | Signal protocol key exchange + message encryption flow | WhatsApp |
 | `GeoMatchingSim` | Simulation | QuadTree spatial index + driver-rider matching with surge | Uber |
 | `TranscodingPipelineSim` | Simulation | Video upload → adaptive bitrate transcoding → CDN delivery | YouTube, Netflix (Wave 2) |
+
+---
+
+> **Planning rule:** Hard topics may reuse Medium primitives only when the teaching story remains clear. If a shared primitive cannot explain the Hard-topic concept without heavy narration, define a dedicated simulation or wrapper before implementation.
+
+---
+
+## Visualization Contract (Mandatory For Hard Wave 1)
+
+Hard case studies are the clearest proof that this product can teach dense distributed systems visually. Every React Flow visualization must help the user reason about the system under `normal`, `alternate`, and `degraded` conditions, not just display topology.
+
+### Required Interaction Model
+
+| Interaction | Required Behavior | Learning Purpose |
+|---|---|---|
+| Hover | Short explanation for `what this component does` and `why it exists` | Makes dense systems readable |
+| Click | Open inspect state for the selected node/edge with role, hot path, and failure role | Supports deliberate exploration |
+| Scenario Toggle | Switch between at least 3 meaningful states: `normal`, `alternate strategy`, `failure/degraded` | Teaches tradeoffs visually |
+| Replay / Reset | Replay active flow and reset to baseline | Supports repetition and interview prep |
+| Visible Legend | Explain colors, line styles, badges, queue states, map zones, and overlays | Prevents hidden meaning |
+
+### Required Visual Grammar
+
+- Every node must have a clear label and short sublabel.
+- Every important edge must name the action or payload (`pre-key fetch`, `match offer`, `segment request`, `retry`, `direct delivery`).
+- Use layered disclosure: default view = main path; secondary paths appear through focus states or scenario toggles.
+- Keep the main path readable before overlays, counters, or alternate branches are introduced.
+- State colors must be consistent:
+  - Green: success / delivered / accepted / hot path success
+  - Amber: fallback / merge / deferred / degraded
+  - Red: blocked / failure / retry / reject
+  - Blue: client-facing / request / read path
+- Complex overlays such as surge zones, queue lanes, delivery states, and ABR gauges must remain understandable without reading the paragraph below the visualization.
+
+---
+
+## React Flow Readiness Checklist
+
+These items must be complete before Hard Wave 1 implementation starts.
+
+- [ ] All shared case-study prerequisites from Easy and Medium are complete
+- [ ] `ArchitectureCanvas` supports hover explanations, click inspection, scenario toggles, replay/reset behavior, and a visible legend for dense diagrams
+- [ ] `CacheNode`, `QueueNode`, and `CapacityEstimationCard` are available in the case-study stack
+- [ ] `diagramConfigs.ts` contains:
+  - [ ] `whatsapp-arch`
+  - [ ] `uber-arch`
+  - [ ] `youtube-arch`
+- [ ] Wave 1 simulation scope is explicit:
+  - [ ] `E2EEncryptionSim` is scoped to the WhatsApp encryption + delivery story
+  - [ ] `GeoMatchingSim` is scoped to the Uber geospatial matching story
+  - [ ] `TranscodingPipelineSim` supports the YouTube media-pipeline story and a later Netflix-specific wrapper or mode
+- [ ] Status badges, zone overlays, queue lanes, and failure-state language are standardized before topic implementation
+
+---
+
+## Shared Simulation Strategy
+
+### `E2EEncryptionSim`
+
+- Treat as a dedicated WhatsApp simulation.
+- It may reuse delivery-receipt and presence tokens from `PresenceDeliverySim`, but it must add first-contact key exchange, ciphertext state, offline queue delivery, and group fan-out as first-class teaching states.
+
+### `GeoMatchingSim`
+
+- Treat as a dedicated Uber simulation.
+- It must teach location ingest, spatial query, driver offer cascade, surge zone overlay, and tracking updates. A mini-map is required because the spatial index is part of the concept, not decorative chrome.
+
+### `TranscodingPipelineSim`
+
+- Treat as a shared media-pipeline primitive across Hard waves.
+- `youtube` teaches upload, transcode queue, progressive variant readiness, CDN hit/miss, and adaptive bitrate playback.
+- Later Netflix reuse must add a playback-focused wrapper or mode. It must not ship as a renamed YouTube upload simulation.
+
+---
+
+## Pilot Sequence
+
+Use a staged pilot approach instead of implementing all three Wave 1 topics in parallel.
+
+### Stage 1: `TranscodingPipelineSim` Pilot
+
+- Start with **YouTube** because it sets the visual standard for high-density pipelines and is reused by Netflix in Wave 2.
+- Use it to validate layered flow teaching: upload, transcode, cache miss, and ABR fallback without overwhelming the default view.
+
+### Stage 2: `GeoMatchingSim` Pilot
+
+- Move to **Uber** after the media-pipeline interaction pattern is proven.
+- Use it to validate map overlays, query radius teaching, and rejection/fallback states.
+
+### Stage 3: `E2EEncryptionSim` Pilot
+
+- Implement **WhatsApp** after the other two pilots establish the visual grammar for dense, stateful flows.
+- Use it to validate encryption-state storytelling without leaking into cryptography jargon that the visual itself cannot explain.
+
+---
+
+## Pedagogical Rules (Same as Phase 5 Easy/Medium)
+
+- **Beginner First**: Simple analogies, explain jargon immediately
+- **Self-Explaining Visuals**: React Flow diagrams must be understandable at a glance
+- **Strict Counts**: Tradeoffs (4-6), FAQ (4-6), Interview Notes (5), Takeaways (4-6)
+- **18-Section Template**: Introduction, Why This Matters, Requirements, Capacity, API, Data Model, Architecture, Read/Write Paths, Deep Dives, Implementation Patterns, Scaling Strategy, Failure Scenarios, System Flows, Tradeoffs, FAQ, Interview Notes, Takeaways, Related Topics
+- **Inherited Quality Bar**: Hard topics must pass the same visualization contract and review rigor established in Easy and Medium before the wave can be marked complete
 
 ---
 
@@ -179,7 +283,7 @@ groups (
 
 **Nodes:**
 - `ClientNode` x2 → "Alice" (sublabel: "🟢 Online · Device: iPhone"), "Bob" (sublabel: "⚫ Offline · Device: Android")
-- `ServiceNode` → "Connection Gateway" (sublabel: "WebSocket/MQTT · 500K conn/node · Sticky sessions")
+- `ServiceNode` x2 → "Connection Gateway" (sublabel: "Alice ingress · WebSocket/MQTT · Sticky sessions"), "Bob's Connection Gateway" (sublabel: "Recipient ingress · WebSocket/MQTT")
 - `ServiceNode` → "Message Router" (sublabel: "Route by recipient · Dedup by clientMsgId")
 - `QueueNode` → "Message Queue" (sublabel: "Cassandra · Per-recipient queue · TTL 30 days")
 - `ServiceNode` → "Key Server" (sublabel: "Signal Protocol · Pre-key bundles · Identity verification")
@@ -478,6 +582,7 @@ surge_zones (
 - `ServiceNode` → "Surge Service" (sublabel: "Supply/demand ratio · Zone-level pricing")
 - `ServiceNode` → "Location Service" (sublabel: "Ingest 5M GPS/sec · QuadTree updates")
 - `ServiceNode` → "Location Ingestion" (sublabel: "Lightweight receiver · Batch to Kafka")
+- `ServiceNode` → "QuadTree Updater" (sublabel: "Consumers update spatial cells")
 - `QueueNode` → "Location Stream" (sublabel: "Kafka · Partitioned by geohash region")
 - `CacheNode` → "QuadTree Index" (sublabel: "Redis + In-memory · Sub-ms spatial queries")
 - `DatabaseNode` → "Ride Store" (sublabel: "PostgreSQL · Trip lifecycle")
@@ -493,7 +598,8 @@ surge_zones (
 - Ride Service → Driver App: animated, label "Ride offer (15 sec timeout)"
 - Driver App → Location Ingestion: animated (high frequency), label "GPS every 4s"
 - Location Ingestion → Location Stream: animated, label "Batch GPS events"
-- Location Stream → QuadTree Index: animated, label "Update driver position"
+- Location Stream → QuadTree Updater: animated, label "Driver position events"
+- QuadTree Updater → QuadTree Index: animated, label "Update driver position"
 - Ride Service → Surge Service: animated, label "Get surge multiplier"
 - Tracking Gateway → Rider App: animated, label "WebSocket: driver location"
 
@@ -958,7 +1064,7 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 ### `E2EEncryptionSim`
 | Property | Value |
 |---|---|
-| **Type** | Interactive simulation |
+| **Type** | Dedicated topic simulation |
 | **Used by** | WhatsApp |
 | **Controls** | Send Message, Bob Goes Offline, First Contact, Group Message, Intercept Attempt |
 | **Key Visual** | Plaintext → `████` ciphertext transformation with 🔐 lock icon |
@@ -969,7 +1075,7 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 ### `GeoMatchingSim`
 | Property | Value |
 |---|---|
-| **Type** | Interactive simulation with mini-map |
+| **Type** | Dedicated topic simulation with mini-map |
 | **Used by** | Uber |
 | **Controls** | Request Ride, Move Drivers, Surge Zone, Driver Rejects |
 | **Key Visual** | Mini-map with driver dots, QuadTree grid overlay, radius circle for matching |
@@ -980,8 +1086,8 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 ### `TranscodingPipelineSim`
 | Property | Value |
 |---|---|
-| **Type** | Interactive simulation |
-| **Used by** | YouTube (Wave 1), Netflix (Wave 2) |
+| **Type** | Shared simulation primitive with topic modes or wrappers |
+| **Used by** | YouTube directly in Wave 1, Netflix later via playback/CDN wrapper in Wave 2 |
 | **Controls** | Upload Video, Watch Video, Network Throttle slider, Transcode Failure, CDN Cache Miss |
 | **Key Visual** | ABR quality gauge (speedometer style), progressive variant completion badges |
 | **Wow Factor** | Real-time ABR quality gauge responding to bandwidth slider — users recognize this from their daily YouTube experience but never see the engineering |
@@ -1019,6 +1125,19 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 
 ## Verification Plan (Wave 1)
 
+### Shared Hard Readiness
+- [ ] All shared case-study prerequisites inherited from Easy and Medium are complete before Wave 1 content implementation begins
+- [ ] `CacheNode`, `QueueNode`, and `CapacityEstimationCard` exist and are wired into the Hard case-study stack
+- [ ] All 3 Wave 1 diagram config IDs exist in `diagramConfigs.ts`
+- [ ] Wave 1 simulations are scoped correctly before reuse claims are made for later Hard waves
+
+### Visual QA Rubric
+- [ ] A new user can identify the main path within 10 seconds without reading surrounding prose
+- [ ] Hover, click, scenario toggle, and replay/reset interactions are present and meaningful
+- [ ] Primary path and fallback/degraded path are visually distinguishable
+- [ ] Legends, labels, badges, and overlays are sufficient to understand the diagram without extra decoding
+- [ ] The visualization feels like a product feature, not a static diagram with motion layered on top
+
 ### Per-Topic Checklist
 - [ ] All 18 sections present and populated per template
 - [ ] React Flow architecture diagram renders with correct nodes, sublabels, and animated edges
@@ -1033,5 +1152,5 @@ async function onUploadComplete(videoId: string, originalPath: string) {
 - [ ] WhatsApp: E2EEncryptionSim shows encryption/decryption flow, offline queuing, and group fan-out
 - [ ] Uber: GeoMatchingSim shows QuadTree query, driver matching, surge zones, and rejection cascade
 - [ ] YouTube: TranscodingPipelineSim shows upload → transcode → CDN flow, ABR quality gauge, and cache miss
-- [ ] All 3 topics reviewed against 5 visualization criteria (Easy to Follow, Understandable, Interactive, Self-Explanatory, Creative)
+- [ ] All 3 topics pass the shared Hard visual QA rubric
 - [ ] No P0 or P1 issues in visualization review

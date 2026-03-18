@@ -223,6 +223,20 @@ Each topic must meet the following criteria before being marked as complete:
 
 ### Execution
 
+#### Shared Phase 5 Prerequisites
+
+| # | Task | Files |
+|---|---|---|
+| 5.0.1 | Extend `ArchitectureCanvas` with hover explanations, click inspection, scenario toggles, replay/reset, and visible legend support | `src/components/diagram/ArchitectureCanvas.tsx`, diagram UI components |
+| 5.0.2 | Register case-study React Flow primitives: `CacheNode` and `QueueNode` | `src/components/diagram/nodes/*.tsx`, `ArchitectureCanvas.tsx` |
+| 5.0.3 | Build `CapacityEstimationCard.tsx` for case-study capacity sections | `src/components/ui/CapacityEstimationCard.tsx` |
+| 5.0.4 | Standardize case-study visual grammar: edge labels, badge states, lane colors, and scenario vocabulary | `src/styles/diagram.css`, simulation/content conventions |
+| 5.0.5 | Add Easy case-study diagram config IDs | `src/data/diagramConfigs.ts` |
+| 5.0.6 | Add Medium case-study diagram config IDs | `src/data/diagramConfigs.ts` |
+| 5.0.7 | Add Hard Wave 1 diagram config IDs | `src/data/diagramConfigs.ts` |
+| 5.0.8 | Scope shared simulation primitives before reuse claims (`PresenceDeliverySim`, `FeedFanoutSim`, `TranscodingPipelineSim`) | `src/components/simulation/*.tsx`, sprint plans |
+| 5.0.9 | Approve pilot visual QA gates before parallel case-study implementation begins | `DOCS/Phase-5-*.md`, `DOCS/Execution-Plan.md` |
+
 #### Easy (⭐ Foundational)
 
 | # | Topic | Unique Concepts | Content File |
@@ -265,9 +279,18 @@ Each topic must meet the following criteria before being marked as complete:
 | `FeedFanoutSim` | Dual-lane fanout-on-write vs fanout-on-read comparison |
 | `PresenceDeliverySim` | Presence dots + delivery/read receipts + channel fallback |
 | `CrawlerFrontierSim` | URL frontier with politeness timers + Bloom filter dedup |
+| `E2EEncryptionSim` | Signal protocol key exchange + encrypted delivery flow |
+| `GeoMatchingSim` | Geospatial driver-rider matching with map overlays and surge zones |
+| `TranscodingPipelineSim` | Media upload → transcode → CDN delivery with adaptive bitrate states |
 
 ### Verification
 
+- [ ] Shared Phase 5 prerequisites are complete before topic implementation begins
+- [ ] `ArchitectureCanvas` supports hover, click inspection, scenario toggles, replay/reset, and visible legends for case-study diagrams
+- [ ] `CacheNode`, `QueueNode`, and `CapacityEstimationCard` exist and are wired into the case-study stack
+- [ ] Active sprint diagram config IDs are defined before MDX implementation starts
+- [ ] Shared simulations are explicitly scoped by topic mode or wrapper before reuse is claimed
+- [ ] Case-study visual QA rubric passes: main path clear in 10 seconds, interactions meaningful, fallback path distinct, legend self-explanatory, presentation feels product-grade
 - [ ] All 18 case studies render using the enhanced 18-section case study template
 - [ ] Each has: Introduction, Why This Matters, Requirements, Capacity, API, Data Model, Architecture
 - [ ] Each has: Read/Write Paths, Deep Dives, Implementation Patterns, Scaling Strategy

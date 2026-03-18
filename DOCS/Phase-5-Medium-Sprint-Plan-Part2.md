@@ -1,6 +1,8 @@
 # Phase 5 (Medium): Case Studies Sprint Plan — Part 2
 
-> **Goal:** Complete 2 of 5 Medium case studies (Instagram, Web Crawler) using the enhanced 18-section template.
+> **Goal:** Complete Topics 4-5 of the Medium case studies (Instagram, Web Crawler) using the enhanced 18-section template.
+
+> **Shared planning rules:** This document inherits the `Visualization Contract`, `React Flow Readiness Checklist`, `Shared Simulation Strategy`, and visual quality bar defined in [Phase-5-Medium-Sprint-Plan-Part1.md](./Phase-5-Medium-Sprint-Plan-Part1.md).
 
 ---
 
@@ -207,7 +209,7 @@ async function createPost(input: CreatePostInput) {
 **Production Monitoring:** Upload success rate, transcoding queue depth, CDN hit rate, feed p99, story expiration accuracy
 **How Instagram Actually Differs:** Instagram uses a custom Django-based backend with Cassandra for feed storage. Their media pipeline processes 200M+ uploads/day using a custom transcoding service (not FFmpeg directly). They use a sophisticated CDN warmup strategy that pre-pushes popular content to edge PoPs before users request it.
 
-### System Flows (Interactive) — `<FeedFanoutSim />` (reused) + Media Pipeline
+### System Flows (Interactive) — `<FeedFanoutSim mode="instagram" />` + media-pipeline wrapper
 
 **Controls:**
 - **"Upload Photo" button** → Triggers the full upload → transcode → publish flow
@@ -399,12 +401,8 @@ async function getNextBatch(workerId: string, capacity: number) {
   const now = Date.now();
   const batch = [];
 
-  // Get eligible hosts (past their politeness delay)
-  const eligibleHosts = await db.hostState.findMany({
-    where: { lastFetchAt: { lt: new Date(now - host.crawlDelayMs) } },
-    orderBy: { lastFetchAt: 'asc' },
-    take: capacity
-  });
+  // Frontier-specific query that returns hosts whose politeness timers have expired
+  const eligibleHosts = await frontier.findEligibleHosts(now, capacity);
 
   for (const host of eligibleHosts) {
     // Get highest-priority pending URL for this host
@@ -504,21 +502,21 @@ class URLDedup {
 ### `FeedFanoutSim` — Twitter + Instagram
 | Attribute | Detail |
 |---|---|
-| **Type** | Simulation component |
+| **Type** | Shared simulation primitive with topic modes |
 | **Controls** | "Post (Normal)" button, "Post (Celebrity)" button, "Fanout Mode" toggle (write/read/hybrid), "Ranking Down" toggle |
 | **Visual** | Dual `LaneNode` comparison. Left = fanout-on-write (tree of edges fanning to follower caches). Right = fanout-on-read (single write, merge at read) |
 | **Metrics** | Live cost counter: "Writes: X" / "Read merges: Y" |
 | **Wow factor** | Celebrity toggle visually switches fanout path + crossed-out cost counter (50M writes → 1 write) |
-| **Reused by** | `twitter-news-feed.mdx`, `instagram.mdx` |
+| **Reused by** | `twitter-news-feed.mdx` directly, `instagram.mdx` via feed mode plus media-pipeline wrapper |
 
 ### `PresenceDeliverySim` — Chat + Notification
 | Attribute | Detail |
 |---|---|
-| **Type** | Simulation component |
+| **Type** | Shared simulation primitive with topic modes |
 | **Controls** | "Send Message" / "Send Notification" button, "Go Online/Offline" toggle, "Channel Preference" selector, "Read Message" button |
 | **Visual** | Pulsing green presence dots (online), grey (offline). Delivery receipt badges: ✓ → ✓✓ → ✓✓ blue. Multi-channel lanes for notifications (Push/SMS/Email) |
 | **Wow factor** | Read receipt animation mirrors WhatsApp's iconic blue ticks. Provider failure triggers visual channel fallback |
-| **Reused by** | `chat-system.mdx`, `notification-system.mdx` |
+| **Reused by** | `chat-system.mdx` in `chat` mode, `notification-system.mdx` in `notification` mode |
 
 ### `CrawlerFrontierSim` — Web Crawler
 | Attribute | Detail |
@@ -557,6 +555,19 @@ class URLDedup {
 
 ## Verification Plan (Manual Only)
 
+### Shared Medium Readiness
+- [ ] All Medium prerequisites inherited from Part 1 are complete before content implementation begins
+- [ ] `CacheNode`, `QueueNode`, and `CapacityEstimationCard` exist and are wired into the Medium case-study stack
+- [ ] All 5 Medium diagram config IDs exist in `diagramConfigs.ts`
+- [ ] Shared simulation primitives support their topic-specific modes or wrappers
+
+### Visual QA Rubric
+- [ ] A new user can identify the main path within 10 seconds without reading surrounding prose
+- [ ] Hover, click, scenario toggle, and replay/reset interactions are present and meaningful
+- [ ] Primary path and fallback/degraded path are visually distinguishable
+- [ ] Legend, labels, and state colors are sufficient to understand the diagram without extra decoding
+- [ ] The visualization feels like a product feature, not a static diagram with motion layered on top
+
 ### Wave 1 Verification
 - [ ] `notification-system.mdx` renders with full 18-section structure
 - [ ] `chat-system.mdx` renders with full 18-section structure
@@ -577,5 +588,6 @@ class URLDedup {
 - [ ] All 5 medium case studies complete in `src/content/case-studies/`
 - [ ] All 3 new simulation components implemented and functional
 - [ ] All diagram configs defined with full node/edge specs
+- [ ] All 5 topics pass the shared Medium visual QA rubric
 - [ ] No placeholder markers (`TODO`, `TBD`, or missing sections)
 - [ ] `Execution-Plan.md` Phase 5 Medium status can be marked complete
