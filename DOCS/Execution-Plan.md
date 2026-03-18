@@ -33,7 +33,7 @@ Each topic must meet the following criteria before being marked as complete:
 | 0.4 | Setup directory structure | ✅ |
 | 0.5 | Establish Linear-inspired dark theme in `index.css` | ✅ |
 | 0.6 | Create prototype layout with animated diagram in `App.tsx` | ✅ |
-| 0.7 | Define refined 11-section MDX schema + case study schema in `SD-Plan.md` | ✅ |
+| 0.7 | Define refined 12-section MDX schema + case study schema in `SD-Plan.md` | ✅ |
 | 0.8 | Setup Antigravity skills | ✅ |
 
 ---
@@ -104,7 +104,7 @@ Each topic must meet the following criteria before being marked as complete:
 ### Phase 1 Verification ✅
 
 - [x] `npm run build` — zero errors
-- [x] Navigate to `/fundamentals/load-balancers` → full 11-section page renders
+- [x] Navigate to `/fundamentals/load-balancers` → full 12-section page renders
 - [x] Sidebar shows all categories, Load Balancers is highlighted as active
 - [x] Breadcrumb shows `Fundamentals > Load Balancers`
 - [x] Diagram renders with custom nodes, animated edges, faint grid
@@ -144,7 +144,7 @@ Each topic must meet the following criteria before being marked as complete:
 
 ## Phase 3: Scaling + Databases Sprint
 
-**Goal:** Complete 8 topics across Scaling and Databases categories.
+**Goal:** Complete 9 topics across Scaling and Databases categories.
 
 ### Execution
 
@@ -154,13 +154,13 @@ Each topic must meet the following criteria before being marked as complete:
 | 3.2 | Consistent Hashing | Interactive Hash Ring | `src/content/scaling/consistent-hashing.mdx` | ✅ |
 | 3.3 | Database Sharding | Hash ring viz, `QueueNode` | `src/content/scaling/database-sharding.mdx` | [ ] |
 | 3.4 | Database Replication | `ReplicationEdge`, leader-follower anim | `src/content/scaling/database-replication.mdx` | [ ] |
-| 3.4 | Caching Strategies | `CacheNode`, `CacheFlowSim.tsx` | `src/content/scaling/caching-strategies.mdx` | [ ] |
-| 3.5 | Indexing | B-tree traversal viz | `src/content/databases/indexing.mdx` | [ ] |
-| 3.6 | Partitioning | Partition routing viz | `src/content/databases/partitioning.mdx` | [ ] |
-| 3.7 | SQL vs NoSQL | Comparison matrix component | `src/content/databases/sql-vs-nosql.mdx` | [ ] |
-| 3.8 | ACID vs BASE | — | `src/content/databases/acid-base.mdx` | [ ] |
+| 3.5 | Caching Strategies | `CacheNode`, `CacheFlowSim.tsx` | `src/content/scaling/caching-strategies.mdx` | [ ] |
+| 3.6 | Indexing | B-tree traversal viz | `src/content/databases/indexing.mdx` | [ ] |
+| 3.7 | Partitioning | Partition routing viz | `src/content/databases/partitioning.mdx` | [ ] |
+| 3.8 | SQL vs NoSQL | Comparison matrix component | `src/content/databases/sql-vs-nosql.mdx` | [ ] |
+| 3.9 | ACID vs BASE | — | `src/content/databases/acid-base.mdx` | [ ] |
 
-### New Components Built
+### Planned New Components
 
 | Component | Purpose |
 |---|---|
@@ -170,7 +170,7 @@ Each topic must meet the following criteria before being marked as complete:
 
 ### Verification
 
-- [ ] All 8 topics render with correct content
+- [ ] All 9 topics render with correct content
 - [ ] Cache sim: hit (green flash) / miss (red → DB query → cache populate)
 - [ ] Sharding diagram shows hash ring with key distribution
 - [ ] Replication diagram shows leader-follower with animated sync
@@ -196,7 +196,7 @@ Each topic must meet the following criteria before being marked as complete:
 | 4.8 | API Gateway | Gateway routing viz | `src/content/patterns/api-gateway.mdx` |
 | 4.9 | Service Discovery | Registry heartbeat viz | `src/content/patterns/service-discovery.mdx` |
 
-### New Components Built
+### Planned New Components
 
 | Component | Purpose |
 |---|---|
@@ -213,7 +213,7 @@ Each topic must meet the following criteria before being marked as complete:
 - [ ] Circuit Breaker sim: closed → open → half-open transitions
 - [ ] Saga sim: forward flow + failure injection + compensation rollback
 - [ ] All diagrams match Linear line-art aesthetic
-- [ ] 22/28 topics now complete
+- [ ] 23/23 conceptual topics now complete
 
 ---
 
@@ -256,7 +256,7 @@ Each topic must meet the following criteria before being marked as complete:
 | 5.17 | Search Engine | Web indexing, ranking (PageRank), query processing | `src/content/case-studies/search-engine.mdx` | 3 |
 | 5.18 | Amazon (E-Commerce) | Full-stack: search, cart, payments, inventory — Capstone | `src/content/case-studies/amazon.mdx` | 3 |
 
-### New Components Built
+### Planned New Components
 
 | Component | Purpose |
 |---|---|
@@ -274,7 +274,7 @@ Each topic must meet the following criteria before being marked as complete:
 - [ ] Each has: Failure Scenarios, System Flows (interactive), Tradeoffs, FAQ, Interview Notes, Takeaways, Related
 - [ ] Architecture diagrams are interactive React Flow with sublabeled nodes and animated edges
 - [ ] Difficulty progression flows naturally (Easy → Medium → Hard)
-- [ ] All topics complete (Phases 1-4: 28 conceptual + Phase 5: 18 case studies = 46 total)
+- [ ] All topics complete (Phases 1-4: 23 conceptual + Phase 5: 18 case studies = 41 total)
 
 ---
 
@@ -331,13 +331,14 @@ Each topic must meet the following criteria before being marked as complete:
 
 ## Phase 8: Testing & Ship
 
-**Goal:** E2E tests, performance, and production deployment.
+**Goal:** Launch readiness, performance, and production deployment (manual verification by default).
 
 ### Execution
 
 - [ ] **Phase 8: Polish & Launch Readiness**
-    - [ ] Implement Hybrid Verification Suite (Antigravity UX + Playwright) for all prior phases.
-    - [ ] Comprehensive A11y & Performance Audit.
+    - [ ] Complete manual verification audit across all completed phases (code inspection + build checks).
+    - [ ] Optional automated tests (Vitest/Playwright) only if explicitly requested by the user.
+    - [ ] Comprehensive A11y & Performance audit.
 
 ### Verification (Manual only if asked)
 
@@ -359,13 +360,13 @@ Phase 1  ✅ Golden Path (1 complete topic: Load Balancers)
 Phase 2  ✅ Fundamentals Sprint (+4 topics = 5 total)
   │        🎯 Milestone: Complete "Fundamentals" category
   │
-Phase 3  ▶ Scaling + Databases Sprint (+8 topics = 13 total)
+Phase 3  ▶ Scaling + Databases Sprint (+9 topics = 14 total)
   │        🎯 Milestone: MVP with 3 categories
   │
-Phase 4  ▶ Messaging + Patterns Sprint (+9 topics = 22 total)
+Phase 4  ▶ Messaging + Patterns Sprint (+9 topics = 23 total)
   │        🎯 Milestone: All concept topics done
   │
-Phase 5  ▶ Case Studies Sprint (+18 topics = 40 total)
+Phase 5  ▶ Case Studies Sprint (+18 topics = 41 total)
   │        🎯 Milestone: All content complete
   │
 Phase 6  ▶ UX Polish (search, progress, animations)

@@ -330,7 +330,7 @@ system-design-platform/
 ├── tsconfig.json
 ├── vite.config.ts
 ├── package.json
-├── cypress.config.ts                      # Cypress testing configuration
+├── playwright.config.ts                   # Playwright testing configuration (optional)
 └── README.md
 ```
 
@@ -340,7 +340,7 @@ system-design-platform/
 
 ### 5.1 Standard MDX Topic Schema (12 Sections)
 
-Every **concept topic** (topics 1–22) follows a consistent 12-section structure. This ensures every page feels uniform, premium, and covers both foundational theory, real-world application, and structured interview preparation.
+Every **concept topic** (topics 1–23) follows a consistent 12-section structure. This ensures every page feels uniform, premium, and covers both foundational theory, real-world application, and structured interview preparation.
 
 | #  | Section                     | Purpose                                           | Key Component                |
 |----|-----------------------------|----------------------------------------------------|------------------------------|
@@ -354,13 +354,9 @@ Every **concept topic** (topics 1–22) follows a consistent 12-section structur
 | 8  | **Implementation Patterns** | Senior-level insights and production strategies     | `<KnowledgeSnippet />`       |
 | 9  | **Common Questions (Q&A)**  | Clarifying confusing points and edge cases         | `<FAQAccordion />`           |
 | 10 | **Interview Notes**         | Structured answer blueprint for interviews          | `<InterviewAnswer />`        |
-| 11 | **Summary & Takeaways**     | Quick revision summary (3–5 bullet points)          | `<KeyTakeaways />`           |
+| 11 | **Summary & Takeaways**     | Quick revision summary (4–6 bullet points)          | `<KeyTakeaways />`           |
 | 12 | **Next Steps & Related Topics**| Links to connected concepts and deeper dives      | `<RelatedTopics />`          |
 
-#### MDX Template (Standard Topic)
-
-```mdx
----
 #### MDX Template (Standard Topic)
 
 ```mdx
@@ -522,7 +518,7 @@ Structured answer following the standard interview framework.
 
 ---
 
-### 5.3 Full Topic Content Outline (28 Topics)
+### 5.3 Full Topic Content Outline (41 Topics)
 
 Below is the detailed content outline for every topic. Each bullet maps to content that should be authored within the corresponding MDX section.
 
@@ -530,71 +526,72 @@ Below is the detailed content outline for every topic. Each bullet maps to conte
 
 | # | Topic | Key Content Points | Structure Check |
 |---|---|---|---|
-| 1 | **Latency vs Throughput** | Difference, why both matter, bottleneck visualization, Little's Law. | 11 Sections |
-| 2 | **CAP Theorem** | C/A/P definitions, network partition impact, interactive triangle. | 11 Sections |
-| 3 | **Consistency Models** | Strong, eventual, causal, read-your-writes, timeline visualization. | 11 Sections |
-| 4 | **Load Balancers** | L4 vs L7, round robin / least conn / IP hash, health checks. | 11 Sections |
-| 5 | **Rate Limiting** | Token bucket, leaky bucket, sliding window, token flow animation. | 11 Sections |
+| 1 | **Latency vs Throughput** | Difference, why both matter, bottleneck visualization, Little's Law. | 12 Sections |
+| 2 | **CAP Theorem** | C/A/P definitions, network partition impact, interactive triangle. | 12 Sections |
+| 3 | **Consistency Models** | Strong, eventual, causal, read-your-writes, timeline visualization. | 12 Sections |
+| 4 | **Load Balancers** | L4 vs L7, round robin / least conn / IP hash, health checks. | 12 Sections |
+| 5 | **Rate Limiting** | Token bucket, leaky bucket, sliding window, token flow animation. | 12 Sections |
 
 #### Category 2: Scaling
 
 | # | Topic | Key Content Points |
 |---|---|---|
 | 6 | **Horizontal vs Vertical** | Definitions, pros/cons, limits, when to choose each, scaling visualization |
-| 7 | **Database Sharding** | Shard key selection, range/hash/directory-based, rebalancing, hot partitions, distribution visualization |
-| 8 | **Database Replication** | Leader-follower, multi-leader, leaderless, read replicas, replication lag, failover, flow animation |
-| 9 | **Caching Strategies** | Cache-aside, read-through, write-through, write-behind, eviction, TTL, invalidation, hit/miss simulation |
+| 7 | **Consistent Hashing** | Virtual nodes, ring rebalancing, hotspot mitigation, key-to-node mapping, ring simulation |
+| 8 | **Database Sharding** | Shard key selection, range/hash/directory-based, rebalancing, hot partitions, distribution visualization |
+| 9 | **Database Replication** | Leader-follower, multi-leader, leaderless, read replicas, replication lag, failover, flow animation |
+| 10 | **Caching Strategies** | Cache-aside, read-through, write-through, write-behind, eviction, TTL, invalidation, hit/miss simulation |
 
 #### Category 3: Databases
 
 | # | Topic | Key Content Points |
 |---|---|---|
-| 10 | **Indexing** | B-tree basics, hash indexes, composite/covering indexes, good vs bad choices, lookup flow visualization |
-| 11 | **Partitioning** | Horizontal vs vertical, partition key strategy, skew, repartitioning, routing visualization |
-| 12 | **SQL vs NoSQL** | Data models, when each is better, schema flexibility, joins vs denormalization, comparison matrix |
-| 13 | **ACID vs BASE** | ACID properties, BASE principles, transaction guarantees, consistency tradeoffs, real-world examples |
+| 11 | **Indexing** | B-tree basics, hash indexes, composite/covering indexes, good vs bad choices, lookup flow visualization |
+| 12 | **Partitioning** | Horizontal vs vertical, partition key strategy, skew, repartitioning, routing visualization |
+| 13 | **SQL vs NoSQL** | Data models, when each is better, schema flexibility, joins vs denormalization, comparison matrix |
+| 14 | **ACID vs BASE** | ACID properties, BASE principles, transaction guarantees, consistency tradeoffs, real-world examples |
 
 #### Category 4: Messaging
 
 | # | Topic | Key Content Points |
 |---|---|---|
-| 14 | **Kafka** | Broker/topic/partition/offset, producer/consumer groups, partitioning strategy, ordering, rebalancing, retention, delivery semantics, topology diagram, partition flow simulation |
-| 15 | **RabbitMQ** | Exchanges, queues, bindings, routing keys, ack/nack, competing consumers, retry/DLQ, queue routing visualization |
-| 16 | **Event-Driven Architecture** | Producer/broker/consumer, async communication, loose coupling, event schema, idempotency, failure handling, event flow diagram |
-| 17 | **Exactly-Once Processing** | Why it's hard, at-most/at-least/exactly-once, idempotency keys, deduplication, transactional processing, failure scenarios, message-processing visualization |
+| 15 | **Kafka** | Broker/topic/partition/offset, producer/consumer groups, partitioning strategy, ordering, rebalancing, retention, delivery semantics, topology diagram, partition flow simulation |
+| 16 | **RabbitMQ** | Exchanges, queues, bindings, routing keys, ack/nack, competing consumers, retry/DLQ, queue routing visualization |
+| 17 | **Event-Driven Architecture** | Producer/broker/consumer, async communication, loose coupling, event schema, idempotency, failure handling, event flow diagram |
+| 18 | **Exactly-Once Processing** | Why it's hard, at-most/at-least/exactly-once, idempotency keys, deduplication, transactional processing, failure scenarios, message-processing visualization |
 
 #### Category 5: Distributed Patterns
 
 | # | Topic | Key Content Points |
 |---|---|---|
-| 18 | **Circuit Breaker** | Closed/open/half-open states, failure threshold, recovery logic, state machine visualization |
-| 19 | **Retry Pattern** | Retryable vs non-retryable errors, immediate vs exponential backoff, jitter, retry storms, timeline visualization |
-| 20 | **Saga Pattern** | Choreography vs orchestration, forward steps, compensating transactions, failure recovery, saga flow visualization |
-| 21 | **API Gateway** | Request routing, authentication, rate limiting, aggregation, cross-cutting concerns, gateway flow visualization |
-| 22 | **Service Discovery** | Client-side vs server-side, registry concepts, heartbeats, health checks, discovery flow visualization |
+| 19 | **Circuit Breaker** | Closed/open/half-open states, failure threshold, recovery logic, state machine visualization |
+| 20 | **Retry Pattern** | Retryable vs non-retryable errors, immediate vs exponential backoff, jitter, retry storms, timeline visualization |
+| 21 | **Saga Pattern** | Choreography vs orchestration, forward steps, compensating transactions, failure recovery, saga flow visualization |
+| 22 | **API Gateway** | Request routing, authentication, rate limiting, aggregation, cross-cutting concerns, gateway flow visualization |
+| 23 | **Service Discovery** | Client-side vs server-side, registry concepts, heartbeats, health checks, discovery flow visualization |
 
 #### Category 6: Case Studies (18 Topics)
 
 | # | Topic | Key Content Points | Difficulty |
 |---|---|---|---|
-| 23 | **URL Shortener** | Capacity estimation, base62, redirect flow, analytics | Easy |
-| 24 | **Rate Limiter Service**| Token bucket vs leaky bucket, Redis counters | Easy |
-| 25 | **Distributed Cache** | Eviction, consistent hashing, replication | Easy |
-| 26 | **Logging / Metrics** | Kafka ingestion, time-series DB, aggregation | Easy |
-| 27 | **Twitter (News Feed)** | Fan-out, timelines, pull vs push models | Medium |
-| 28 | **Notification System**| Push/SMS/Email, priority queues, retry logic | Medium |
-| 29 | **Instagram** | Image processing, storage, feed ranking | Medium |
-| 30 | **Chat System** | WebSockets, message persistence, presence | Medium |
-| 31 | **Web Crawler** | URL frontier, politeness, Bloom filter dedup | Medium |
-| 32 | **WhatsApp** | E2E encryption (Signal), delivery guarantees | Hard |
-| 33 | **Uber/Lyft** | Geospatial (QuadTree), matching, surge pricing | Hard |
-| 34 | **YouTube** | Upload flow, transcoding, CDN delivery | Hard |
-| 35 | **Netflix** | ABR streaming, CDN, recommendation engine | Hard |
-| 36 | **Zoom / GMeet** | WebRTC, media servers (SFU/MCU), recording | Hard |
-| 37 | **Google Docs** | Real-time collab, OT vs CRDT, cursor sync | Hard |
-| 38 | **Google Drive** | File sync, chunking, conflict resolution | Hard |
-| 39 | **Search Engine** | Web indexing, PageRank, query processing | Hard |
-| 40 | **Amazon (Capstone)** | Product, Search, Cart, Orders, Inventory | Hard |
+| 24 | **URL Shortener** | Capacity estimation, base62, redirect flow, analytics | Easy |
+| 25 | **Rate Limiter Service**| Token bucket vs leaky bucket, Redis counters | Easy |
+| 26 | **Distributed Cache** | Eviction, consistent hashing, replication | Easy |
+| 27 | **Logging / Metrics** | Kafka ingestion, time-series DB, aggregation | Easy |
+| 28 | **Twitter (News Feed)** | Fan-out, timelines, pull vs push models | Medium |
+| 29 | **Notification System**| Push/SMS/Email, priority queues, retry logic | Medium |
+| 30 | **Instagram** | Image processing, storage, feed ranking | Medium |
+| 31 | **Chat System** | WebSockets, message persistence, presence | Medium |
+| 32 | **Web Crawler** | URL frontier, politeness, Bloom filter dedup | Medium |
+| 33 | **WhatsApp** | E2E encryption (Signal), delivery guarantees | Hard |
+| 34 | **Uber/Lyft** | Geospatial (QuadTree), matching, surge pricing | Hard |
+| 35 | **YouTube** | Upload flow, transcoding, CDN delivery | Hard |
+| 36 | **Netflix** | ABR streaming, CDN, recommendation engine | Hard |
+| 37 | **Zoom / GMeet** | WebRTC, media servers (SFU/MCU), recording | Hard |
+| 38 | **Google Docs** | Real-time collab, OT vs CRDT, cursor sync | Hard |
+| 39 | **Google Drive** | File sync, chunking, conflict resolution | Hard |
+| 40 | **Search Engine** | Web indexing, PageRank, query processing | Hard |
+| 41 | **Amazon (Capstone)** | Product, Search, Cart, Orders, Inventory | Hard |
 
 ---
 
@@ -622,6 +619,7 @@ export const topicTree: TopicCategory[] = [
     icon: "TrendingUp",
     topics: [
       { slug: "horizontal-vs-vertical", label: "Horizontal vs Vertical", difficulty: "easy" },
+      { slug: "consistent-hashing",     label: "Consistent Hashing",     difficulty: "medium" },
       { slug: "database-sharding",      label: "Database Sharding",      difficulty: "hard" },
       { slug: "database-replication",    label: "Database Replication",    difficulty: "medium" },
       { slug: "caching-strategies",      label: "Caching Strategies",      difficulty: "medium" },
@@ -902,46 +900,50 @@ SimulationProvider (Context)
 
 ## 8. Topic Roadmap & Learning Path
 
-### Phase 1 — Fundamentals (MVP)
+### Phase 1 — Fundamentals (Implemented)
 
 | Topic                  | Visualization                                      | Simulation  |
 | ---------------------- | -------------------------------------------------- | ----------- |
-| Latency vs Throughput  | Animated pipeline with bottleneck visualization    | ❌          |
-| CAP Theorem            | Interactive triangle: drag to select CP/AP/CA      | ❌          |
-| Consistency Models     | Timeline diagram with read/write ordering          | ❌          |
+| Latency vs Throughput  | Animated pipeline with bottleneck visualization    | ✅          |
+| CAP Theorem            | Interactive triangle: drag to select CP/AP/CA      | ✅          |
+| Consistency Models     | Timeline diagram with read/write ordering          | ✅          |
 | Load Balancers         | Multi-server distribution diagram                  | ✅          |
 | Rate Limiting          | Token bucket filling/draining animation            | ✅          |
 
-### Phase 2 — Data Layer
+### Phase 2 — Scaling + Databases (In Progress)
 
 | Topic                  | Visualization                                      | Simulation  |
 | ---------------------- | -------------------------------------------------- | ----------- |
+| Horizontal vs Vertical | Scale-up vs scale-out comparison                   | ✅          |
+| Consistent Hashing     | Hash ring with virtual nodes                       | ✅          |
 | Indexing               | B-tree traversal animation                         | ❌          |
-| Replication            | Leader-follower data sync flow                     | ✅          |
-| Sharding               | Hash ring with key distribution                    | ✅          |
+| Replication            | Leader-follower data sync flow                     | ❌          |
+| Sharding               | Hash ring with key distribution                    | ❌          |
 | Partitioning           | Range vs hash partition comparison                 | ❌          |
-| Caching                | Cache-aside pattern with hit/miss flow             | ✅          |
+| Caching                | Cache-aside pattern with hit/miss flow             | ❌          |
+| SQL vs NoSQL           | Relational vs document/key-value tradeoff matrix   | ❌          |
+| ACID vs BASE           | Consistency and transaction model comparison       | ❌          |
 
-### Phase 3 — Messaging
+### Phase 3 — Messaging (Planned)
 
 | Topic                  | Visualization                                      | Simulation  |
 | ---------------------- | -------------------------------------------------- | ----------- |
-| Kafka                  | Full broker-partition-consumer topology             | ✅          |
-| RabbitMQ               | Exchange-queue-consumer binding                    | ✅          |
-| Event-Driven Arch      | Multi-service event flow                           | ✅          |
+| Kafka                  | Full broker-partition-consumer topology             | ❌          |
+| RabbitMQ               | Exchange-queue-consumer binding                    | ❌          |
+| Event-Driven Arch      | Multi-service event flow                           | ❌          |
 | Exactly-Once           | Idempotency key dedup visualization                | ❌          |
 
-### Phase 4 — Distributed Patterns
+### Phase 4 — Distributed Patterns (Planned)
 
 | Topic                  | Visualization                                      | Simulation  |
 | ---------------------- | -------------------------------------------------- | ----------- |
-| Circuit Breaker        | State machine with transition animations           | ✅          |
-| Retry Pattern          | Exponential backoff timeline                       | ✅          |
-| Saga Pattern           | Multi-step transaction with rollback               | ✅          |
+| Circuit Breaker        | State machine with transition animations           | ❌          |
+| Retry Pattern          | Exponential backoff timeline                       | ❌          |
+| Saga Pattern           | Multi-step transaction with rollback               | ❌          |
 | API Gateway            | Request routing + auth + rate limiting             | ❌          |
 | Service Discovery      | Service registry with heartbeat pulses             | ❌          |
 
-### Phase 5 — Case Studies (18 Topics)
+### Phase 5 — Case Studies (18 Topics, Planned)
 
 | #  | Topic | Complexity | Simulation |
 |----|---|---|---|
@@ -949,15 +951,15 @@ SimulationProvider (Context)
 | 5.2| Rate Limiter | Easy | ❌ |
 | 5.3| Distributed Cache | Easy | ❌ |
 | 5.4| Logging / Metrics | Easy | ❌ |
-| 5.5| News Feed | Medium | ✅ (Fanout) |
+| 5.5| News Feed | Medium | ❌ |
 | 5.6| Notification Sys | Medium | ❌ |
 | 5.7| Instagram | Medium | ❌ |
-| 5.8| Chat System | Medium | ✅ (Presence) |
-| 5.9| Web Crawler | Medium | ✅ (Frontier) |
-| 5.10| WhatsApp | Hard | ✅ (Signal) |
-| 5.11| Uber | Hard | ✅ (Geo) |
-| 5.12| YouTube | Hard | ✅ (ABR) |
-| ... | 6 More Topics | Hard | ... |
+| 5.8| Chat System | Medium | ❌ |
+| 5.9| Web Crawler | Medium | ❌ |
+| 5.10| WhatsApp | Hard | ❌ |
+| 5.11| Uber | Hard | ❌ |
+| 5.12| YouTube | Hard | ❌ |
+| ... | 6 More Topics | Hard | ❌ |
 
 ---
 
@@ -1109,7 +1111,7 @@ export const slideInLeft = {
 
 | Feature                          | Priority | Complexity |
 | -------------------------------- | -------- | ---------- |
-| All 40+ topic pages              | P2       | High       |
+| All 41 topic pages               | P2       | High       |
 | 18 case study pages              | P2       | High       |
 | Full Interview Mode              | P2       | High       |
 | Whiteboard mode                  | P3       | Very High  |
@@ -1124,7 +1126,7 @@ export const slideInLeft = {
 ### 12.1 Local Progress Tracking
 Local storage-based progress tracking to keep users motivated.
 - Checkmarks next to completed topics in the sidebar
-- Progress bar for overall course completion (e.g., "5/25 Mastered")
+- Progress bar for overall course completion (e.g., "7/41 Mastered")
 - Stored as a simple array of completed topic slugs in `localStorage`
 
 ### 12.2 Whiteboard Mode
@@ -1201,7 +1203,7 @@ Quick-review system with spaced repetition:
 [ ] Edge particle animations (gated by IntersectionObserver)
 [ ] Diagram configs for all Phase 1 topics
 [ ] Diagram controls (zoom, fit, minimap, export to PNG)
-[ ] Cypress suite setup for visual snapshot tests
+[ ] Playwright suite setup for visual snapshot tests (optional, only when requested)
 ```
 
 ### Phase 3 — Simulations (Week 5-6)
@@ -1218,7 +1220,7 @@ Quick-review system with spaced repetition:
 ### Phase 4 — Content Expansion (Week 7-8)
 
 ```
-[ ] Scaling topics (4 pages)
+[ ] Scaling topics (5 pages)
 [ ] Database topics (4 pages)
 [ ] Messaging topics (4 pages)
 [ ] Distributed pattern topics (5 pages)
@@ -1346,30 +1348,26 @@ App
 
 ## 17. Testing Strategy
 
-To ensure clinical precision and visual excellence, the platform employs a three-tiered testing strategy. No topic is considered complete without passing all three tiers.
+Current policy: automated tests are optional and should only run when explicitly requested by the user. Default verification is manual code inspection plus a production build check.
 
-### 17.1 Unit Testing (Vitest)
+### 17.1 Default Verification (Current Workflow)
+- **Scope**: Content correctness, component wiring, route integrity, and build health.
+- **Method**: Code inspection + `npm run build`.
+- **Use Case**: Standard workflow for all phases unless the user asks for automated suites.
+
+### 17.2 Optional Unit Testing (Vitest, On Request)
 - **Scope**: Data structures, simulation math, and utility functions.
-- **Focus**: Ensuring edge cases in algorithms (e.g., Round Robin indexing, Token Bucket drain logic) are mathematically correct.
-- **Command**: `npm run test:unit`
+- **Focus**: Edge cases (e.g., Round Robin indexing, Token Bucket drain logic).
+- **Command**: `npm run test`
 
-### 17.2 E2E Functional Testing (Playwright)
-- **Scope**: User flows and interactivity.
-- **Goal**: Verify that clicking "CAP Theorem" actually loads the CAP page and that the interactive simulation responds to user inputs.
-- **Key Assertions**: URL changes, component visibility, state updates in the DOM.
-- **Command**: `npx playwright test`
-
-### 17.3 Visual Regression Testing (Playwright Snapshots)
-- **Scope**: UI Fidelity and Technical Rendering.
-- **Goal**: Catch issues that functional tests miss, such as unrendered LaTeX math (raw `$` signs), SVG diagram misalignment, or CSS regressions in the Glassmorphism theme.
-- **Strategy (Local Mac)**: For development speed, snapshots are generated and verified exclusively on **macOS**. Golden baselines are committed to the repository.
-- **Method**: Compare current screenshots against "Golden Baselines".
-- **Trigger**: Mandatory for every new component or MDX content change.
-- **Command**: `npx playwright test --update-snapshots` (to generate) / `npx playwright test` (to verify)
+### 17.3 Optional E2E / Visual Testing (Playwright, On Request)
+- **Scope**: User flows, interactivity, and visual regression.
+- **Goal**: Validate navigation, component rendering, and style regressions.
+- **Commands**: `npx playwright test` and `npx playwright test --update-snapshots`
 
 ### 17.4 Future Testing Pillars
 1.  **Accessibility (A11y)**: Automated `@axe-core/playwright` audits to ensure WCAG compliance for high-contrast dark mode and SVG interactive nodes.
-2.  **Content Schema Validation**: Automated `Zod` or Node.js scripts to enforce the 11-section quality requirement for all MDX topics.
+2.  **Content Schema Validation**: Automated `Zod` or Node.js scripts to enforce the 12-section quality requirement for all MDX topics.
 3.  **Performance Budgeting**: Tracking initial page load and animation FPS to maintain the "Ultra-Premium" snappy feel.
 
 | Concern                    | Strategy                                          |
