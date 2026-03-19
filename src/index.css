@@ -138,8 +138,15 @@
   .animate-shimmer::after {
     content: "";
     @apply absolute inset-0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
-    animation: shimmer 1.5s infinite;
+    background: linear-gradient(
+      90deg, 
+      transparent, 
+      rgba(255, 255, 255, 0.03) 20%, 
+      rgba(112, 93, 232, 0.08) 50%, 
+      rgba(255, 255, 255, 0.03) 80%, 
+      transparent
+    );
+    animation: shimmer 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
   }
 
   /* Breathing Glow Effect */

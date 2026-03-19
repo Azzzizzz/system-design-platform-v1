@@ -12,6 +12,7 @@ import { CapTheoremSim } from "../simulation/CapTheoremSim";
 import { ConsistencyModelsSim } from "../simulation/ConsistencyModelsSim";
 import { TopicNotFound } from "./TopicNotFound";
 import { InterviewAnswer } from "./InterviewAnswer";
+import { ContentSkeleton } from "../ui/ContentSkeleton";
 
 import { RateLimitingSim } from "../simulation/RateLimitingSim";
 import { ScalingComparison } from "../simulation/ScalingComparison";
@@ -86,21 +87,9 @@ export function MDXRenderer({ categoryId, slug }: { categoryId: string; slug: st
     return <TopicNotFound categoryId={categoryId} slug={slug} />;
   }
 
-  const Skeleton = () => (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="h-8 w-1/3 animate-shimmer rounded-lg" />
-      <div className="space-y-3">
-        <div className="h-4 w-full animate-shimmer rounded-md" />
-        <div className="h-4 w-5/6 animate-shimmer rounded-md" />
-        <div className="h-4 w-4/6 animate-shimmer rounded-md" />
-      </div>
-      <div className="h-64 w-full animate-shimmer rounded-2xl" />
-    </div>
-  );
-
   return (
     <div className="mdx-content pb-20">
-      <Suspense fallback={<Skeleton />}>
+      <Suspense fallback={<ContentSkeleton />}>
         <ContentComponent components={mdxComponents} />
       </Suspense>
     </div>

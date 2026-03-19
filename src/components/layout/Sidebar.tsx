@@ -39,15 +39,15 @@ export function Sidebar() {
                 aria-expanded={isExpanded}
               >
                 <div className="flex items-center gap-2">
-                  {IconComponent && <IconComponent className={`w-3.5 h-3.5 transition-all ${isCategoryActive ? "opacity-100 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" : "opacity-40"}`} />}
-                  <span className={`text-micro transition-colors font-bold uppercase tracking-wider group-hover:!text-white ${isCategoryActive ? "!text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" : "text-foreground/40"}`}>
+                  {IconComponent && <IconComponent className={`w-3.5 h-3.5 transition-all ${isCategoryActive ? "opacity-100 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" : "opacity-50 text-foreground/60"}`} />}
+                  <span className={`text-micro transition-colors !font-bold uppercase tracking-wider group-hover:!text-white ${isCategoryActive ? "!text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" : "text-foreground/55"}`}>
                     {category.label}
                   </span>
                 </div>
                 {isExpanded ? (
-                  <ChevronDown className={`w-3 h-3 transition-colors ${isCategoryActive ? "text-white" : "text-foreground/40 group-hover:text-white"}`} strokeWidth={2.5} />
+                  <ChevronDown className={`w-3 h-3 transition-colors ${isCategoryActive ? "text-white" : "text-foreground/50 group-hover:text-white"}`} strokeWidth={2.5} />
                 ) : (
-                  <ChevronRight className="w-3 h-3 text-foreground/40 opacity-80 group-hover:opacity-100 group-hover:text-white transition-all" strokeWidth={2.5} />
+                  <ChevronRight className="w-3 h-3 text-foreground/50 opacity-100 group-hover:text-white transition-all" strokeWidth={2.5} />
                 )}
               </button>
               
@@ -65,7 +65,7 @@ export function Sidebar() {
                           `block px-3 py-[6px] text-[13px] rounded-md transition-all relative ${
                             isActive
                               ? "text-white font-semibold"
-                              : "text-foreground/50 hover:text-foreground hover:bg-white/[0.03] font-medium"
+                              : "text-foreground/65 hover:text-white hover:bg-white/[0.03] font-medium"
                           }`
                         }
                       >
