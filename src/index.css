@@ -142,6 +142,16 @@
     animation: shimmer 1.5s infinite;
   }
 
+  /* Breathing Glow Effect */
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.4; filter: blur(0.5px); }
+    50% { opacity: 0.8; filter: blur(1.5px); }
+  }
+
+  .animate-glow-pulse {
+    animation: glow-pulse 4s ease-in-out infinite;
+  }
+
   /* Top Loading Bar */
   .loading-bar-container {
     @apply fixed top-0 left-0 right-0 h-[2px] z-[9999] pointer-events-none;
